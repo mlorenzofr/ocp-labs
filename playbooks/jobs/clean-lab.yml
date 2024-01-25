@@ -1,0 +1,57 @@
+---
+- name: 'Remove lab resources'
+  hosts:
+    - 'lab'
+
+  gather_facts: false
+
+  vars:
+    lab_dnsmasq_root: '/opt/dnsmasq'
+    lab_path: '/root/labs'
+
+  vars_prompt:
+    - name: lab_name
+      prompt: 'lab name to remove'
+      private: false
+
+  tasks:
+    - name: 'Test lab_name'
+      ansible.builtin.fail:
+        msg: 'Variable lab_name is empty'
+      when: lab_name | length == 0
+
+    - name: 'Prepare dnsmasq fileglob pattern'
+      ansible.builtin.find:
+        path: "{{ lab_dnsmasq_root }}/include.d/"
+        patterns: "^{{ lab_name }}.*\\.ipv4$"
+        use_regex: true
+      register: clean_dnsmasq_files
+
+    - name: 'Remove dnsmasq snippets'
+      notify: 'Restart dnsmasq-virt service'
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: 'absent'
+      loop: "{{ clean_dnsmasq_files.files | map(attribute='path') }}"
+
+    # It doesn't work in the ansible module
+    # Fix pending
+    # - name: 'Remove virtual machines'
+    #   karmab.kcli.kcli_plan:
+    #     name: "{{ lab_name }}"
+    #     state: 'absent'
+
+    - name: 'Remove virtual machines'
+      ansible.builtin.command:
+        cmd: "kcli delete plan {{ lab_name }} -y"
+
+    - name: 'Remove lab files'
+      ansible.builtin.file:
+        path: "{{ lab_path }}/{{ lab_name }}"
+        state: 'absent'
+
+  handlers:
+    - name: 'Restart dnsmasq-virt service'
+      ansible.builtin.service:
+        name: 'dnsmasq-virt'
+        state: 'restarted'

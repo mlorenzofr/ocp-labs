@@ -1,0 +1,13 @@
+{{ ansible_managed | comment }}
+
+# {{ lab_name }} lab
+host-record=api-int.{{ lab_name }}.{{ lab_domain }},{{ lab_api_ips[0] }}
+host-record=api.{{ lab_name }}.{{ lab_domain }},{{ lab_api_ips[0] }}
+address=/apps.{{ lab_name }}.{{ lab_domain }}/{{ lab_ingress_ips[0] }}
+
+{% for host in lab_hosts %}
+dhcp-host={{ host.mac }},{{ lab_name }}-{{ host.role | default('master') }}-{{ loop.index }},{{ host.ip }}
+{% endfor %}
+{% if lab_bootstrap_ip != '' %}
+dhcp-host={{ lab_bootstrap_mac }},{{ lab_name }}-bootstrap,{{ lab_bootstrap_ip }}
+{% endif %}

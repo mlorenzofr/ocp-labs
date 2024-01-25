@@ -1,0 +1,14 @@
+---
+- name: 'Prepare metallb install manifest'
+  ansible.builtin.template:
+    src: 'metallb-init.yaml.j2'
+    dest: "{{ ocp_metallb_path }}/metallb-subscription.yaml"
+    mode: '0644'
+  notify: 'metallb install'
+
+- name: 'Prepare metallb setup manifest'
+  ansible.builtin.template:
+    src: 'metallb-setup.yaml.j2'
+    dest: "{{ ocp_metallb_path }}/metallb-setup.yaml"
+    mode: '0644'
+  notify: 'metallb setup'

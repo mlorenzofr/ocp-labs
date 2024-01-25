@@ -1,0 +1,77 @@
+---
+apiVersion: hypershift.openshift.io/v1beta1
+kind: HostedCluster
+metadata:
+  name: {{ item.name }}
+  namespace: {{ item.ns }}
+  labels:
+spec:
+  release:
+    image: quay.io/openshift-release-dev/ocp-release:{{ item.version }}-{{ item.arch | default('x86_64') }}
+  pullSecret:
+    name: pullsecret-cluster-{{ item.name }}
+  sshKey:
+    name: sshkey-cluster-{{ item.name }}
+  networking:
+    clusterNetwork:
+      - cidr: {{ item.cluster_network | default('10.132.0.0/14') }}
+    serviceNetwork:
+      - cidr: {{ item.service_network | default('172.31.0.0/16') }}
+    networkType: {{ item.network_type | default('OVNKubernetes') }}
+  platform:
+    type: Agent
+    agent:
+      agentNamespace: '{{ item.agent_ns }}'
+  infraID: '{{ item.infra }}'
+  dns:
+    baseDomain: '{{ item.domain }}'
+  services:
+  - service: APIServer
+    servicePublishingStrategy:
+      type: LoadBalancer
+  - service: OAuthServer
+    servicePublishingStrategy:
+      type: Route
+  - service: OIDC
+    servicePublishingStrategy:
+      type: Route
+  - service: Konnectivity
+    servicePublishingStrategy:
+      type: Route
+  - service: Ignition
+    servicePublishingStrategy:
+      type: Route
+---
+apiVersion: hypershift.openshift.io/v1beta1
+kind: NodePool
+metadata:
+  name: 'nodepool-{{ item.name }}-1'
+  namespace: '{{ item.ns }}'
+spec:
+  clusterName: '{{ item.name }}'
+  replicas: {{ item.replicas }}
+  management:
+    autoRepair: false
+    upgradeType: InPlace
+  platform:
+    type: Agent
+    agent:
+      agentLabelSelector:
+        matchLabels: {}
+  release:
+    image: quay.io/openshift-release-dev/ocp-release:{{ item.version }}-{{ item.arch | default('x86_64') }}
+---
+apiVersion: cluster.open-cluster-management.io/v1
+kind: ManagedCluster
+metadata:
+  annotations:
+    import.open-cluster-management.io/hosting-cluster-name: local-cluster
+    import.open-cluster-management.io/klusterlet-deploy-mode: Hosted
+    open-cluster-management/created-via: hypershift
+  labels:
+    cloud: BareMetal
+    vendor: OpenShift
+    name: '{{ item.name }}'
+  name: '{{ item.name }}'
+spec:
+  hubAcceptsClient: true

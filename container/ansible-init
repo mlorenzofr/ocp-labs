@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Here we will install the external ansible roles
+mkdir -p /etc/ansible/roles
+
+# Install external roles/collections
+# This may be useful for some testing.
+# The main roles and collections are included in the OCI image.
+# ansible-galaxy install --roles-path=/etc/ansible/roles -r /ansible/requirements.yml
+
+# Generate a plain text file with ansible inventory for bash completion
+touch /tmp/.inventory
+ansible-inventory --list 2>/dev/null | jq -r "keys | .[]" > /tmp/.inventory
+ansible-inventory --list 2>/dev/null | jq -r ".[].hosts | .[]?" >> /tmp/.inventory
+
+# Start a shell
+/bin/bash

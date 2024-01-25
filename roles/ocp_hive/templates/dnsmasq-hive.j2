@@ -1,0 +1,7 @@
+{{ ansible_managed | comment }}
+
+# {{ ocp_hive_lab_name }} - {{ item.name }} cluster services
+
+host-record=api-int.{{ item.name }}.{{ item.domain }},{{ item.ip }}
+host-record=api.{{ item.name }}.{{ item.domain }},{{ item.ip }}
+address=/apps.{{ item.name }}.{{ item.domain }}/{{ item.ip }}

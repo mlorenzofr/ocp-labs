@@ -1,0 +1,20 @@
+---
+- name: 'Create AgentServiceConfig resource'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_assisted_service_path }}/agent-service-config.yaml"
+  when: ocp_assisted_service_install
+  listen:
+    - 'apply AgentServiceConfig'
+
+- name: 'Waiting until assisted-service pods are ready'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc wait -n {{ ocp_mce_ns }}
+      -l app="assisted-service"
+      --for=condition=Ready
+      pods --timeout=300s
+  changed_when: false
+  failed_when: false
+  when: ocp_assisted_service_install
+  listen:
+    - 'apply AgentServiceConfig'

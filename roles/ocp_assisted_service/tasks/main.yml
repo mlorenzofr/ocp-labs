@@ -1,0 +1,18 @@
+---
+- name: 'Create Agent Service config manifest'
+  ansible.builtin.template:
+    src: 'config.yaml.j2'
+    dest: "{{ ocp_assisted_service_path }}/agent-service-config.yaml"
+    mode: '0644'
+  ignore_errors: "{{ ansible_check_mode }}"
+  notify: 'apply AgentServiceConfig'
+
+- name: 'Check agent resource'
+  ansible.builtin.command:
+    cmd: '/usr/local/bin/oc get agentserviceconfigs agent'
+  register: __agentconfig_status
+  check_mode: false
+  changed_when: __agentconfig_status.rc != 0
+  failed_when: false
+  when: ocp_assisted_service_install
+  notify: 'apply AgentServiceConfig'

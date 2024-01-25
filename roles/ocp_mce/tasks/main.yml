@@ -1,0 +1,15 @@
+---
+- name: 'Create MultiCluster Engine manifests'
+  ansible.builtin.template:
+    src: "{{ item.template }}"
+    dest: "{{ ocp_mce_path }}/{{ item.dest }}"
+    mode: '0644'
+  ignore_errors: "{{ ansible_check_mode }}"
+  loop:
+    - {template: 'init.yaml.j2', dest: 'mce-subscription.yaml'}
+    - {template: 'mce.yaml.j2', dest: 'mce.yaml'}
+
+- name: 'Install MultiCluster Engine'
+  ansible.builtin.include_tasks:
+    file: 'apply.yml'
+  when: ocp_mce_install

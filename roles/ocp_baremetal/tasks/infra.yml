@@ -1,0 +1,44 @@
+---
+- name: 'Create Baremetal environment manifests'
+  ansible.builtin.template:
+    src: 'infraenv.yaml.j2'
+    dest: "{{ ocp_baremetal_path }}/infra/01-env-{{ item.name }}.yaml"
+    mode: '0644'
+  notify: 'update infrastructure'
+
+- name: 'Create Baremetal hosts manifest'
+  ansible.builtin.template:
+    src: 'inventory.yaml.j2'
+    dest: "{{ ocp_baremetal_path }}/infra/02-bmh-{{ item.name }}.yaml"
+    mode: '0644'
+  notify: 'update infrastructure'
+
+- name: 'Create dnsmasq snippet'
+  ansible.builtin.template:
+    src: 'dnsmasq-bmh.j2'
+    dest: "{{ ocp_baremetal_dnsmasq_root }}/include.d/{{ ocp_baremetal_lab_name }}-{{ item.name }}-bmh.ipv4"
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify:
+    - 'svc restart dnsmasq-virt'
+
+- name: 'Create virtual machines'
+  karmab.kcli.kcli_vm:
+    name: "{{ host.name | default('{}-worker-{}'.format(ocp_baremetal_lab_name, ansible_loop.index)) }}"
+    state: 'present'
+    parameters:
+      start: false
+      uefi_legacy: true
+      plan: "{{ ocp_baremetal_lab_name }}"
+      memory: "{{ host.memory | default(24000) }}"
+      numcpus: "{{ host.cpus | default(12) }}"
+      disks:
+        - {"size": 120, "pool": "ocp"}
+      nets:
+        - {"name": "{{ ocp_baremetal_network_name }}", "mac": "{{ host.mac }}"}
+  loop: "{{ item.inventory }}"
+  loop_control:
+    loop_var: host
+    extended: true
+...

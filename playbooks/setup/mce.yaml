@@ -1,0 +1,37 @@
+---
+# Installs MCE and configures assisted-service on a existing cluster
+# In this scenario we expect that control plane is installed and master have an
+#   additional disk (40 GB) for assisted-service (LVMS)
+- name: 'Install MultiCluster Engine (MCE)'
+  hosts:
+    - 'lab'
+
+  gather_facts: false
+
+  vars:
+    lab_dnsmasq_root: '/opt/dnsmasq'
+    lab_configs: '/root/labs/standard/config'
+    lab_name: 'standard'
+    lab_network_name: 'lab-network'
+    lab_install: true
+    ocp_baremetal_infras:
+      - name: 'hosted'
+        ns: 'hardware-inventory'
+        ntp: ['192.168.125.1']
+        pullsecret: "{{ lab_pull_secret }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        redfish: '192.168.125.1'
+        inventory:
+          - {'mac': 'be:be:ca:fe:02:05', 'ip': '192.168.125.25'}
+          - {'mac': 'be:be:ca:fe:02:06', 'ip': '192.168.125.26'}
+          - {'mac': 'be:be:ca:fe:02:07', 'ip': '192.168.125.27'}
+
+  environment:
+    KUBECONFIG: '/root/labs/standard/deploy/auth/kubeconfig'
+
+  roles:
+    - 'ocp_baremetal'
+
+  pre_tasks:
+    - name: 'Load personal vars'
+      ansible.builtin.include_vars: 'user.yml'

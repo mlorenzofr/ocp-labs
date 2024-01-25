@@ -1,0 +1,50 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ item.ns }}
+{% if item.hypershift | default(false) %}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: capi-provider-role
+  namespace: {{ item.ns }}
+rules:
+- apiGroups:
+    - agent-install.openshift.io
+  resources:
+    - agents
+  verbs:
+    - '*'
+{% endif %}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pull-secret
+  namespace: {{ item.ns }}
+stringData:
+  .dockerconfigjson: {{ item.pullsecret }}
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: agent-install.openshift.io/v1beta1
+kind: InfraEnv
+metadata:
+  name: {{ item.name }}
+  namespace: {{ item.ns }}
+spec:
+  additionalNTPSources:
+{% for server in item.ntp %}
+    - {{ server }}
+{% endfor %}
+{% if not item.hypershift | default(false) %}
+  clusterRef:
+    name: {{ item.name }}
+    namespace: {{ item.ns }}
+  agentLabels:
+      cluster-name: "{{ item.name }}"
+{% endif %}
+  pullSecretRef:
+    name: pull-secret
+  sshAuthorizedKey: {{ item.sshkey }}

@@ -1,0 +1,33 @@
+---
+- name: 'Check image visibility'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc get clusterimageset {{ item.image }} -o jsonpath='{.metadata.labels.visible}'
+  register: __hive_image_visibility
+  changed_when: false
+  failed_when: false
+
+- name: 'Make cluster image visible'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc label clusterimageset {{ item.image }} visible=true --overwrite
+  when: __hive_image_visibility.stdout != 'true'
+
+- name: 'Create DNS resolution for cluster services'
+  ansible.builtin.template:
+    src: 'dnsmasq-hive.j2'
+    dest: "{{ ocp_hive_dnsmasq_root }}/include.d/{{ ocp_hive_lab_name }}-{{ item.name }}-cluster.ipv4"
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify:
+    - 'svc restart dnsmasq-virt'
+
+- name: 'Prepare hive cluster'
+  ansible.builtin.template:
+    src: 'cluster.yaml.j2'
+    dest: "{{ ocp_hive_path }}/hive/{{ item.name }}.yaml"
+    mode: '0644'
+  ignore_errors: "{{ ansible_check_mode }}"
+  notify: 'hive cluster update'
+...

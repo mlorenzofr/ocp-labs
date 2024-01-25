@@ -1,0 +1,5 @@
+---
+ocp_metallb_install: "{{ lab_install | default(false) }}"
+ocp_metallb_path: "{{ lab_configs }}"
+ocp_metallb_pool_ips: ''
+ocp_metallb_pool_name: ''

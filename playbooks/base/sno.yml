@@ -1,0 +1,49 @@
+---
+- name: 'Setup Single Node Openshift (SNO) with Agent Based Installation (ABI)'
+  hosts:
+    - 'lab'
+
+  gather_facts: false
+
+  vars:
+    lab_abi: True
+    lab_abi_ip: '192.168.125.31'
+    lab_api_ips: ['192.168.125.31']
+    lab_ingress_ips: ['192.168.125.31']
+    lab_name: 'sno'
+    lab_master_replicas: 1
+    lab_hosts:
+      - {'mac': 'aa:aa:aa:aa:02:02', 'ip': '192.168.125.31', 'iface':'enp1s0'}
+    libvirt_image_dir: '/home/libvirt-ocp'
+
+  roles:
+    - 'lab'
+
+  tasks:
+    - name: 'Copy configuration files to deploy directory'
+      ansible.builtin.copy:
+        src: "{{ lab_path }}/{{ lab_name }}/config/{{ item }}"
+        dest: "{{ lab_path }}/{{ lab_name }}/deploy/{{ item }}"
+        remote_src: true
+      loop:
+        - 'install-config.yaml'
+        - 'agent-config.yaml'
+
+    - name: 'Generate cluster manifests'
+      ansible.builtin.command:
+        cmd: "openshift-install agent create cluster-manifests --dir {{ lab_path }}/{{ lab_name }}/deploy"
+        creates: "{{ lab_path }}/{{ lab_name }}/deploy/.openshift_install_state.json"
+
+    - name: 'Generate bootstrap ISO image'
+      ansible.builtin.command:
+        cmd: "openshift-install agent create image --dir {{ lab_path }}/{{ lab_name }}/deploy"
+        creates: "{{ lab_path }}/{{ lab_name }}/deploy/agent.x86_64.iso"
+
+    - name: 'Copy ISO image to libvirt image directory'
+      ansible.builtin.copy:
+        src: "{{ lab_path }}/{{ lab_name }}/deploy/agent.x86_64.iso"
+        dest: "{{ libvirt_image_dir }}/{{ lab_name }}-agent-installer.iso"
+        remote_src: true
+
+    # TODO
+    # attach the ISO to the VM and start it

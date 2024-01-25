@@ -1,0 +1,12 @@
+---
+- name: 'Create cluster configurations directory'
+  ansible.builtin.file:
+    path: "{{ ocp_hive_path }}/hive"
+    mode: '0750'
+    state: 'directory'
+
+- name: 'Prepare hive clusters'
+  ansible.builtin.include_tasks:
+    file: 'cluster.yml'
+  loop: "{{ ocp_hive_clusters }}"
+...

@@ -1,0 +1,57 @@
+---
+# Run it with: ansible-playbook ocp.yml
+# To start the installation in background inside a tmux session use `-e "start_install=true"`
+- name: 'Setup Openshift with control plane only'
+  hosts:
+    - 'lab'
+
+  gather_facts: false
+
+  vars:
+    lab_api_ips: ['192.168.125.10']
+    lab_bootstrap_ip: '192.168.125.100'
+    lab_bootstrap_mac: 'be:be:ca:fe:02:00'
+    lab_ingress_ips: ['192.168.125.11']
+    lab_name: 'ocp-lab-1'
+    lab_master_replicas: 3
+    lab_worker_replicas: 1
+    lab_platform: 'baremetal'
+    lab_redfish_ip: '192.168.125.1'
+    lab_hosts:
+      - {'mac': 'be:be:ca:fe:02:01', 'ip': '192.168.125.21'}
+      - {'mac': 'be:be:ca:fe:02:02', 'ip': '192.168.125.22'}
+      - {'mac': 'be:be:ca:fe:02:03', 'ip': '192.168.125.23'}
+      - {'mac': 'be:be:ca:fe:02:04', 'ip': '192.168.125.24', role: 'worker'}
+    libvirt_image_dir: '/home/libvirt-ocp'
+
+  roles:
+    - 'lab'
+
+  pre_tasks:
+    - name: 'Load personal vars'
+      ansible.builtin.include_vars: 'user.yml'
+
+  tasks:
+    - name: 'Execute base handlers'
+      ansible.builtin.meta: flush_handlers
+
+    - name: 'Copy configuration files to deploy directory'
+      ansible.builtin.copy:
+        src: "{{ lab_path }}/{{ lab_name }}/config/{{ item }}"
+        dest: "{{ lab_path }}/{{ lab_name }}/deploy/{{ item }}"
+        remote_src: true
+      loop:
+        - 'install-config.yaml'
+
+    - name: 'Generate cluster manifests'
+      ansible.builtin.command:
+        cmd: "/usr/local/bin/openshift-baremetal-install create cluster-manifests --dir {{ lab_path }}/{{ lab_name }}/deploy"
+        creates: "{{ lab_path }}/{{ lab_name }}/deploy/.openshift_install_state.json"
+
+    - name: 'Launch install process in a tmux session'
+      ansible.builtin.command:
+        cmd: >
+          /usr/bin/tmux new-session -s ocp-install-{{ lab_name }} -d
+          "/usr/local/bin/openshift-baremetal-install --dir {{ lab_path }}/{{ lab_name }}/deploy --log-level debug create cluster"
+      register: tmux_status
+      when: start_install | default(False)

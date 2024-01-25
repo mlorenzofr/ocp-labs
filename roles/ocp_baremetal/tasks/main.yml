@@ -1,0 +1,22 @@
+---
+- name: 'Check watch scope configured in baremetal operator'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc get provisionings/provisioning-configuration
+      -o jsonpath='{.spec.watchAllNamespaces}'
+  register: __ocp_baremetal_watchall
+  check_mode: false
+  changed_when: __ocp_baremetal_watchall.stdout | length == 0
+  failed_when: false
+  notify: 'set watch-all'
+
+- name: 'Create infrastructure configurations directory'
+  ansible.builtin.file:
+    path: "{{ ocp_baremetal_path }}/infra"
+    mode: '0750'
+    state: 'directory'
+
+- name: 'Prepare infrastructures'
+  ansible.builtin.include_tasks:
+    file: 'infra.yml'
+  loop: "{{ ocp_baremetal_infras }}"

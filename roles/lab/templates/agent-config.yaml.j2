@@ -1,0 +1,26 @@
+---
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: {{ lab_name }}
+rendezvousIP: {{ lab_abi_ip }}
+{% if lab_hosts | length > 0 %}
+hosts:
+{% for host in lab_hosts %}
+  - hostname: {{ lab_name }}-{{ host.role | default('master') }}-{{ loop.index }}
+    interfaces:
+      - name: {{ host.iface | default('eth0') }}
+        macAddress: {{ host.mac }}
+    networkConfig:
+      interfaces:
+        - name: {{ host.iface | default('eth0') }}
+          type: ethernet
+          state: up
+          mac-address: {{ host.mac }}
+          ipv4:
+            enabled: true
+            dhcp: true
+    rootDeviceHints:
+      deviceName: "{{ host.disk | default('/dev/vda') }}"
+{% endfor %}
+{% endif %}

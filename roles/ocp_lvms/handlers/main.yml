@@ -1,0 +1,32 @@
+---
+- name: 'Install LVMS Operator'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_lvms_path }}/lvms-subscription.yaml"
+  listen: 'lvms install'
+
+- name: 'Waiting until the operator is installed'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc -n {{ ocp_lvms_ns }} wait
+      --for=jsonpath='{.status.state}'=AtLatestKnown
+      subscription/lvms --timeout=300s
+  changed_when: false
+  failed_when: false
+  listen: 'lvms install'
+
+- name: 'Waiting until lvms-operator pods are ready'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc wait -n {{ ocp_lvms_ns }}
+      -l app.kubernetes.io/name=lvms-operator
+      --for=condition=Ready
+      pods --timeout=300s
+  changed_when: false
+  failed_when: false
+  listen: 'lvms install'
+
+- name: 'Create LVMS clusters'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_lvms_path }}/lvmcluster-{{ item.name }}.yaml"
+  loop: "{{ ocp_lvms_clusters }}"
+  listen: 'lvms install'

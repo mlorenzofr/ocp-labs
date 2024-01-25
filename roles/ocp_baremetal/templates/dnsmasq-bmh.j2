@@ -1,0 +1,7 @@
+{{ ansible_managed | comment }}
+
+# {{ ocp_baremetal_lab_name }} baremetal hosts
+
+{% for host in item.inventory %}
+dhcp-host={{ host.mac }},{{ host.name | default('{}-worker-{}'.format(ocp_baremetal_lab_name, loop.index)) }},{{ host.ip }}
+{% endfor %}

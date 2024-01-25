@@ -1,0 +1,58 @@
+FROM alpine:3.19
+
+ARG UID
+ENV ANSIBLE_VERSION 7.5.0
+ENV ANSIBLE_LINT_VERSION 6.16.0
+ENV ANSIBLE_COMM_GENERAL_VERSION 6.6.0
+
+RUN apk --update --no-cache add \
+        bash \
+        bash-completion \
+        ca-certificates \
+        fzf \
+        git \
+        gpg-agent \
+        jq \
+        openssh-client \
+        openssl \
+        python3 \
+        py3-pip \
+        rsync \
+        sshpass \
+        pass
+
+RUN apk --update add --virtual \
+        .build-deps \
+        python3-dev \
+        libffi-dev \
+        openssl-dev \
+        build-base \
+        curl
+
+# RUN python3 -m ensurepip --upgrade
+RUN pip install --upgrade cffi --break-system-packages
+
+RUN pip install --break-system-packages \
+        yamllint \
+        molecule \
+        netaddr \
+        ansible==${ANSIBLE_VERSION} \
+        ansible-lint==${ANSIBLE_LINT_VERSION}
+
+RUN ansible-galaxy collection install \
+        community.general:==${ANSIBLE_COMM_GENERAL_VERSION} \
+        ansible.posix \
+        karmab.kcli
+
+# script used to init ansible environment
+COPY container/ansible-init /usr/bin/
+COPY container/.bashrc /root/.bashrc
+COPY container/ssh_config /etc/ssh/ssh_config
+
+RUN apk del .build-deps && rm -rf /var/cache/apk/*
+RUN adduser -D -H -u ${UID} ansible
+RUN git config --global --add safe.directory /ansible
+
+# USER ansible
+WORKDIR /ansible
+CMD ["/usr/bin/ansible-init"]

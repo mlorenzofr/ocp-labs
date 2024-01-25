@@ -1,0 +1,62 @@
+---
+- name: 'Install MetalLB and create an ingress for a HostedCluster'
+  hosts:
+    - 'lab'
+
+  gather_facts: false
+
+  vars:
+    lab_path: '/root/labs'
+    lab_install: true
+    ocp_metallb_path: "{{ lab_path }}/{{ lab_name }}/{{ hcp_name }}"
+    ocp_metallb_pool_ips: '192.168.125.50-192.168.125.55'
+    ocp_metallb_pool_name: "{{ hcp_name }}-lb-pool"
+
+  vars_prompt:
+    - name: lab_name
+      prompt: 'lab name'
+      private: false
+    - name: hcp_name
+      prompt: 'hosted cluster name'
+      private: false
+
+  environment:
+    KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/{{ hcp_name }}/auth/kubeconfig"
+
+  roles:
+    - ocp_metallb
+
+  tasks:
+    - name: 'Create metallb ingress'
+      ansible.builtin.copy:
+        dest: "{{ lab_path }}/{{ lab_name }}/{{ hcp_name }}/metallb-ingress.yaml"
+        content: |
+          ---
+          kind: Service
+          apiVersion: v1
+          metadata:
+            annotations:
+              metallb.universe.tf/address-pool: {{ ocp_metallb_pool_name }}
+            name: metallb-ingress
+            namespace: openshift-ingress
+          spec:
+            ports:
+              - name: http
+                protocol: TCP
+                port: 80
+                targetPort: 80
+              - name: https
+                protocol: TCP
+                port: 443
+                targetPort: 443
+            selector:
+              ingresscontroller.operator.openshift.io/deployment-ingresscontroller: default
+            type: LoadBalancer
+      notify: 'Create metallb-ingress'
+
+  handlers:
+    - name: 'Create metallb-ingress'
+      ansible.builtin.command:
+        cmd: >
+          /usr/local/bin/oc apply -f {{ lab_path }}/{{ lab_name }}/{{ hcp_name }}/metallb-ingress.yaml
+      when: lab_install

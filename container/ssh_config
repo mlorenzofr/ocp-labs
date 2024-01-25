@@ -1,0 +1,4 @@
+HostKeyAlgorithms +ssh-rsa
+PubkeyAcceptedAlgorithms +ssh-rsa
+StrictHostKeyChecking no
+UserKnownHostsFile=/dev/null

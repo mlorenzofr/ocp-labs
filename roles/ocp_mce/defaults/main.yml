@@ -1,0 +1,4 @@
+---
+ocp_mce_install: "{{ lab_install | default(false) }}"
+ocp_mce_ns: 'multicluster-engine'
+ocp_mce_path: "{{ lab_configs }}"

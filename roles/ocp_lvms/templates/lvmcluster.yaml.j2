@@ -1,0 +1,32 @@
+---
+apiVersion: lvm.topolvm.io/v1alpha1
+kind: LVMCluster
+metadata:
+  name: {{ item.name }}
+  namespace: {{ item.ns }}
+spec:
+  storage:
+    deviceClasses:
+{% for class in item.classes %}
+      - name: {{ class.name }}
+        deviceSelector:
+          paths:
+{% for dev in class.devices %}
+            - {{ dev }}
+{% endfor %}
+{% if class.devices_opt | default([]) | length > 0 %}
+          optionalPaths:
+{% for dev in class.devices_opt %}
+            - {{ dev }}
+{% endfor %}
+{% endif %}
+        thinPoolConfig:
+          name: {{ class.name }}-pool-1
+          sizePercent: 90
+          overprovisionRatio: 10
+        nodeSelector:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: node-role.kubernetes.io/{{ class.node_role }}
+                  operator: Exists
+{% endfor %}

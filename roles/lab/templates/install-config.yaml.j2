@@ -1,0 +1,51 @@
+---
+apiVersion: v1
+baseDomain: {{ lab_domain }}
+networking:
+  networkType: {{ lab_network_type }}
+  machineCIDR: {{ lab_machine_network }}
+  clusterNetwork:
+  - cidr: {{ lab_cluster_network }}
+    hostPrefix: 23
+  serviceNetwork:
+  - {{ lab_service_network }}
+metadata:
+  name: {{ lab_name }}
+compute:
+  - name: worker
+    architecture: amd64
+    hyperthreading: Enabled
+    replicas: {{ lab_worker_replicas }}
+controlPlane:
+  name: master
+  architecture: amd64
+  hyperthreading: Enabled
+  replicas: {{ lab_master_replicas }}
+platform:
+{% if lab_platform == 'baremetal' %}
+  baremetal:
+    externalBridge: "{{ lab_network_name }}"
+    provisioningNetwork: "Disabled"
+    externalMACAddress: {{ lab_bootstrap_mac }}
+    apiVIPs: {{ lab_api_ips }}
+    ingressVIPs: {{ lab_ingress_ips }}
+{% if lab_hosts | length > 0 %}
+    hosts:
+{% for host in lab_hosts %}
+      - name: {{ lab_name }}-{{ host.role | default('master') }}-{{ loop.index }}
+        role: {{ host.role | default('master') }}
+        bmc:
+          address: redfish-virtualmedia://{{ lab_redfish_ip }}:9000/redfish/v1/Systems/local/{{ lab_name }}-{{ host.role | default('master') }}-{{ loop.index }}
+          username: ADMIN
+          password: ADMIN
+          disableCertificateVerification: True
+        bootMACAddress: {{ host.mac }}
+        rootDeviceHints:
+          deviceName: "{{ host.disk | default('/dev/vda') }}"
+{% endfor %}
+{% endif %}
+{% else %}
+  none: {}
+{% endif %}
+pullSecret: {{ lab_pull_secret }}
+sshKey: '{{ lab_ssh_pubkey }}'

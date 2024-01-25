@@ -1,0 +1,39 @@
+---
+- name: 'Install MetalLB Operator'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_metallb_path }}/metallb-subscription.yaml"
+  when: ocp_metallb_install
+  listen: 'metallb install'
+
+- name: 'Waiting until the operator is installed'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc -n openshift-operators wait
+      --for=jsonpath='{.status.state}'=AtLatestKnown
+      subscription/metallb --timeout=300s
+  changed_when: false
+  failed_when: false
+  when: ocp_metallb_install
+  listen: 'metallb install'
+
+- name: 'Waiting until speaker pods are ready'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc wait -n openshift-operators
+      -l name=metallb
+      --for=condition=Ready
+      pods --timeout=300s
+  changed_when: false
+  failed_when: false
+  when: ocp_metallb_install
+  listen: 'metallb install'
+
+- name: 'Setup MetalLB'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_metallb_path }}/metallb-setup.yaml"
+  register: __metallb_setup_cmd
+  until: __metallb_setup_cmd.rc == 0
+  retries: 5
+  delay: 10
+  when: ocp_metallb_install
+  listen: 'metallb setup'

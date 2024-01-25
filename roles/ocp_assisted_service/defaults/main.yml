@@ -1,0 +1,12 @@
+---
+ocp_assisted_service_install: "{{ lab_install | default(false) }}"
+ocp_assisted_service_lvms: true
+ocp_assisted_service_ns: 'multicluster-engine'
+ocp_assisted_service_path: "{{ lab_configs }}"
+ocp_assisted_service_sc_name: 'lvms-vg1'
+ocp_assisted_service_storage_db_size: 10
+ocp_assisted_service_storage_fs_size: 20
+ocp_assisted_service_images:
+  - ocp_version: '4.14.0'
+    arch: 'x86_64'
+    version: '414.92.202310210434-0'

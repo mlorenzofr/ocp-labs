@@ -1,0 +1,11 @@
+---
+profile: shared
+
+exclude_paths:
+  - .ansible-lint
+  - .cache
+  - dependencies.yml
+  - molecule
+
+parseable: true
+verbosity: 1

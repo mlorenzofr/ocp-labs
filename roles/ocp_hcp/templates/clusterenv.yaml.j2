@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ item.ns }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pullsecret-cluster-{{ item.name }}
+  namespace: {{ item.ns }}
+data:
+  '.dockerconfigjson': '{{ item.pullsecret }}'
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sshkey-cluster-{{ item.name }}
+  namespace: {{ item.ns }}
+stringData:
+  id_rsa.pub: {{ item.sshkey | b64encode }}

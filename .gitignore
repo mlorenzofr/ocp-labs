@@ -1,0 +1,51 @@
+*.retry
+
+# Don't commit secrets
+secrets/
+
+# Custom user files (env, bash history, ...)
+.user/
+
+# Don't commit inventory to avoid expose internal names
+hosts.yml
+
+# Don't commit compressed files
+*.7z
+*.bz2
+*.deb
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.rpm
+*.tar
+*.xz
+*.zip
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.tox
+*.egg-info
+Icon?
+ehthumbs.db
+Thumbs.db
+.eggs
+.coverage
+*.pyc
+.cache
+
+# backup files
+*.bak
+*.swp
+
+# IDE generated files
+*.code-workspace
+.idea
+*.iml
+*.sublime*
+.vscode

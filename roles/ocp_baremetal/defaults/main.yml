@@ -1,0 +1,7 @@
+---
+ocp_baremetal_dnsmasq_root: "{{ lab_dnsmasq_root }}"
+ocp_baremetal_infras: []
+ocp_baremetal_install: "{{ lab_install | default(false) }}"
+ocp_baremetal_lab_name: "{{ lab_name }}"
+ocp_baremetal_network_name: "{{ lab_network_name }}"
+ocp_baremetal_path: "{{ lab_configs }}"

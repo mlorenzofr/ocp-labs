@@ -1,0 +1,62 @@
+---
+- name: 'Create labs root directory'
+  ansible.builtin.file:
+    path: "{{ lab_path }}"
+    mode: '0775'
+    state: 'directory'
+
+- name: 'Create lab directory tree'
+  ansible.builtin.file:
+    path: "{{ lab_path }}/{{ item }}"
+    mode: '0775'
+    state: 'directory'
+  ignore_errors: "{{ ansible_check_mode }}"
+  loop:
+    - "{{ lab_name }}"
+    - "{{ lab_name }}/config"
+    - "{{ lab_name }}/deploy"
+
+- name: 'Create install-config.yaml file'
+  ansible.builtin.template:
+    src: 'install-config.yaml.j2'
+    dest: "{{ lab_path }}/{{ lab_name }}/config/install-config.yaml"
+    mode: '0644'
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: 'Create agent-config.yaml file'
+  ansible.builtin.template:
+    src: 'agent-config.yaml.j2'
+    dest: "{{ lab_path }}/{{ lab_name }}/config/agent-config.yaml"
+    mode: '0644'
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: lab_abi
+
+- name: 'Create dnsmasq snippet'
+  ansible.builtin.template:
+    src: 'dnsmasq-lab.j2'
+    dest: "{{ lab_dnsmasq_root }}/include.d/{{ lab_name }}.ipv4"
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify:
+    - 'svc restart dnsmasq-virt'
+
+- name: 'Create virtual machines'
+  karmab.kcli.kcli_vm:
+    name: "{{ lab_name }}-{{ item.role | default('master') }}-{{ ansible_loop.index }}"
+    state: 'present'
+    parameters:
+      start: false
+      uefi_legacy: true
+      plan: "{{ lab_name }}"
+      memory: "{{ item.memory | default(24000) }}"
+      numcpus: "{{ item.cpus | default(12) }}"
+      disks:
+        - {"size": 120, "pool": "ocp"}
+        - {"size": 60, "pool": "ocp"}
+      nets:
+        - {"name": "{{ lab_network_name }}", "mac": "{{ item.mac }}"}
+  loop: "{{ lab_hosts }}"
+  loop_control:
+    extended: true
+...

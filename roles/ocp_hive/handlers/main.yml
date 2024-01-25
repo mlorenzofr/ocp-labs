@@ -1,0 +1,8 @@
+---
+- name: 'Apply hive clusters changes'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc apply -f {{ ocp_hive_path }}/hive
+  when: ocp_hive_install
+  listen:
+    - 'hive cluster update'

@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  role_name: ocp_assisted_service
+  namespace: mlorenzofr
+  author: 'Manuel Lorenzo'
+  description: 'Creates and applies the manifests required for Assisted Service on Openshift Cluster'
+  company: 'Red Hat'
+  license: 'BSD'
+  min_ansible_version: '2.12'
+  platforms:
+    - name: 'EL'
+      versions:
+        - '8'
+  galaxy_tags: []
+dependencies:
+  - name: 'ocp_mce'
+  - name: 'ocp_lvms'
+    when: ocp_assisted_service_lvms

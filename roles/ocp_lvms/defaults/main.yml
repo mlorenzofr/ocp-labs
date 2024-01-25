@@ -1,0 +1,11 @@
+---
+ocp_lvms_install: "{{ lab_install | default(false) }}"
+ocp_lvms_ns: 'openshift-storage'
+ocp_lvms_path: "{{ lab_configs }}"
+ocp_lvms_clusters:
+  - name: 'mce-data'
+    ns: 'openshift-storage'
+    classes:
+      - name: 'vg1'
+        devices: ['/dev/vdb']
+        node_role: 'worker'

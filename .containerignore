@@ -1,0 +1,6 @@
+.*
+*
+
+!/container/ansible-init
+!/container/.bashrc
+!/container/ssh_config

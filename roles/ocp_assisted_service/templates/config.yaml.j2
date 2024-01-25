@@ -1,0 +1,40 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: assisted-service-config
+  namespace: {{ ocp_assisted_service_ns }}
+data:
+  ALLOW_CONVERGED_FLOW: "false"
+---
+apiVersion: agent-install.openshift.io/v1beta1
+kind: AgentServiceConfig
+metadata:
+  namespace: {{ ocp_assisted_service_ns }}
+  name: agent
+  annotations:
+    unsupported.agent-install.openshift.io/assisted-service-configmap: assisted-service-config
+spec:
+  databaseStorage:
+    storageClassName: {{ ocp_assisted_service_sc_name }}
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: {{ ocp_assisted_service_storage_db_size }}Gi
+  filesystemStorage:
+    storageClassName: {{ ocp_assisted_service_sc_name }}
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: {{ ocp_assisted_service_storage_fs_size }}Gi
+  osImages:
+{% for image in ocp_assisted_service_images %}
+{% set version_major = '.'.join(image.ocp_version.split('.')[0:2]) %}
+    - openshiftVersion: "{{ version_major }}"
+      url: "https://mirror.openshift.com/pub/openshift-v4/{{ image.arch }}/dependencies/rhcos/{{ version_major }}/{{ image.ocp_version }}/rhcos-{{ image.ocp_version }}-{{ image.arch }}-live.{{ image.arch }}.iso"
+      rootFSUrl: "https://mirror.openshift.com/pub/openshift-v4/{{ image.arch }}/dependencies/rhcos/{{ version_major }}/{{ image.ocp_version }}/rhcos-{{ image.ocp_version }}-{{ image.arch }}-live-rootfs.{{ image.arch }}.img"
+      cpuArchitecture: "{{ image.arch }}"
+      version: "{{ image.version }}"
+{% endfor %}

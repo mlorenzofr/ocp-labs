@@ -1,0 +1,15 @@
+---
+- name: 'Create LVM installation manifest'
+  ansible.builtin.template:
+    src: 'init.yaml.j2'
+    dest: "{{ ocp_lvms_path }}/lvms-subscription.yaml"
+    mode: '0644'
+  notify: 'lvms install'
+
+- name: 'Create LVM cluster manifests'
+  ansible.builtin.template:
+    src: 'lvmcluster.yaml.j2'
+    dest: "{{ ocp_lvms_path }}/lvmcluster-{{ item.name }}.yaml"
+    mode: '0644'
+  loop: "{{ ocp_lvms_clusters }}"
+  notify: 'lvms install'
