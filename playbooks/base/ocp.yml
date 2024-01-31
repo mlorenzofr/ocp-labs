@@ -27,10 +27,6 @@
   roles:
     - 'lab'
 
-  pre_tasks:
-    - name: 'Load personal vars'
-      ansible.builtin.include_vars: 'user.yml'
-
   tasks:
     - name: 'Execute base handlers'
       ansible.builtin.meta: flush_handlers

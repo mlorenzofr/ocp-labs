@@ -8,9 +8,9 @@
   gather_facts: false
 
   vars:
-    lab_configs: '/root/labs/standard/config'
     lab_dnsmasq_root: '/opt/dnsmasq'
     lab_name: 'standard'
+    lab_configs: "/root/labs/{{ lab_name }}/config"
     lab_network_name: 'lab-network'
     lab_install: true
     ocp_baremetal_infras:
@@ -37,11 +37,7 @@
         ip: '192.168.125.25'
 
   environment:
-    KUBECONFIG: '/root/labs/standard/deploy/auth/kubeconfig'
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
 
   roles:
     - 'ocp_hive'
-
-  pre_tasks:
-    - name: 'Load personal vars'
-      ansible.builtin.include_vars: 'user.yml'

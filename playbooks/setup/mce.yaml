@@ -10,8 +10,8 @@
 
   vars:
     lab_dnsmasq_root: '/opt/dnsmasq'
-    lab_configs: '/root/labs/standard/config'
     lab_name: 'standard'
+    lab_configs: "/root/labs/{{ lab_name }}/config"
     lab_network_name: 'lab-network'
     lab_install: true
     ocp_baremetal_infras:
@@ -27,11 +27,7 @@
           - {'mac': 'be:be:ca:fe:02:07', 'ip': '192.168.125.27'}
 
   environment:
-    KUBECONFIG: '/root/labs/standard/deploy/auth/kubeconfig'
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
 
   roles:
     - 'ocp_baremetal'
-
-  pre_tasks:
-    - name: 'Load personal vars'
-      ansible.builtin.include_vars: 'user.yml'
