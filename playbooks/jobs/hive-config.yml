@@ -1,0 +1,52 @@
+---
+# Run example:
+#   hive-config.yml -e lab_name=standard -e cluster_name=sno1 -e cluster_ns=hive-sno
+
+- name: 'Extract the auth configuration of an hive cluster'
+  hosts:
+    - 'lab'
+
+  gather_facts: false
+
+  vars:
+    lab_path: '/root/labs'
+
+  vars_prompt:
+    - name: lab_name
+      prompt: 'lab name'
+      private: false
+    - name: cluster_ns
+      prompt: 'cluster namespace'
+      private: false
+    - name: cluster_name
+      prompt: 'cluster name'
+      private: false
+
+  tasks:
+    - name: 'Create cluster auth directory'
+      ansible.builtin.file:
+        path: "{{ lab_path }}/{{ lab_name }}/{{ cluster_name }}/auth"
+        mode: '0750'
+        state: 'directory'
+
+    - name: 'Extract cluster kubeconfig'
+      ansible.builtin.command:
+        cmd: >
+          /usr/local/bin/oc extract -n {{ cluster_ns }}
+          secret/{{ cluster_name }}-admin-kubeconfig
+          --to={{ lab_path }}/{{ lab_name }}/{{ cluster_name }}/auth
+          --confirm
+        creates: "{{ lab_path }}/{{ lab_name }}/{{ cluster_name }}/auth/kubeconfig"
+      environment:
+        KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+
+    - name: 'Extract cluster kubeadmin console password'
+      ansible.builtin.command:
+        cmd: >
+          /usr/local/bin/oc extract -n {{ cluster_ns }}
+          secret/{{ cluster_name }}-admin-password
+          --to={{ lab_path }}/{{ lab_name }}/{{ cluster_name }}/auth
+          --confirm
+        creates: "{{ lab_path }}/{{ lab_name }}/{{ cluster_name }}/auth/password"
+      environment:
+        KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
