@@ -33,7 +33,7 @@
     cmd: "/usr/local/bin/oc apply -f {{ ocp_metallb_path }}/metallb-setup.yaml"
   register: __metallb_setup_cmd
   until: __metallb_setup_cmd.rc == 0
-  retries: 5
-  delay: 10
+  retries: 10
+  delay: 30
   when: ocp_metallb_install
   listen: 'metallb setup'
