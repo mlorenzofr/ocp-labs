@@ -29,4 +29,6 @@
   ansible.builtin.command:
     cmd: "/usr/local/bin/oc apply -f {{ ocp_lvms_path }}/lvmcluster-{{ item.name }}.yaml"
   loop: "{{ ocp_lvms_clusters }}"
+  retries: 10
+  delay: 30
   listen: 'lvms install'
