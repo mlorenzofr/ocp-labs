@@ -31,12 +31,12 @@
 
     - name: 'Generate cluster manifests'
       ansible.builtin.command:
-        cmd: "openshift-install agent create cluster-manifests --dir {{ lab_path }}/{{ lab_name }}/deploy"
+        cmd: "/usr/local/bin/openshift-install agent create cluster-manifests --dir {{ lab_path }}/{{ lab_name }}/deploy"
         creates: "{{ lab_path }}/{{ lab_name }}/deploy/.openshift_install_state.json"
 
     - name: 'Generate bootstrap ISO image'
       ansible.builtin.command:
-        cmd: "openshift-install agent create image --dir {{ lab_path }}/{{ lab_name }}/deploy"
+        cmd: "/usr/local/bin/openshift-install agent create image --dir {{ lab_path }}/{{ lab_name }}/deploy"
         creates: "{{ lab_path }}/{{ lab_name }}/deploy/agent.x86_64.iso"
 
     - name: 'Copy ISO image to libvirt image directory'
