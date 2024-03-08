@@ -6,6 +6,7 @@ metadata:
   namespace: {{ item.ns }}
   labels:
 spec:
+  controllerAvailabilityPolicy: {{ item.ctl_availability | default('SingleReplica') }}
   release:
     image: quay.io/openshift-release-dev/ocp-release:{{ item.version }}-{{ item.arch | default('x86_64') }}
   pullSecret:
@@ -23,6 +24,7 @@ spec:
     agent:
       agentNamespace: '{{ item.agent_ns }}'
   infraID: '{{ item.infra }}'
+  infrastructureAvailabilityPolicy: {{ item.infra_availability | default('SingleReplica') }}
   dns:
     baseDomain: '{{ item.domain }}'
   services:

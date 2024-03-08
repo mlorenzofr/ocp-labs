@@ -9,7 +9,6 @@
     lab_path: '/root/labs'
     lab_install: true
     ocp_metallb_path: "{{ lab_path }}/{{ lab_name }}/{{ hcp_name }}"
-    ocp_metallb_pool_ips: '192.168.125.50-192.168.125.55'
     ocp_metallb_pool_name: "{{ hcp_name }}-lb-pool"
 
   vars_prompt:
@@ -18,6 +17,9 @@
       private: false
     - name: hcp_name
       prompt: 'hosted cluster name'
+      private: false
+    - name: ocp_metallb_pool_ips
+      prompt: 'IP pool (Ex: 192.168.125.50-192.168.125.55)'
       private: false
 
   environment:
