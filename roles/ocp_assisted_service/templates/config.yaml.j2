@@ -29,6 +29,13 @@ spec:
     resources:
       requests:
         storage: {{ ocp_assisted_service_storage_fs_size }}Gi
+  imageStorage:
+    storageClassName: {{ ocp_assisted_service_sc_name }}
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: {{ ocp_assisted_service_storage_image_size }}Gi
   osImages:
 {% for image in ocp_assisted_service_images %}
 {% set version_major = '.'.join(image.ocp_version.split('.')[0:2]) %}
