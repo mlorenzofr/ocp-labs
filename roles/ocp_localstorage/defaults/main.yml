@@ -1,0 +1,8 @@
+---
+ocp_localstorage_install: "{{ lab_install | default(false) }}"
+ocp_localstorage_nodes: []
+ocp_localstorage_ns: 'openshift-storage'
+ocp_localstorage_path: "{{ lab_configs }}"
+ocp_localstorage_subscription_channel: ''
+ocp_localstorage_volumes: []
+ocp_localstorage_volumesets: []

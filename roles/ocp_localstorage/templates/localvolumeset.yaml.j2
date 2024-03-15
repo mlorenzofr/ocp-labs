@@ -1,0 +1,35 @@
+apiVersion: local.storage.openshift.io/v1alpha1
+kind: LocalVolumeDiscovery
+metadata:
+ name: auto-discover-devices
+ namespace: {{ ocp_localstorage_ns }}
+spec:
+  nodeSelector:
+    nodeSelectorTerms:
+      - matchExpressions:
+        - key: {{ item.node_label }}
+          operator: Exists
+---
+apiVersion: local.storage.openshift.io/v1alpha1
+kind: LocalVolumeSet
+metadata:
+  name: {{ item.name }}
+  namespace: {{ ocp_localstorage_ns }}
+spec:
+  nodeSelector:
+    nodeSelectorTerms:
+      - matchExpressions:
+        - key: {{ item.node_label }}
+          operator: Exists
+  storageClassName: {{ item.sc_name }}
+  volumeMode: {{ item.mode | default('Block') }}
+  fstype: {{ item.fstype | default('ext4') }}
+{% if item.max_devices | default(0) > 0 %}
+  maxDeviceCount: {{ item.max_devices }}
+{% endif %}
+  deviceInclusionSpec:
+    deviceTypes:
+      - disk
+{% if item.partitions | default(false) %}
+      - part
+{% endif %}
