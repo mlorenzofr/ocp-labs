@@ -1,0 +1,15 @@
+---
+- name: 'Create ODF installation manifest'
+  ansible.builtin.template:
+    src: 'odf-init.yaml.j2'
+    dest: "{{ ocp_odf_path }}/odf-subscription.yaml"
+    mode: '0644'
+  notify: 'odf install'
+
+- name: 'Create ODF StorageCluster manifests'
+  ansible.builtin.template:
+    src: 'storagecluster.yaml.j2'
+    dest: "{{ ocp_odf_path }}/odf-storagecluster-{{ item.name }}.yaml"
+    mode: '0644'
+  loop: "{{ ocp_odf_clusters }}"
+  notify: 'odf clusters'

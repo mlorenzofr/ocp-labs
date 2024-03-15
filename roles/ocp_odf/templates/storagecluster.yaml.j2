@@ -1,0 +1,42 @@
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  name: {{ item.name }}
+  namespace: {{ ocp_odf_ns }}
+spec:
+  manageNodes: false
+  resources:
+    mds:
+      limits:
+        cpu: "{{ item.mds_cpu | default(3) }}"
+        memory: "{{ item.mds_memory | default('8Gi') }}"
+      requests:
+        cpu: "{{ item.mds_cpu | default(3) }}"
+        memory: "{{ item.mds_memory | default('8Gi') }}"
+  monDataDirHostPath: {{ item.mon_data_path | default('/var/lib/rook') }}
+  storageDeviceSets:
+{% for ds in item.devicesets %}
+    - count: {{ ds.count }}
+      dataPVCTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: "{{ ds.storage }}"
+          storageClassName: {{ ds.storageclass }}
+          volumeMode: Block
+      name: {{ ds.name }}
+      placement: {}
+      portable: false
+      replica: {{ ds.replica }}
+{% if 'resources' in ds.keys() %}
+      resources:
+        limits:
+          cpu: "{{ ds.resources.cpu }}"
+          memory: "{{ ds.resources.memory }}"
+        requests:
+          cpu: "{{ ds.resources.cpu }}"
+          memory: "{{ ds.resources.memory }}"
+{% endif %}
+{% endfor %}

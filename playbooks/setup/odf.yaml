@@ -1,0 +1,43 @@
+---
+# Install and configure Openshift Data Foundation (ODF)
+# In this scenario we expect an Openshift cluster installed with additional
+#   disks for ODF.
+- name: 'Install and configure Openshift Data Foundation (ODF)'
+  hosts:
+    - 'lab'
+
+  gather_facts: false
+
+  vars:
+    lab_name: 'standard'
+    lab_configs: "/root/labs/{{ lab_name }}/config"
+    lab_install: true
+    lab_odf_node_label: 'cluster.ocs.openshift.io/openshift-storage'
+    lab_odf_storageclass: 'localblock'
+
+    ocp_localstorage_ns: 'openshift-storage-local'
+    ocp_localstorage_nodes:
+      - {'name': "{{ lab_name }}-master-1", 'label': "{{ lab_odf_node_label }}"}
+      - {'name': "{{ lab_name }}-master-2", 'label': "{{ lab_odf_node_label }}"}
+      - {'name': "{{ lab_name }}-master-3", 'label': "{{ lab_odf_node_label }}"}
+    ocp_localstorage_volumesets:
+      - name: 'local-block'
+        node_label: "{{ lab_odf_node_label }}"
+        sc_name: "{{ lab_odf_storageclass }}"
+        max_devices: 1
+
+    ocp_odf_ns: 'openshift-storage-odf'
+    ocp_odf_clusters:
+      - name: 'ocs1'
+        devicesets:
+          - name: 'deviceset1'
+            count: 1
+            storage: '150Gi'
+            storageclass: "{{ lab_odf_storageclass }}"
+            replica: 3
+
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  roles:
+    - 'ocp_odf'

@@ -1,0 +1,6 @@
+---
+ocp_odf_install: "{{ lab_install | default(false) }}"
+ocp_odf_ns: 'openshift-storage'
+ocp_odf_path: "{{ lab_configs }}"
+ocp_odf_subscription_channel: ''
+ocp_odf_clusters: []

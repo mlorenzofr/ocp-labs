@@ -1,0 +1,40 @@
+---
+- name: 'Install ODF Operator'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_odf_path }}/odf-subscription.yaml"
+  when: ocp_odf_install
+  listen:
+    - 'odf install'
+
+- name: 'Waiting until the operator is installed'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc -n {{ ocp_odf_ns }} wait
+      --for=jsonpath='{.status.state}'=AtLatestKnown
+      subscription/odf-operator --timeout=300s
+  changed_when: false
+  failed_when: false
+  when: ocp_odf_install
+  listen:
+    - 'odf install'
+
+- name: 'Waiting until ODF pods are ready'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc wait -n {{ ocp_odf_ns }}
+      -l name=ocs-operator
+      --for=condition=Ready
+      pods --timeout=300s
+  changed_when: false
+  failed_when: false
+  when: ocp_odf_install
+  listen:
+    - 'odf install'
+
+- name: 'Update ODF StorageClusters'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_odf_path }}/odf-storagecluster-{{ item.name }}.yaml"
+  loop: "{{ ocp_odf_clusters }}"
+  when: ocp_odf_install
+  listen:
+    - 'odf clusters'
