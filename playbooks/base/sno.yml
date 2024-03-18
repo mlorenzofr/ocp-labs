@@ -19,6 +19,9 @@
       - {'id': '31', 'iface':'enp1s0'}
     libvirt_image_dir: '/home/libvirt-ocp'
 
+  environment:
+    PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
+
   roles:
     - 'lab'
 

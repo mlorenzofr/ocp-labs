@@ -10,13 +10,13 @@ hosts:
   - hostname: {{ lab_name }}-{{ host.role | default('master') }}-{{ loop.index }}
     interfaces:
       - name: {{ host.iface | default('eth0') }}
-        macAddress: {{ host.mac }}
+        macAddress: {{ host.mac | default('{}{}'.format(lab_mac_base, host.id)) }}
     networkConfig:
       interfaces:
         - name: {{ host.iface | default('eth0') }}
           type: ethernet
           state: up
-          mac-address: {{ host.mac }}
+          mac-address: {{ host.mac | default('{}{}'.format(lab_mac_base, host.id)) }}
           ipv4:
             enabled: true
             dhcp: true
