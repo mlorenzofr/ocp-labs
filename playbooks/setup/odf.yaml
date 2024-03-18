@@ -2,6 +2,9 @@
 # Install and configure Openshift Data Foundation (ODF)
 # In this scenario we expect an Openshift cluster installed with additional
 #   disks for ODF.
+# VMs requirements:
+#  - 32 GB memory
+#  - Additional disk with 150 GB
 - name: 'Install and configure Openshift Data Foundation (ODF)'
   hosts:
     - 'lab'

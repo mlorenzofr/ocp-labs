@@ -35,6 +35,8 @@
   ansible.builtin.command:
     cmd: "/usr/local/bin/oc apply -f {{ ocp_odf_path }}/odf-storagecluster-{{ item.name }}.yaml"
   loop: "{{ ocp_odf_clusters }}"
+  retries: 10
+  delay: 30
   when: ocp_odf_install
   listen:
     - 'odf clusters'
