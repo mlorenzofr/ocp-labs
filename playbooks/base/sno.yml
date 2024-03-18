@@ -7,13 +7,16 @@
 
   vars:
     lab_abi: True
-    lab_abi_ip: '192.168.125.31'
-    lab_api_ips: ['192.168.125.31']
-    lab_ingress_ips: ['192.168.125.31']
+    lab_abi_ip: "{{ lab_node_network }}.31"
+    lab_api_ips: ["{{ lab_node_network }}.31"]
+    lab_ingress_ips: ["{{ lab_node_network }}.31"]
     lab_name: 'sno'
     lab_master_replicas: 1
+    lab_mac_base: 'be:be:ca:fe:03:'
+    lab_node_disk_data: 1
+    lab_node_network: '192.168.125'
     lab_hosts:
-      - {'mac': 'aa:aa:aa:aa:02:02', 'ip': '192.168.125.31', 'iface':'enp1s0'}
+      - {'id': '31', 'iface':'enp1s0'}
     libvirt_image_dir: '/home/libvirt-ocp'
 
   roles:
@@ -45,5 +48,5 @@
         dest: "{{ libvirt_image_dir }}/{{ lab_name }}-agent-installer.iso"
         remote_src: true
 
-    # TODO
-    # attach the ISO to the VM and start it
+# TODO
+# attach the ISO to the VM and start it

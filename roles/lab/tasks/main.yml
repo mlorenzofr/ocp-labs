@@ -49,14 +49,13 @@
       start: false
       uefi_legacy: true
       plan: "{{ lab_name }}"
-      memory: "{{ item.memory | default(24000) }}"
-      numcpus: "{{ item.cpus | default(12) }}"
+      memory: "{{ item.memory | default(lab_node_memory) }}"
+      numcpus: "{{ item.cpus | default(lab_node_cpus) }}"
       disks:
-        - {"size": 120, "pool": "ocp"}
-        - {"size": 60, "pool": "ocp"}
+        - {"size": "{{ lab_node_disk_sys }}", "pool": "{{ lab_node_disk_pool }}"}
+        - {"size": "{{ item.disk_data | default(lab_node_disk_data) }}", "pool": "{{ lab_node_disk_pool }}"}
       nets:
-        - {"name": "{{ lab_network_name }}", "mac": "{{ item.mac }}"}
+        - {"name": "{{ lab_network_name }}", "mac": "{{ item.mac | default('{}{}'.format(lab_mac_base, item.id)) }}"}
   loop: "{{ lab_hosts }}"
   loop_control:
     extended: true
-...

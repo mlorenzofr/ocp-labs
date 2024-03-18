@@ -15,11 +15,17 @@ None.
 * `lab_dnsmasq_root`. _String_. Path to the directory where the dnsmasq snippets are hosted.
 * `lab_hosts`. _List_. List of machines in the cluster.
 * `lab_ingress_ips`. _List_. List of IP addresses assigned to the OCP ingress controller, where the **console** is published.
+* `lab_mac_base`. _String_. MAC vendor address for the lab.
 * `lab_master_replicas`. _Number_. Number of master nodes.
 * `lab_name`. _String_. lab name.
 * `lab_network_name`. _String_. **Libvirt** network name used.
 * `lab_network_type`. _String_. Network type used (`OVNKubernetes|Calico|Other`)
-* `lab_machine_network`. _String_. Node network CIDR.
+* `lab_node_cpus`. _Number_. Number of vCPU's in each node.
+* `lab_node_disk_data`. _Number_. Disk space, in GB, allocated for data disk.
+* `lab_node_disk_sys`. _Number_. Disk space, in GB, allocated for OS disk.
+* `lab_node_disk_pool`. _String_. Libvirt storage pool to create disks.
+* `lab_node_memory`. _Number_. Memory size, in MB, assigned in each node.
+* `lab_node_network`. _String_. Node network base (example: `192.168.125`).
 * `lab_path`. _String_. Path in the server where the files will be placed.
 * `lab_platform`. _String_. Set the platform (`none|baremetal|vsphere`).
 * `lab_pull_secret`: _String_. Personal pull secret.
@@ -29,10 +35,14 @@ None.
 * `lab_worker_replicas`. _Number_. Number of worker nodes.
 
 ### Variables for `lab_hosts` items
+* `cpus`. _Number_. Machine vCPUs.
 * `disk`. _String_. Device used to install Openshift (default: `/dev/vda`).
+* `disk_data`. _Number_. Disk size for data disk (GB).
+* `id`. _String_. Machine ID, used for IP and MAC addresses.
 * `iface`. _String_. Machine interface name.
 * `ip`. _String_. Machine IP address.
 * `mac`. _String_. Machine MAC address.
+* `memory`. _Number_. Memory assigned (MB)
 * `role`. _String_. Machine role (`master|worker`).
 
 ## Dependencies

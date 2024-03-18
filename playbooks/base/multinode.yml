@@ -1,26 +1,30 @@
 ---
-# Run it with: ansible-playbook ctlplane.yml
+# Run it with: ansible-playbook multinode.yml
 # To start the installation in background inside a tmux session use `-e "start_install=true"`
-# Hypershift setup is in the playbook playbooks/setup/hcp-compact.yaml
-- name: 'Openshift with only control plane and extra memory for compacted Hypershift scenario'
+- name: 'Deploy Openshift multi-node cluster'
   hosts:
     - 'lab'
 
   gather_facts: false
 
   vars:
-    lab_api_ips: ['192.168.125.10']
-    lab_bootstrap_ip: '192.168.125.100'
-    lab_bootstrap_mac: 'be:be:ca:fe:02:00'
-    lab_ingress_ips: ['192.168.125.11']
-    lab_name: 'hypershift'
+    lab_api_ips: ["{{ lab_node_network }}.10"]
+    lab_bootstrap_ip: "{{ lab_node_network }}.100"
+    lab_bootstrap_mac: "{{ lab_mac_base }}00"
+    lab_ingress_ips: ["{{ lab_node_network }}.11"]
+    lab_name: 'multinode'
     lab_master_replicas: 3
+    lab_mac_base: 'be:be:ca:fe:01:'
+    lab_worker_replicas: 1
     lab_platform: 'baremetal'
-    lab_redfish_ip: '192.168.125.1'
+    lab_redfish_ip: "{{ lab_node_network }}.1"
+    lab_node_disk_data: 1
+    lab_node_network: '192.168.125'
     lab_hosts:
-      - {'memory': 32000, 'mac': 'be:be:ca:fe:02:01', 'ip': '192.168.125.21'}
-      - {'memory': 32000, 'mac': 'be:be:ca:fe:02:02', 'ip': '192.168.125.22'}
-      - {'memory': 32000, 'mac': 'be:be:ca:fe:02:03', 'ip': '192.168.125.23'}
+      - {'id': '21'}
+      - {'id': '22'}
+      - {'id': '23'}
+      - {'id': '24', role: 'worker'}
     libvirt_image_dir: '/home/libvirt-ocp'
 
   roles:

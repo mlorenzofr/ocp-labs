@@ -1,28 +1,33 @@
 ---
-# Run it with: ansible-playbook ocp.yml
 # To start the installation in background inside a tmux session use `-e "start_install=true"`
-- name: 'Setup Openshift with control plane only'
+#
+# Run examples:
+#   - ansible-playbook playbooks/base/compact.yml -e "start_install=true"
+#   - ansible-playbook playbooks/base/compact.yml -e "lab_node_memory=32000" -e "lab_node_disk_data=60"
+#   - ansible-playbook playbooks/base/compact.yml -e "lab_node_memory=32000" -e "lab_node_disk_data=150"
+- name: 'Install Openshift compact cluster'
   hosts:
     - 'lab'
 
   gather_facts: false
 
   vars:
-    lab_api_ips: ['192.168.125.10']
-    lab_bootstrap_ip: '192.168.125.100'
-    lab_bootstrap_mac: 'be:be:ca:fe:02:00'
-    lab_ingress_ips: ['192.168.125.11']
-    lab_name: 'ocp-lab-1'
+    lab_api_ips: ["{{ lab_node_network }}.10"]
+    lab_bootstrap_ip: "{{ lab_node_network }}.100"
+    lab_bootstrap_mac: "{{ lab_mac_base }}00"
+    lab_ingress_ips: ["{{ lab_node_network }}.11"]
+    lab_name: 'standard'
     lab_master_replicas: 3
-    lab_worker_replicas: 1
+    lab_mac_base: 'be:be:ca:fe:02:'
     lab_platform: 'baremetal'
-    lab_redfish_ip: '192.168.125.1'
-    lab_hosts:
-      - {'mac': 'be:be:ca:fe:02:01', 'ip': '192.168.125.21'}
-      - {'mac': 'be:be:ca:fe:02:02', 'ip': '192.168.125.22'}
-      - {'mac': 'be:be:ca:fe:02:03', 'ip': '192.168.125.23'}
-      - {'mac': 'be:be:ca:fe:02:04', 'ip': '192.168.125.24', role: 'worker'}
+    lab_redfish_ip: "{{ lab_node_network }}.1"
+    lab_node_disk_data: 1
+    lab_node_network: '192.168.125'
     libvirt_image_dir: '/home/libvirt-ocp'
+    lab_hosts:
+      - {'id': '21'}
+      - {'id': '22'}
+      - {'id': '23'}
 
   roles:
     - 'lab'

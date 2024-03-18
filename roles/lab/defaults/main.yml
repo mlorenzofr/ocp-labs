@@ -9,7 +9,13 @@ lab_domain: 'local.lab'
 lab_master_replicas: 3
 lab_network_name: 'lab-network'
 lab_network_type: 'OVNKubernetes'
-lab_machine_network: '192.168.125.0/24'
+lab_node_cpus: 12
+lab_node_disk_data: 1
+lab_node_disk_sys: 120
+lab_node_disk_pool: 'ocp'
+lab_node_memory: 24000
+lab_node_network: '192.168.125'
+lab_mac_base: '52:54:00:ff:ff:'
 lab_cluster_network: '10.132.0.0/14'
 lab_service_network: '172.30.0.0/16'
 lab_path: '/root/labs'

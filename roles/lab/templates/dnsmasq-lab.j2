@@ -6,7 +6,9 @@ host-record=api.{{ lab_name }}.{{ lab_domain }},{{ lab_api_ips[0] }}
 address=/apps.{{ lab_name }}.{{ lab_domain }}/{{ lab_ingress_ips[0] }}
 
 {% for host in lab_hosts %}
-dhcp-host={{ host.mac }},{{ lab_name }}-{{ host.role | default('master') }}-{{ loop.index }},{{ host.ip }}
+{% set macaddr = host.mac | default('{}{}'.format(lab_mac_base, host.id)) %}
+{% set ipaddr = host.ip | default('{}.{}'.format(lab_node_network, host.id)) %}
+dhcp-host={{ macaddr }},{{ lab_name }}-{{ host.role | default('master') }}-{{ loop.index }},{{ ipaddr }}
 {% endfor %}
 {% if lab_bootstrap_ip != '' %}
 dhcp-host={{ lab_bootstrap_mac }},{{ lab_name }}-bootstrap,{{ lab_bootstrap_ip }}
