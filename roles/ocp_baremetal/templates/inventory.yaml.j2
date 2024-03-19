@@ -1,5 +1,5 @@
 {% for bmh in item.inventory %}
-{% set hostname = bmh.name | default('{}-worker-{}'.format(ocp_baremetal_lab_name, loop.index)) %}
+{% set hostname = bmh.name | default('{}-worker-{}'.format(lab_name, loop.index)) %}
 ---
 apiVersion: v1
 kind: Secret
@@ -26,10 +26,10 @@ metadata:
 {% endif %}
 spec:
   automatedCleaningMode: disabled
-  bootMACAddress: {{ bmh.mac }}
+  bootMACAddress: {{ bmh.mac | default('{}{}'.format(lab_mac_base, bmh.id)) }}
   online: true
   rootDeviceHints:
-    deviceName: {{ host.device | default('/dev/vda') }}
+    deviceName: {{ bmh.device | default('/dev/vda') }}
   bmc:
     disableCertificateVerification: True
     address: redfish-virtualmedia://{{ item.redfish }}:9000/redfish/v1/Systems/local/{{ hostname }}

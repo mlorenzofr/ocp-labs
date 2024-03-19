@@ -11,9 +11,11 @@
     lab_dnsmasq_root: '/opt/dnsmasq'
     lab_name: 'hypershift'
     lab_configs: "/root/labs/{{ lab_name }}/config"
+    lab_mac_base: 'be:be:ca:fe:02:'
     lab_network_name: 'lab-network'
+    lab_node_network: '192.168.125'
     lab_install: true
-    ocp_metallb_pool_ips: '192.168.125.40-192.168.125.45'
+    ocp_metallb_pool_ips: "{{ lab_node_network }}.40-{{ lab_node_network }}.45"
     ocp_metallb_pool_name: "{{ lab_network_name }}"
     ocp_baremetal_infras:
       - name: 'hcp1'
@@ -21,19 +23,19 @@
         hypershift: true
         pullsecret: "{{ lab_pull_secret }}"
         sshkey: "{{ lab_ssh_pubkey }}"
-        ntp: ['192.168.125.1']
-        redfish: '192.168.125.1'
+        ntp: ["{{ lab_node_network }}.1"]
+        redfish: "{{ lab_node_network }}.1"
         inventory:
-          - {'name': 'hcp1-worker-1', 'mac': 'be:be:ca:fe:05:05', 'ip': '192.168.125.51'}
+          - {'name': 'hcp1-worker-1', 'id': '51'}
       - name: 'hcp2'
         ns: 'hardware-inventory'
         hypershift: true
         pullsecret: "{{ lab_pull_secret }}"
         sshkey: "{{ lab_ssh_pubkey }}"
-        ntp: ['192.168.125.1']
-        redfish: '192.168.125.1'
+        ntp: ["{{ lab_node_network }}.1"]
+        redfish: "{{ lab_node_network }}.1"
         inventory:
-          - {'name': 'hcp2-worker-1', 'mac': 'be:be:ca:fe:05:06', 'ip': '192.168.125.61'}
+          - {'name': 'hcp2-worker-1', 'id': '61'}
     ocp_hcp_clusters:
       - name: 'hcp1'
         ns: 'hcp1'
@@ -45,7 +47,7 @@
         version: '4.14.8'
         service_network: '172.32.0.0/16'
         domain: 'local.lab'
-        lb: '192.168.125.50'
+        lb: "{{ lab_node_network }}.50"
         replicas: 1  # In this scenario we need at least 1 worker to start the installation
       - name: 'hcp2'
         ns: 'hcp2'
@@ -57,7 +59,7 @@
         version: '4.14.13'
         service_network: '172.33.0.0/16'
         domain: 'local.lab'
-        lb: '192.168.125.60'
+        lb: "{{ lab_node_network }}.60"
         replicas: 1  # In this scenario we need at least 1 worker to start the installation
 
   environment:

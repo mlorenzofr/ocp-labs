@@ -1,7 +1,15 @@
 ---
-ocp_baremetal_dnsmasq_root: "{{ lab_dnsmasq_root }}"
+lab_dnsmasq_root: '/opt/dnsmasq'
+lab_mac_base: '52:54:00:ff:ff:'
+lab_name: 'bmh'
+lab_node_disk_pool: 'ocp'
+lab_node_network: '192.168.125'
+lab_network_name: 'lab-network'
+
 ocp_baremetal_infras: []
 ocp_baremetal_install: "{{ lab_install | default(false) }}"
-ocp_baremetal_lab_name: "{{ lab_name }}"
-ocp_baremetal_network_name: "{{ lab_network_name }}"
 ocp_baremetal_path: "{{ lab_configs }}"
+ocp_baremetal_node_cpus: 12
+ocp_baremetal_node_memory: 24000
+ocp_baremetal_node_disk_data: 1
+ocp_baremetal_node_disk_sys: 120
