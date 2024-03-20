@@ -1,0 +1,19 @@
+---
+# This playbook installs a lab with ACM running on a compact Openshift
+#   control plane.
+#
+# Run it with:
+#   ap playbooks/labs/acm.yaml -e lab_name=acm
+
+- name: 'Import compact playbook'
+  ansible.builtin.import_playbook: ../base/compact.yml
+  vars:
+    lab_name: 'acm'
+    lab_node_memory: 28000
+    lab_node_disk_data: 60
+    start_install: true
+
+- name: 'Import hcp-compact setup playbook'
+  ansible.builtin.import_playbook: ../setup/acm.yaml
+  vars:
+    lab_name: 'acm'

@@ -1,0 +1,44 @@
+---
+- name: 'Install ACM Operator'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_acm_path }}/acm-subscription.yaml"
+  when: ocp_acm_install
+  listen:
+    - 'acm install'
+
+- name: 'Waiting until the operator is installed'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc -n {{ ocp_acm_ns }} wait
+      --for=jsonpath='{.status.state}'=AtLatestKnown
+      subscription/advanced-cluster-management --timeout=300s
+  changed_when: false
+  failed_when: false
+  when: ocp_acm_install
+  listen:
+    - 'acm install'
+
+- name: 'Check ACM CRDs'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc get crds multiclusterhubs.operator.open-cluster-management.io
+  register: __acm_crd
+  until: __acm_crd.rc == 0
+  retries: 25
+  delay: 30
+  changed_when: false
+  failed_when: false
+  when: ocp_acm_install
+  listen:
+    - 'acm install'
+
+- name: 'Setup ACM MultiClusterHub'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_acm_path }}/acm-multiclusterhub.yaml"
+  register: __acm_setup_cmd
+  until: __acm_setup_cmd.rc == 0
+  retries: 10
+  delay: 30
+  when: ocp_acm_install
+  listen:
+    - 'acm install'

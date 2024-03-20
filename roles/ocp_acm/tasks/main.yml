@@ -1,0 +1,14 @@
+---
+- name: 'Create ACM installation manifest'
+  ansible.builtin.template:
+    src: 'acm-init.yaml.j2'
+    dest: "{{ ocp_acm_path }}/acm-subscription.yaml"
+    mode: '0644'
+  notify: 'acm install'
+
+- name: 'Create ACM MultiClusterHub manifests'
+  ansible.builtin.template:
+    src: 'multiclusterhub.yaml.j2'
+    dest: "{{ ocp_acm_path }}/acm-multiclusterhub.yaml"
+    mode: '0644'
+  notify: 'acm install'

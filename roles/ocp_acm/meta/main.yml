@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  role_name: ocp_acm
+  namespace: mlorenzofr
+  author: 'Manuel Lorenzo'
+  description: 'Install and configure Advanced Cluster Management (ACM) Operator'
+  company: 'Red Hat'
+  license: 'BSD'
+  min_ansible_version: '2.12'
+  platforms:
+    - name: 'EL'
+      versions:
+        - '8'
+  galaxy_tags: []
+dependencies: []
