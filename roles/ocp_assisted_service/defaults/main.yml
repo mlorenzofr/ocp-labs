@@ -2,6 +2,7 @@
 ocp_assisted_service_install: "{{ lab_install | default(false) }}"
 ocp_assisted_service_lvms: true
 ocp_assisted_service_ns: 'multicluster-engine'
+ocp_assisted_service_op: 'mce'
 ocp_assisted_service_path: "{{ lab_configs }}"
 ocp_assisted_service_sc_name: 'lvms-vg1'
 ocp_assisted_service_storage_db_size: 10

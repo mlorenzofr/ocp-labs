@@ -86,13 +86,3 @@
 
   roles:
     - 'ocp_hcp'
-
-# TODO:
-#
-# When the HCPs are in installation phase, we can extract their configuration:
-#   ap playbooks/jobs/hcp/create-config.yml -e lab_name=hypershift -e hcp_name=hcp1
-#   ap playbooks/jobs/hcp/create-config.yml -e lab_name=hypershift -e hcp_name=hcp2
-#
-# When the HCP installation is complete (all except the console), we need to create a MetalLB ingress:
-#   ap playbooks/jobs/hcp/create-ingress.yml -e lab_name=hypershift -e hcp_name=hcp1 -e ocp_metallb_pool_ips=192.168.125.50-192.168.125.50
-#   ap playbooks/jobs/hcp/create-ingress.yml -e lab_name=hypershift -e hcp_name=hcp2 -e ocp_metallb_pool_ips=192.168.125.60-192.168.125.60

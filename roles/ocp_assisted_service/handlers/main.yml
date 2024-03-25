@@ -1,4 +1,19 @@
 ---
+- name: 'Check if AgentServiceConfig is registered'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc get crds
+      agentserviceconfigs.agent-install.openshift.io
+  register: __assisted_crd
+  until: __assisted_crd.rc == 0
+  retries: 25
+  delay: 30
+  changed_when: false
+  failed_when: false
+  when: ocp_assisted_service_install
+  listen:
+    - 'apply AgentServiceConfig'
+
 - name: 'Create AgentServiceConfig resource'
   ansible.builtin.command:
     cmd: "/usr/local/bin/oc apply -f {{ ocp_assisted_service_path }}/agent-service-config.yaml"

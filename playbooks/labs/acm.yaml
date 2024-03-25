@@ -13,7 +13,7 @@
     lab_node_disk_data: 60
     start_install: true
 
-- name: 'Import hcp-compact setup playbook'
+- name: 'Import ACM setup playbook'
   ansible.builtin.import_playbook: ../setup/acm.yaml
   vars:
     lab_name: 'acm'

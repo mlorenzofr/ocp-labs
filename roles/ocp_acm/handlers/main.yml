@@ -42,3 +42,15 @@
   when: ocp_acm_install
   listen:
     - 'acm install'
+
+- name: 'Waiting until the MultiClusterHub is running'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc -n {{ ocp_acm_ns }} wait
+      --for=jsonpath='{.status.phase}'=Running
+      multiclusterhub/multiclusterhub --timeout=600s
+  changed_when: false
+  failed_when: false
+  when: ocp_acm_install
+  listen:
+    - 'acm install'

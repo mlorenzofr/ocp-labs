@@ -1,38 +1,42 @@
-Role Name
-=========
+# ocp_assisted_service
+This role installs and configures Assisted Service on an Openshift cluster.  
+This workload is usually deployed as part of the ACM or MCE operators.
 
-A brief description of the role goes here.
+## Requirements
+This role requires the `ocp_mce` or `ocp_acm` roles for deployment.  
+Additionally, the `ocp_lvms` role will be required for persistent storage.
 
-Requirements
-------------
+## Role Variables
+* `ocp_assisted_service_install`. _Bool_. Set wether the role should apply manifests or simply create them.
+* `ocp_assisted_service_lvms`. _Bool_. Enable/Disable LVMS persistent storage.
+* `ocp_assisted_service_ns`. _String_. Namespace for the Operator.
+* `ocp_assisted_service_op`. _String_. Operator used to install _Assisted Service_ (`acm | mce`).
+* `ocp_assisted_service_path`. _String_. Path where the manifest files are saved.
+* `ocp_assisted_service_sc_name`. _String_. _StorageClass_ name for the persistent storage (DB).
+* `ocp_assisted_service_storage_db_size`. _Number_. _PersistentVolumeClaim_ size for DB volume.
+* `ocp_assisted_service_storage_fs_size`. _Number_. _PersistentVolumeClaim_ size for filesystem volume.
+* `ocp_assisted_service_storage_image_size`. _Number_. _PersistentVolumeClaim_ size for image replica volume.
+* `ocp_assisted_service_images`. _List_. List of images available for _Assisted_service_.
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+### Variables for `ocp_assisted_service_images` elements
+* `ocp_version`. _String_. Openshift release version.
+* `arch`. _String_. Openshift release CPU architecture.
+* `version`. _String_. Image version.
 
-Role Variables
---------------
+## Example Playbook
+```yaml
+- hosts: servers
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+  vars:
+    ocp_assisted_service_install: true
+    ocp_assisted_service_path: '/home/labs/standard'
 
-Dependencies
-------------
+  roles:
+    - ocp_assisted_service
+```
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+## License
+MIT / BSD
 
-Example Playbook
-----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+## Author Information
+ - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2024-)

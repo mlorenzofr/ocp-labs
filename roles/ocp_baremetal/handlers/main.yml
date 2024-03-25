@@ -17,6 +17,10 @@
   ansible.builtin.command:
     cmd: >
       /usr/local/bin/oc apply -f {{ ocp_baremetal_path }}/infra
+  register: __baremetal_infra
+  until: __baremetal_infra.rc == 0
+  retries: 5
+  delay: 30
   when: ocp_baremetal_install
   listen:
     - 'update infrastructure'
