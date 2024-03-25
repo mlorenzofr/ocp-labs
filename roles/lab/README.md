@@ -28,6 +28,9 @@ None.
 * `lab_node_network`. _String_. Node network base (example: `192.168.125`).
 * `lab_path`. _String_. Path in the server where the files will be placed.
 * `lab_platform`. _String_. Set the platform (`none|baremetal|vsphere`).
+* `lab_proxy_http`. _String_. Set HTTP proxy for the cluster.
+* `lab_proxy_https`. _String_. Set HTTPS proxy for the cluster.
+* `lab_proxy_exceptions`. _List_. List with domains or networks excluded for proxy use.
 * `lab_pull_secret`: _String_. Personal pull secret.
 * `lab_redfish_ip`. _String_. Redfish server IP address.
 * `lab_service_network`. _String_. k8s service network CIDR.

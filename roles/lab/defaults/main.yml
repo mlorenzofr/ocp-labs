@@ -20,6 +20,18 @@ lab_cluster_network: '10.132.0.0/14'
 lab_service_network: '172.30.0.0/16'
 lab_path: '/root/labs'
 lab_platform: 'none'
+lab_proxy_http: ''
+lab_proxy_https: ''
+lab_proxy_exceptions:
+  - '.cluster.local'
+  - '.svc'
+  - 'localhost'
+  - ".{{ lab_domain }}"
+  - "api-int.{{ lab_domain }}"
+  - '127.0.0.1'
+  - "{{ lab_node_network }}.0/24"
+  - "{{ lab_cluster_network }}"
+  - "{{ lab_service_network }}"
 lab_worker_replicas: 0
 lab_hosts: []
 ...
