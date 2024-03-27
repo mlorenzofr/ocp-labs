@@ -4,32 +4,33 @@ lab_api_ips: ['192.168.125.10']
 lab_bootstrap_ip: ''
 lab_bootstrap_mac: ''
 lab_dnsmasq_root: '/opt/dnsmasq'
+lab_dns_servers: []
 lab_ingress_ips: ['192.168.125.11']
 lab_domain: 'local.lab'
 lab_master_replicas: 3
 lab_network_name: 'lab-network'
 lab_network_type: 'OVNKubernetes'
 lab_node_cpus: 12
+lab_node_dhcp: true
+lab_node_dhcp6: false
 lab_node_disk_data: 1
 lab_node_disk_sys: 120
 lab_node_disk_pool: 'ocp'
+lab_node_ipv4: true
+lab_node_ipv6: false
 lab_node_memory: 24000
-lab_node_network: '192.168.125'
+lab_node_network: "{{ lab_node_network_base }}0/24"
+lab_node_role: 'master'
+lab_ntp_sources: []
 lab_mac_base: '52:54:00:ff:ff:'
 lab_cluster_network: '10.132.0.0/14'
 lab_service_network: '172.30.0.0/16'
 lab_path: '/root/labs'
 lab_platform: 'none'
-lab_proxy_http: ''
-lab_proxy_https: ''
 lab_proxy_exceptions:
-  - '.cluster.local'
-  - '.svc'
-  - 'localhost'
-  - ".{{ lab_domain }}"
-  - "api-int.{{ lab_domain }}"
-  - '127.0.0.1'
-  - "{{ lab_node_network }}.0/24"
+  - "{{ lab_name }}.{{ lab_domain }}"
+  - "api-int.{{ lab_name }}.{{ lab_domain }}"
+  - "{{ lab_node_network }}"
   - "{{ lab_cluster_network }}"
   - "{{ lab_service_network }}"
 lab_worker_replicas: 0

@@ -3,13 +3,14 @@ apiVersion: v1
 baseDomain: {{ lab_domain }}
 networking:
   networkType: {{ lab_network_type }}
-  machineCIDR: {{ lab_node_network }}.0/24
+  machineCIDR: {{ lab_node_network }}
   clusterNetwork:
   - cidr: {{ lab_cluster_network }}
-    hostPrefix: 23
+    hostPrefix: {{ lab_cluster_network_prefix | default('23') }}
   serviceNetwork:
   - {{ lab_service_network }}
 {% if lab_proxy_http != '' or lab_proxy_https != '' %}
+additionalTrustBundlePolicy: Proxyonly
 proxy:
   httpProxy: {{ lab_proxy_http | default('') }}
   httpsProxy: {{ lab_proxy_https | default(lab_proxy_http) }}
@@ -30,18 +31,19 @@ controlPlane:
 platform:
 {% if lab_platform == 'baremetal' %}
   baremetal:
-    externalBridge: "{{ lab_network_name }}"
-    provisioningNetwork: "Disabled"
-    externalMACAddress: {{ lab_bootstrap_mac }}
     apiVIPs: {{ lab_api_ips }}
     ingressVIPs: {{ lab_ingress_ips }}
+    externalMACAddress: {{ lab_bootstrap_mac }}
+    provisioningNetwork: Disabled
+{% if not lab_abi %}
+    externalBridge: "{{ lab_external_bridge | default(lab_network_name) }}"
 {% if lab_hosts | length > 0 %}
     hosts:
 {% for host in lab_hosts %}
-      - name: {{ lab_name }}-{{ host.role | default('master') }}-{{ loop.index }}
-        role: {{ host.role | default('master') }}
+      - name: {{ lab_name }}-{{ host.role | default(lab_node_role) }}-{{ loop.index }}
+        role: {{ host.role | default(lab_node_role) }}
         bmc:
-          address: redfish-virtualmedia://{{ lab_redfish_ip }}:9000/redfish/v1/Systems/local/{{ lab_name }}-{{ host.role | default('master') }}-{{ loop.index }}
+          address: redfish-virtualmedia://{{ lab_redfish_ip }}:9000/redfish/v1/Systems/local/{{ lab_name }}-{{ host.role | default(lab_node_role) }}-{{ loop.index }}
           username: ADMIN
           password: ADMIN
           disableCertificateVerification: True
@@ -49,6 +51,7 @@ platform:
         rootDeviceHints:
           deviceName: "{{ host.disk | default('/dev/vda') }}"
 {% endfor %}
+{% endif %}
 {% endif %}
 {% else %}
   none: {}

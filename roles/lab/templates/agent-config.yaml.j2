@@ -4,10 +4,16 @@ kind: AgentConfig
 metadata:
   name: {{ lab_name }}
 rendezvousIP: {{ lab_abi_ip }}
+{% if lab_ntp_sources | length > 0 %}
+additionalNTPSources:
+{% for server in lab_ntp_sources %}
+  - '{{ server }}'
+{% endfor %}
+{% endif %}
 {% if lab_hosts | length > 0 %}
 hosts:
 {% for host in lab_hosts %}
-  - hostname: {{ lab_name }}-{{ host.role | default('master') }}-{{ loop.index }}
+  - hostname: {{ lab_name }}-node-{{ loop.index }}
     interfaces:
       - name: {{ host.iface | default('eth0') }}
         macAddress: {{ host.mac | default('{}{}'.format(lab_mac_base, host.id)) }}
@@ -18,8 +24,43 @@ hosts:
           state: up
           mac-address: {{ host.mac | default('{}{}'.format(lab_mac_base, host.id)) }}
           ipv4:
-            enabled: true
-            dhcp: true
+            enabled: {{ host.ipv4_enabled | default(lab_node_ipv4) }}
+{% if host.ipv4_enabled | default(lab_node_ipv4) %}
+            dhcp: {{ host.ipv4_dhcp | default(lab_node_dhcp) }}
+{% if not host.ipv4_dhcp | default(lab_node_dhcp) %}
+            address:
+              - ip: {{ host.address | default('{}{}'.format(lab_node_network_base, host.id)) }}
+                prefix-length: {{ '{}'.format(lab_node_network.split('/')[1]) }}
+{% endif %}
+{% endif %}
+          ipv6:
+            enabled: {{ host.ipv6_enabled | default(lab_node_ipv6) }}
+{% if host.ipv6_enabled | default(lab_node_ipv6) %}
+            dhcp: {{ host.ipv6_dhcp | default(lab_node_dhcp6) }}
+{% if not host.ipv6_dhcp | default(lab_node_dhcp6) %}
+            address:
+              - ip: '{{ host.address | default('{}{}'.format(lab_node_network_base, host.id)) }}'
+                prefix-length: {{ '{}'.format(lab_node_network.split('/')[1]) }}
+{% endif %}
+{% endif %}
+{% if host.dns | default(lab_dns_servers) | length > 0 %}
+      dns-resolver:
+        config:
+          search:
+            - {{ lab_name }}.{{ lab_domain }}
+          server:
+{% for server in host.dns | default(lab_dns_servers) %}
+            - {{ server }}
+{% endfor %}
+{% endif %}
+{% if not host.ipv6_dhcp | default(lab_node_dhcp6) %}
+      routes:
+        config:
+          - destination: ::/0
+            next-hop-interface: {{ host.iface | default('eth0') }}
+            next-hop-address: {{ lab_dns_servers[0] }}
+            table-id: 254
+{% endif %}
     rootDeviceHints:
       deviceName: "{{ host.disk | default('/dev/vda') }}"
 {% endfor %}

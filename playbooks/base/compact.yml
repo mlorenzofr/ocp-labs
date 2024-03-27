@@ -12,17 +12,17 @@
   gather_facts: false
 
   vars:
-    lab_api_ips: ["{{ lab_node_network }}.10"]
-    lab_bootstrap_ip: "{{ lab_node_network }}.100"
+    lab_api_ips: ["{{ lab_node_network_base }}10"]
+    lab_bootstrap_ip: "{{ lab_node_network_base }}100"
     lab_bootstrap_mac: "{{ lab_mac_base }}00"
-    lab_ingress_ips: ["{{ lab_node_network }}.11"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}11"]
     lab_name: 'standard'
     lab_master_replicas: 3
     lab_mac_base: 'be:be:ca:fe:02:'
     lab_platform: 'baremetal'
-    lab_redfish_ip: "{{ lab_node_network }}.1"
+    lab_redfish_ip: "{{ lab_node_network_base }}1"
     lab_node_disk_data: 1
-    lab_node_network: '192.168.125'
+    lab_node_network_base: '192.168.125.'
     libvirt_image_dir: '/home/libvirt-ocp'
     lab_hosts:
       - {'id': '21'}

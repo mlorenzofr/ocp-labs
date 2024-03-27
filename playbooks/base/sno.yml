@@ -7,14 +7,14 @@
 
   vars:
     lab_abi: True
-    lab_abi_ip: "{{ lab_node_network }}.31"
-    lab_api_ips: ["{{ lab_node_network }}.31"]
-    lab_ingress_ips: ["{{ lab_node_network }}.31"]
+    lab_abi_ip: "{{ lab_node_network_base }}31"
+    lab_api_ips: ["{{ lab_node_network_base }}31"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}31"]
     lab_name: 'sno'
     lab_master_replicas: 1
     lab_mac_base: 'be:be:ca:fe:03:'
     lab_node_disk_data: 1
-    lab_node_network: '192.168.125'
+    lab_node_network_base: '192.168.125.'
     lab_hosts:
       - {'id': '31', 'iface':'enp1s0'}
     libvirt_image_dir: '/home/libvirt-ocp'

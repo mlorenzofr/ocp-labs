@@ -2,13 +2,13 @@
 - name: 'Create labs root directory'
   ansible.builtin.file:
     path: "{{ lab_path }}"
-    mode: '0775'
+    mode: '0755'
     state: 'directory'
 
 - name: 'Create lab directory tree'
   ansible.builtin.file:
     path: "{{ lab_path }}/{{ item }}"
-    mode: '0775'
+    mode: '0755'
     state: 'directory'
   ignore_errors: "{{ ansible_check_mode }}"
   loop:
@@ -43,7 +43,7 @@
 
 - name: 'Create virtual machines'
   karmab.kcli.kcli_vm:
-    name: "{{ lab_name }}-{{ item.role | default('master') }}-{{ ansible_loop.index }}"
+    name: "{{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}"
     state: 'present'
     parameters:
       start: false
