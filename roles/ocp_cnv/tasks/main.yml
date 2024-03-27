@@ -1,0 +1,14 @@
+---
+- name: 'Create CNV installation manifest'
+  ansible.builtin.template:
+    src: 'cnv-init.yaml.j2'
+    dest: "{{ ocp_cnv_path }}/cnv-subscription.yaml"
+    mode: '0644'
+  notify: 'cnv install'
+
+- name: 'Create CNV HyperConverged manifests'
+  ansible.builtin.template:
+    src: 'hyperconverged.yaml.j2'
+    dest: "{{ ocp_cnv_path }}/cnv-hyperconverged.yaml"
+    mode: '0644'
+  notify: 'cnv install'

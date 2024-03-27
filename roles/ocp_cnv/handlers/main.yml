@@ -1,0 +1,57 @@
+---
+- name: 'Install CNV Operator'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_cnv_path }}/cnv-subscription.yaml"
+  when: ocp_cnv_install
+  listen:
+    - 'cnv install'
+
+- name: 'Waiting until the operator is installed'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc -n {{ ocp_cnv_ns }} wait
+      --for=jsonpath='{.status.state}'=AtLatestKnown
+      subscription/hco-operatorhub --timeout=300s
+  changed_when: false
+  failed_when: false
+  when: ocp_cnv_install
+  listen:
+    - 'cnv install'
+
+- name: 'Check CNV CRDs'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc get crds hyperconvergeds.hco.kubevirt.io
+  register: __cnv_crd
+  until: __cnv_crd.rc == 0
+  retries: 25
+  delay: 30
+  changed_when: false
+  failed_when: false
+  when: ocp_cnv_install
+  listen:
+    - 'cnv install'
+
+- name: 'Setup CNV HyperConverged'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_cnv_path }}/cnv-hyperconverged.yaml"
+  register: __cnv_setup_cmd
+  until: __cnv_setup_cmd.rc == 0
+  retries: 10
+  delay: 30
+  when: ocp_cnv_install
+  listen:
+    - 'cnv install'
+
+# Review pending
+- name: 'Waiting until the HyperConverged is running'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc -n {{ ocp_cnv_ns }} wait
+      --for=jsonpath='{.status.systemHealthStatus}'=Running
+      hyperconverged/kubevirt-hyperconverged --timeout=600s
+  changed_when: false
+  failed_when: false
+  when: ocp_cnv_install
+  listen:
+    - 'cnv install'

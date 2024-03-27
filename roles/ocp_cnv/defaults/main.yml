@@ -1,0 +1,6 @@
+---
+ocp_cnv_install: "{{ lab_install | default(false) }}"
+ocp_cnv_ns: 'openshift-cnv'
+ocp_cnv_path: "{{ lab_configs }}"
+ocp_cnv_subscription_channel: 'stable'
+ocp_cnv_version: '4.15.0'
