@@ -10,7 +10,7 @@ additionalNTPSources:
   - '{{ server }}'
 {% endfor %}
 {% endif %}
-{% if lab_hosts | length > 0 %}
+{% if lab_hosts | length > 0 and not lab_appliance %}
 hosts:
 {% for host in lab_hosts %}
   - hostname: {{ lab_name }}-node-{{ loop.index }}

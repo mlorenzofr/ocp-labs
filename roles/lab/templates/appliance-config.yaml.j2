@@ -1,0 +1,11 @@
+apiVersion: v1beta1
+kind: ApplianceConfig
+ocpRelease:
+  version: {{ lab_appliance_version }}
+  channel: {{ lab_appliance_channel }}
+  cpuArchitecture: {{ lab_appliance_arch }}
+pullSecret: '{{ lab_pull_secret_appliance | default(lab_pull_secret) }}'
+sshKey: '{{ lab_ssh_pubkey }}'
+userCorePass: {{ lab_appliance_password }}
+diskSizeGB: {{ lab_appliance_disk_size }}
+stopLocalRegistry: {{ not lab_appliance_local_registry }}

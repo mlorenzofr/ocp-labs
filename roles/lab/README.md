@@ -5,8 +5,6 @@ This role is used to create labs in my beaker machine.
 None.
 
 ## Role Variables
-* `lab_abi`. _Bool_. Enable Agent Based Installation.
-* `lab_abi_ip`. _String_. Assisted Service IP for ABI installation.
 * `lab_api_ips`. _List_. List of IP addresses assigned OCP API.
 * `lab_bootstrap_ip`. _String_. IP address of the machine used for bootstrap OCP cluster.
 * `lab_bootstrap_mac`. _String_. MAC address of the machine used for bootstrap OCP cluster.
@@ -23,13 +21,9 @@ None.
 * `lab_network_name`. _String_. **Libvirt** network name used.
 * `lab_network_type`. _String_. Network type used (`OVNKubernetes|Calico|Other`)
 * `lab_node_cpus`. _Number_. Number of vCPU's in each node.
-* `lab_node_dhcp`. _Bool_. Enable/Disable IPv4 DHCP for nodes (ABI).
-* `lab_node_dhcp6`. _Bool_. Enable/Disable IPv4 DHCP for nodes (ABI).
 * `lab_node_disk_data`. _Number_. Disk space, in GB, allocated for data disk.
 * `lab_node_disk_sys`. _Number_. Disk space, in GB, allocated for OS disk.
 * `lab_node_disk_pool`. _String_. Libvirt storage pool to create disks.
-* `lab_node_ipv4`. _Bool_. Enable/Disable IPv4 network stack for nodes (ABI).
-* `lab_node_ipv6`. _Bool_. Enable/Disable IPv6 network stack for nodes (ABI).
 * `lab_node_memory`. _Number_. Memory size, in MB, assigned in each node.
 * `lab_node_network`. _String_. Node network base (example: `192.168.125`).
 * `lab_node_role`. _String_. Node default role.
@@ -44,6 +38,23 @@ None.
 * `lab_service_network`. _String_. k8s service network CIDR.
 * `lab_ssh_pubkey`: _String_. Personal SSH public key.
 * `lab_worker_replicas`. _Number_. Number of worker nodes.
+
+### ABI related variables
+* `lab_abi`. _Bool_. Enable Agent Based Installation.
+* `lab_abi_ip`. _String_. Assisted Service IP for ABI installation.
+* `lab_node_dhcp`. _Bool_. Enable/Disable IPv4 DHCP for nodes.
+* `lab_node_dhcp6`. _Bool_. Enable/Disable IPv4 DHCP for nodes.
+* `lab_node_ipv4`. _Bool_. Enable/Disable IPv4 network stack for nodes.
+* `lab_node_ipv6`. _Bool_. Enable/Disable IPv6 network stack for nodes.
+
+### Appliance related variables
+* `lab_appliance`. _Bool_. Enable Appliance installation (ABI subtype).
+* `lab_appliance_arch`. _String_. Platform architecture.
+* `lab_appliance_channel`. _String_. Openshift distribution channel.
+* `lab_appliance_disk_size`. _Number_. Virtual size of the appliance disk image (150 GB min).
+* `lab_appliance_local_registry`. _Bool_. Enable/Disable local registry in Appliance nodes.
+* `lab_appliance_password`. _String_. Password of user 'core' during the bootstrap phase.
+* `lab_appliance_version`. _String_. Openshift version.
 
 ### Variables for `lab_hosts` items
 * `cpus`. _Number_. Machine vCPUs.

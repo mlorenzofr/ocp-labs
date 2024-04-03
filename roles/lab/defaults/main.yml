@@ -1,6 +1,13 @@
 ---
 lab_abi: False
 lab_api_ips: ['192.168.125.10']
+lab_appliance: False
+lab_appliance_arch: 'x86_64'
+lab_appliance_channel: 'stable'
+lab_appliance_disk_size: 150
+lab_appliance_image: 'quay.io/edge-infrastructure/openshift-appliance'
+lab_appliance_local_registry: true
+lab_appliance_version: '4.15.0'
 lab_bootstrap_ip: ''
 lab_bootstrap_mac: ''
 lab_dnsmasq_root: '/opt/dnsmasq'

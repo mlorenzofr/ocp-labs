@@ -1,0 +1,151 @@
+---
+- name: 'Install a new lab using the Appliance Bundle tool'
+  hosts:
+    - 'lab'
+
+  gather_facts: false
+
+  vars:
+    lab_appliance: True
+    lab_appliance_version: '4.14.11'
+    lab_abi_ip: "{{ lab_node_network_base }}31"
+    lab_api_ips: ["{{ lab_node_network_base }}15"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}16"]
+    lab_name: 'apls'
+    lab_master_replicas: 3
+    lab_worker_replicas: 1
+    lab_mac_base: 'be:be:ca:fe:03:'
+    lab_node_disk_sys: 150
+    lab_node_disk_data: 1
+    lab_node_network_base: '192.168.125.'
+    lab_node_role: 'node'
+    lab_path: '/home/ocp-labs'
+    lab_platform: 'baremetal'
+    lab_pull_secret_install: '{"auths":{"":{"auth":"dXNlcjpwYXNz"}}}'
+    lab_hosts:
+      - {'id': '31'}
+      - {'id': '32'}
+      - {'id': '33'}
+      - {'id': '34'}
+    libvirt_image_dir: '/home/libvirt-ocp'
+
+  environment:
+    PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
+
+  roles:
+    - 'lab'
+
+  tasks:
+    - name: 'Copy configuration files to deploy directory'
+      ansible.builtin.copy:
+        src: "{{ lab_path }}/{{ lab_name }}/config/appliance-config.yaml"
+        dest: "{{ lab_path }}/{{ lab_name }}/deploy/appliance-config.yaml"
+        remote_src: true
+      ignore_errors: "{{ ansible_check_mode }}"
+      notify:
+        - 'bundle build'
+
+    - name: 'Copy configuration files to deploy directory'
+      ansible.builtin.copy:
+        src: "{{ lab_path }}/{{ lab_name }}/config/{{ item }}"
+        dest: "{{ lab_path }}/{{ lab_name }}/deploy/{{ item }}"
+        remote_src: true
+      ignore_errors: "{{ ansible_check_mode }}"
+      loop:
+        - 'install-config.yaml'
+        - 'agent-config.yaml'
+      notify:
+        - 'agent build'
+
+  handlers:
+    - name: 'Clean appliance builds'
+      ansible.builtin.command:
+        cmd: >
+          podman run --rm
+            --pull newer
+            --privileged
+            --net=host
+            -v {{ lab_path }}/{{ lab_name }}/deploy/:/assets:Z
+            {{ lab_appliance_image }}
+            clean
+      listen:
+        - 'bundle build'
+
+    - name: 'Generate appliance bundle'
+      ansible.builtin.command:
+        cmd: >
+          podman run --rm
+            --pull newer
+            --privileged
+            --net=host
+            -v {{ lab_path }}/{{ lab_name }}/deploy/:/assets:Z
+            {{ lab_appliance_image }}
+            build
+      listen:
+        - 'bundle build'
+
+    # This task is too slow, it must be reviewed
+    # - name: 'Copy appliance disk to libvirt storage directory'
+    #   ansible.posix.synchronize:
+    #     src: "{{ lab_path }}/{{ lab_name }}/deploy/appliance.raw"
+    #     dest: "{{ libvirt_image_dir }}/{{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}.raw"
+    #   delegate_to: "{{ inventory_hostname }}"
+    #   loop: "{{ lab_hosts }}"
+    #   loop_control:
+    #     extended: true
+    #   listen:
+    #     - 'bundle build'
+
+    - name: 'Copy appliance disk to libvirt storage directory'
+      ansible.builtin.command:
+        cmd: >
+          cp -f {{ lab_path }}/{{ lab_name }}/deploy/appliance.raw
+          {{ libvirt_image_dir }}/{{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}.raw
+      loop: "{{ lab_hosts }}"
+      loop_control:
+        extended: true
+      listen:
+        - 'bundle build'
+
+    - name: 'Remove old agent-config files'
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: 'absent'
+      loop:
+        - "{{ lab_path }}/{{ lab_name }}/deploy/agentconfig.noarch.iso"
+        - "{{ lab_path }}/{{ lab_name }}/deploy/auth"
+      listen:
+        - 'agent build'
+
+    - name: 'Get Openshift cache version'
+      ansible.builtin.shell:
+        cmd: >
+          grep -Eo 'cache/[^/]+' temp/scripts/guestfish/guestfish.sh | uniq
+        chdir: "{{ lab_path }}/{{ lab_name }}/deploy"
+      register: __appliance_ocp_version
+      listen:
+        - 'agent build'
+
+    - name: 'Generate bootstrap ISO image'
+      ansible.builtin.command:
+        cmd: >
+          {{ lab_path }}/{{ lab_name }}/deploy/{{ __appliance_ocp_version.stdout }}/openshift-install
+            agent create config-image
+            --dir {{ lab_path }}/{{ lab_name }}/deploy
+      listen:
+        - 'agent build'
+
+    - name: 'Copy ISO image to libvirt image directory'
+      ansible.builtin.copy:
+        src: "{{ lab_path }}/{{ lab_name }}/deploy/agentconfig.noarch.iso"
+        dest: "{{ libvirt_image_dir }}/{{ lab_name }}-agentconfig.iso"
+        remote_src: true
+      listen:
+        - 'agent build'
+
+# TODO
+# Remove CDROM in VMs
+# Attach the appliance raw disk as sda
+# Attach the agent-config ISO (Read-Only) as sdb
+# Configure boot
+# Start VMs

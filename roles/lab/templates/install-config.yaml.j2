@@ -1,14 +1,17 @@
 ---
 apiVersion: v1
+metadata:
+  name: {{ lab_name }}
 baseDomain: {{ lab_domain }}
 networking:
   networkType: {{ lab_network_type }}
-  machineCIDR: {{ lab_node_network }}
+  machineNetwork:
+    - cidr: {{ lab_node_network }}
   clusterNetwork:
-  - cidr: {{ lab_cluster_network }}
-    hostPrefix: {{ lab_cluster_network_prefix | default('23') }}
+    - cidr: {{ lab_cluster_network }}
+      hostPrefix: {{ lab_cluster_network_prefix | default('23') }}
   serviceNetwork:
-  - {{ lab_service_network }}
+    - {{ lab_service_network }}
 {% if lab_proxy_http != '' or lab_proxy_https != '' %}
 additionalTrustBundlePolicy: Proxyonly
 proxy:
@@ -16,8 +19,6 @@ proxy:
   httpsProxy: {{ lab_proxy_https | default(lab_proxy_http) }}
   noProxy: {{ lab_proxy_exceptions | join(',') }}
 {% endif %}
-metadata:
-  name: {{ lab_name }}
 compute:
   - name: worker
     architecture: amd64
@@ -33,7 +34,9 @@ platform:
   baremetal:
     apiVIPs: {{ lab_api_ips }}
     ingressVIPs: {{ lab_ingress_ips }}
+{% if not lab_appliance %}
     externalMACAddress: {{ lab_bootstrap_mac }}
+{% endif %}
     provisioningNetwork: Disabled
 {% if not lab_abi %}
     externalBridge: "{{ lab_external_bridge | default(lab_network_name) }}"
@@ -56,5 +59,5 @@ platform:
 {% else %}
   none: {}
 {% endif %}
-pullSecret: {{ lab_pull_secret }}
+pullSecret: '{{ lab_pull_secret_install | default(lab_pull_secret) }}'
 sshKey: '{{ lab_ssh_pubkey }}'
