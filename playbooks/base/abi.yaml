@@ -1,0 +1,95 @@
+---
+# Run it with: ansible-playbook abi.yaml -e "start_install=true"
+#
+# This playbook prepares an installation of Openshift cluster using Agent Based
+#   Installation (ABI)
+
+- name: 'ABI Openshift cluster'
+  hosts:
+    - 'lab'
+
+  gather_facts: false
+
+  vars:
+    lab_abi: True
+    lab_abi_ip: "{{ lab_node_network_base }}31"
+    lab_api_ips: ["{{ lab_node_network_base }}15"]
+    lab_bootstrap_ip: "{{ lab_node_network_base }}254"
+    lab_bootstrap_mac: "{{ lab_mac_base }}00"
+    lab_ingress_ips: ["{{ lab_node_network_base }}16"]
+    lab_name: 'abi'
+    lab_master_replicas: 3
+    lab_mac_base: 'be:be:ca:fe:03:'
+    lab_worker_replicas: 1
+    lab_platform: 'baremetal'
+    lab_node_disk_data: 1
+    lab_node_network: "{{ lab_node_network_base }}0/24"
+    lab_node_network_base: '192.168.125.'
+    lab_node_role: 'node'
+    libvirt_image_dir: '/home/libvirt-ocp'
+    lab_hosts:
+      - {'id': '31'}
+      - {'id': '32'}
+      - {'id': '33'}
+      - {'id': '34'}
+
+  roles:
+    - 'lab'
+
+  environment:
+    PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
+
+  tasks:
+    - name: 'Execute base handlers'
+      ansible.builtin.meta: flush_handlers
+
+    - name: 'Copy configuration files to deploy directory'
+      ansible.builtin.copy:
+        src: "{{ lab_path }}/{{ lab_name }}/config/{{ item }}"
+        dest: "{{ lab_path }}/{{ lab_name }}/deploy/{{ item }}"
+        mode: '0640'
+        remote_src: true
+      loop:
+        - 'install-config.yaml'
+        - 'agent-config.yaml'
+
+    - name: 'Generate cluster manifests'
+      ansible.builtin.command:
+        cmd: >
+          openshift-baremetal-install create cluster-manifests
+          --dir {{ lab_path }}/{{ lab_name }}/deploy
+        creates: "{{ lab_path }}/{{ lab_name }}/deploy/.openshift_install_state.json"
+
+    - name: 'Generate bootstrap ISO image'
+      ansible.builtin.command:
+        cmd: >
+          openshift-install agent create image
+          --dir {{ lab_path }}/{{ lab_name }}/deploy
+        creates: "{{ lab_path }}/{{ lab_name }}/deploy/agent.x86_64.iso"
+
+    - name: 'Copy ISO image to libvirt image directory'
+      ansible.builtin.copy:
+        src: "{{ lab_path }}/{{ lab_name }}/deploy/agent.x86_64.iso"
+        dest: "{{ libvirt_image_dir }}/{{ lab_name }}-agent-installer.iso"
+        remote_src: true
+
+    - name: 'Change CD-ROM source to ABI iso image'
+      ansible.builtin.command:
+        cmd: >
+          virsh change-media --current
+          {{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}
+          hdc
+          {{ libvirt_image_dir }}/{{ lab_name }}-agent-installer.iso
+      loop: "{{ lab_hosts }}"
+      loop_control:
+        extended: true
+
+    - name: 'Start VMs'
+      ansible.builtin.command:
+        cmd: >
+          virsh start
+          {{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}
+      loop: "{{ lab_hosts }}"
+      loop_control:
+        extended: true
+      when: start_install | default(False)
