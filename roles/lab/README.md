@@ -13,6 +13,7 @@ None.
 * `lab_dnsmasq_root`. _String_. Path to the directory where the dnsmasq snippets are hosted.
 * `lab_dns_servers`. _List_. List of static DNS servers.
 * `lab_external_bridge`. _String_. External bridge used by the Openshift platform.
+* `lab_gateway`. _String_. Default network gateway.
 * `lab_hosts`. _List_. List of machines in the cluster.
 * `lab_ingress_ips`. _List_. List of IP addresses assigned to the OCP ingress controller, where the **console** is published.
 * `lab_mac_base`. _String_. MAC vendor address for the lab.

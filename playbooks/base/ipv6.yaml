@@ -21,6 +21,7 @@
     lab_bootstrap_mac: "{{ lab_mac_base }}00"
     lab_dns_servers: ["{{ lab_node_network_base }}1"]
     lab_ntp_sources: ["{{ lab_node_network_base }}1"]
+    lab_gateway: "{{ lab_node_network_base }}1"
     lab_ingress_ips: ["{{ lab_node_network_base }}11"]
     lab_name: 'cnv'
     lab_master_replicas: 3

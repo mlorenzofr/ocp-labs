@@ -1,3 +1,4 @@
+{% set net_prefix = lab_node_network.split('/') %}
 ---
 apiVersion: v1alpha1
 kind: AgentConfig
@@ -30,7 +31,7 @@ hosts:
 {% if not host.ipv4_dhcp | default(lab_node_dhcp) %}
             address:
               - ip: {{ host.address | default('{}{}'.format(lab_node_network_base, host.id)) }}
-                prefix-length: {{ '{}'.format(lab_node_network.split('/')[1]) }}
+                prefix-length: {{ '{}'.format(net_prefix[1]) }}
 {% endif %}
 {% endif %}
           ipv6:
@@ -40,7 +41,13 @@ hosts:
 {% if not host.ipv6_dhcp | default(lab_node_dhcp6) %}
             address:
               - ip: '{{ host.address | default('{}{}'.format(lab_node_network_base, host.id)) }}'
-                prefix-length: {{ '{}'.format(lab_node_network.split('/')[1]) }}
+                prefix-length: {{ '{}'.format(net_prefix[1]) }}
+      routes:
+        config:
+          - destination: ::/0
+            next-hop-interface: {{ host.iface | default('eth0') }}
+            next-hop-address: {{ lab_gateway }}
+            table-id: 254
 {% endif %}
 {% endif %}
 {% if host.dns | default(lab_dns_servers) | length > 0 %}
@@ -52,14 +59,6 @@ hosts:
 {% for server in host.dns | default(lab_dns_servers) %}
             - {{ server }}
 {% endfor %}
-{% endif %}
-{% if not host.ipv6_dhcp | default(lab_node_dhcp6) %}
-      routes:
-        config:
-          - destination: ::/0
-            next-hop-interface: {{ host.iface | default('eth0') }}
-            next-hop-address: {{ lab_dns_servers[0] }}
-            table-id: 254
 {% endif %}
     rootDeviceHints:
       deviceName: "{{ host.disk | default('/dev/vda') }}"
