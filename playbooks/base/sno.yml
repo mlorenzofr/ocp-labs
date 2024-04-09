@@ -1,4 +1,9 @@
 ---
+# Run it with: ansible-playbook sno.yaml -e "start_install=true"
+#
+# This playbook prepares an Single Node Openshift (SNO) installation
+# Right now the only way to do this is through Agent Based Installation (ABI)
+
 - name: 'Setup Single Node Openshift (SNO) with Agent Based Installation (ABI)'
   hosts:
     - 'lab'
@@ -15,6 +20,7 @@
     lab_mac_base: 'be:be:ca:fe:03:'
     lab_node_disk_data: 1
     lab_node_network_base: '192.168.125.'
+    lab_node_role: 'node'
     lab_hosts:
       - {'id': '31', 'iface':'enp1s0'}
     libvirt_image_dir: '/home/libvirt-ocp'
@@ -37,12 +43,16 @@
 
     - name: 'Generate cluster manifests'
       ansible.builtin.command:
-        cmd: "/usr/local/bin/openshift-install agent create cluster-manifests --dir {{ lab_path }}/{{ lab_name }}/deploy"
+        cmd: >
+          openshift-install agent create cluster-manifests
+          --dir {{ lab_path }}/{{ lab_name }}/deploy
         creates: "{{ lab_path }}/{{ lab_name }}/deploy/.openshift_install_state.json"
 
     - name: 'Generate bootstrap ISO image'
       ansible.builtin.command:
-        cmd: "/usr/local/bin/openshift-install agent create image --dir {{ lab_path }}/{{ lab_name }}/deploy"
+        cmd: >
+          openshift-install agent create image
+          --dir {{ lab_path }}/{{ lab_name }}/deploy
         creates: "{{ lab_path }}/{{ lab_name }}/deploy/agent.x86_64.iso"
 
     - name: 'Copy ISO image to libvirt image directory'
@@ -51,5 +61,23 @@
         dest: "{{ libvirt_image_dir }}/{{ lab_name }}-agent-installer.iso"
         remote_src: true
 
-# TODO
-# attach the ISO to the VM and start it
+    - name: 'Change CD-ROM source to ABI iso image'
+      ansible.builtin.command:
+        cmd: >
+          virsh change-media --current
+          {{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}
+          hdc
+          {{ libvirt_image_dir }}/{{ lab_name }}-agent-installer.iso
+      loop: "{{ lab_hosts }}"
+      loop_control:
+        extended: true
+
+    - name: 'Start VMs'
+      ansible.builtin.command:
+        cmd: >
+          virsh start
+          {{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}
+      loop: "{{ lab_hosts }}"
+      loop_control:
+        extended: true
+      when: start_install | default(False)

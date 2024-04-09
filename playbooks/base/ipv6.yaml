@@ -1,11 +1,8 @@
 ---
-# Run it with: ansible-playbook ipv6.yaml
+# Run it with: ansible-playbook ipv6.yaml -e "start_install=true"
 #
 # This playbook prepares an installation of Openshift with IPv6 Single Stack
 # Right now the only way to do this is through Agent Based Installation (ABI)
-#
-# The playbook will create the ISO to start the installation, after that we must
-#   attach the ISO to the VMs and start them.
 
 - name: 'Deploy IPv6 Single Stack Openshift cluster'
   hosts:
@@ -52,6 +49,9 @@
   roles:
     - 'lab'
 
+  environment:
+    PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
+
   tasks:
     - name: 'Execute base handlers'
       ansible.builtin.meta: flush_handlers
@@ -68,15 +68,17 @@
 
     - name: 'Generate cluster manifests'
       ansible.builtin.command:
-        cmd: "/usr/local/bin/openshift-baremetal-install create cluster-manifests --dir {{ lab_path }}/{{ lab_name }}/deploy"
+        cmd: >
+          /usr/local/bin/openshift-baremetal-install create cluster-manifests
+          --dir {{ lab_path }}/{{ lab_name }}/deploy
         creates: "{{ lab_path }}/{{ lab_name }}/deploy/.openshift_install_state.json"
 
     - name: 'Generate bootstrap ISO image'
       ansible.builtin.command:
-        cmd: "/usr/local/bin/openshift-install agent create image --dir {{ lab_path }}/{{ lab_name }}/deploy"
+        cmd: >
+          /usr/local/bin/openshift-install agent create image
+          --dir {{ lab_path }}/{{ lab_name }}/deploy
         creates: "{{ lab_path }}/{{ lab_name }}/deploy/agent.x86_64.iso"
-      environment:
-        PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
 
     - name: 'Copy ISO image to libvirt image directory'
       ansible.builtin.copy:
@@ -84,5 +86,23 @@
         dest: "{{ libvirt_image_dir }}/{{ lab_name }}-agent-installer.iso"
         remote_src: true
 
-# TODO
-# attach the ISO to the VMs and start them
+    - name: 'Change CD-ROM source to ABI iso image'
+      ansible.builtin.command:
+        cmd: >
+          virsh change-media --current
+          {{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}
+          hdc
+          {{ libvirt_image_dir }}/{{ lab_name }}-agent-installer.iso
+      loop: "{{ lab_hosts }}"
+      loop_control:
+        extended: true
+
+    - name: 'Start VMs'
+      ansible.builtin.command:
+        cmd: >
+          virsh start
+          {{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}
+      loop: "{{ lab_hosts }}"
+      loop_control:
+        extended: true
+      when: start_install | default(False)
