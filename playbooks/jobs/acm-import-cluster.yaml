@@ -1,0 +1,62 @@
+---
+# Execution example:
+#
+# $ ansible-playbook acm-import-cluster.yaml
+# lab name: acm
+# cluster name: cluster-abi
+# kubeconfig path: /root/labs/abi/deploy/auth/kubeconfig
+
+- name: 'Import cluster to ACM'
+  hosts:
+    - 'lab'
+
+  gather_facts: false
+
+  vars:
+    lab_path: '/root/labs'
+
+  vars_prompt:
+    - name: lab_name
+      prompt: 'lab name'
+      private: false
+    - name: cluster_name
+      prompt: 'cluster name'
+      private: false
+    - name: kubeconfig_path
+      prompt: 'kubeconfig path'
+      private: false
+
+  environment:
+    PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
+    KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  tasks:
+    - name: 'Test lab_name'
+      ansible.builtin.fail:
+        msg: 'Variable lab_name is empty'
+      when: lab_name | length == 0
+
+    - name: 'Create import directory'
+      ansible.builtin.file:
+        path: "{{ lab_path }}/{{ lab_name }}/import"
+        mode: '0750'
+        state: 'directory'
+
+    - name: 'Fetch remote kubeconfig'
+      ansible.builtin.fetch:
+        dest: '/tmp/'
+        src: "{{ kubeconfig_path }}"
+        flat: true
+
+    - name: 'Get kubeconfig data'
+      ansible.builtin.set_fact:
+        kubeconfig_data: "{{ lookup('file', '/tmp/kubeconfig') }}"
+
+    - name: 'Import external cluster'
+      ansible.builtin.import_role:
+        name: 'ocp_acm'
+        tasks_from: 'import.yaml'
+      vars:
+        import_dir: "{{ lab_path }}/{{ lab_name }}/import"
+        kubeconfig: "{{ kubeconfig_data }}"
+...
