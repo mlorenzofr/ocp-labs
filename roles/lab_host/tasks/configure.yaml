@@ -1,0 +1,46 @@
+---
+- name: 'Configure tmux'
+  ansible.builtin.copy:
+    src: 'tmux.conf'
+    dest: '/root/.tmux.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'Configure vim'
+  ansible.builtin.copy:
+    src: 'vimrc'
+    dest: '/root/.vimrc'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'Configure HAproxy'
+  ansible.builtin.template:
+    src: 'haproxy.cfg.j2'
+    dest: '/etc/haproxy/haproxy.cfg'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify:
+    - 'svc reload haproxy'
+
+- name: 'Configure chronyd'
+  ansible.builtin.template:
+    src: 'chrony.conf.j2'
+    dest: '/etc/chrony.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify:
+    - 'svc restart chronyd'
+
+- name: 'Configure squid'
+  ansible.builtin.template:
+    src: 'squid.conf.j2'
+    dest: '/etc/squid/squid.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify:
+    - 'svc restart squid'

@@ -1,0 +1,101 @@
+{{ ansible_managed | comment }}
+
+global
+    log         127.0.0.1 local2
+    maxconn     4000
+    daemon
+
+defaults
+    mode                    tcp
+    log                     global
+    retries                 3
+    timeout http-request    10s
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 3000
+
+listen stats-50000
+    bind :50000
+    mode            http
+    log             global
+    maxconn 10
+    timeout client  100s
+    timeout server  100s
+    timeout connect 100s
+    stats enable
+    stats hide-version
+    stats refresh 30s
+    stats show-node
+    stats auth {{ lab_host_haproxy_stats_user }}:{{ lab_host_haproxy_stats_password }}
+    stats uri  /haproxy?stats
+
+frontend apis-6443
+    bind :6443
+    mode tcp
+    tcp-request inspect-delay 5s
+    tcp-request content accept if { req_ssl_hello_type 1 }
+{% for lab in lab_host_haproxy_labs %}
+{% if lab.api | default(False) %}
+    acl ACL_{{ lab.name }} req_ssl_sni -i api.{{ lab.name }}.{{ lab.domain | default('local.lab') }}
+    use_backend {{ lab.name }}_api_6443 if ACL_{{ lab.name }}
+{% endif %}
+{% endfor %}
+
+frontend routers-http-80
+    bind :80
+    mode http
+{% for lab in lab_host_haproxy_labs %}
+    acl ACL_{{ lab.name }} hdr(host) -m reg -i ^[^\.]+\.apps\.{{ lab.name }}\.{{ lab.domain | default('local.lab') | replace('.', '\.') }}
+{% endfor %}
+{% for lab in lab_host_haproxy_labs %}
+    use_backend {{ lab.name }}_ingress_80 if ACL_{{ lab.name }}
+{% endfor %}
+
+frontend routers-https-443
+    bind :443
+    mode tcp
+    tcp-request inspect-delay 5s
+    tcp-request content accept if { req_ssl_hello_type 1 }
+{% for lab in lab_host_haproxy_labs %}
+    acl ACL_{{ lab.name }} req_ssl_sni -m reg -i ^[^\.]+\.apps\.{{ lab.name }}\.{{ lab.domain | default('local.lab') | replace('.', '\.') }}
+{% endfor %}
+{% for lab in lab_host_haproxy_labs %}
+    use_backend {{ lab.name }}_ingress_443 if ACL_{{ lab.name }}
+{% endfor %}
+{% for lab in lab_host_haproxy_labs %}
+
+backend {{ lab.name }}_ingress_80
+    mode http
+    balance hdr(Host)
+    hash-type consistent
+    option forwardfor
+    http-send-name-header Host
+{% for server in lab.backends %}
+    server server{{ loop.index }} {{ server }}:80 check inter 1s
+{% endfor %}
+
+backend {{ lab.name }}_ingress_443
+    mode tcp
+    balance source
+    option ssl-hello-chk
+{% for server in lab.backends %}
+    server server{{ loop.index }} {{ server }}:443 check inter 1s
+{% endfor %}
+{% if lab.api | default(False) %}
+
+backend {{ lab.name }}_api_6443
+    mode tcp
+    balance source
+    option ssl-hello-chk
+{% for server in lab.api_ips %}
+    server server{{ loop.index }} {{ server }}:6443 check inter 1s
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% for snippet in lab_host_haproxy_snippets %}
+{% include snippet %}
+{% endfor %}

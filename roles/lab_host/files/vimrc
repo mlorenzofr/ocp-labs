@@ -1,0 +1,45 @@
+" Files
+set hidden          " Hide buffers instead of close them
+set noswapfile      " Don't use swap files when editing
+set nobackup        " Don't use backup files when editing
+set history=250     " Increase command history
+set undolevels=250  " Increase undo levels
+scriptencoding utf-8
+set encoding=utf-8
+
+" UI
+" Set colors
+set t_Co=256
+"
+syntax on                           " Enable syntax colors
+" set number                          " Show line numbers
+set laststatus=2                    " Show status line
+set colorcolumn=81                  " Highlight column 81
+set cursorline                      " Highlight the cursor line
+set showmatch                       " Highlight matching parenthesis
+set visualbell                      " don't beep
+set noerrorbells                    " don't beep
+set list                            " mark eols
+set listchars=tab:→\ ,eol:↲,trail:• " Set symbols for whitespaces
+
+" Spaces & Tabs
+set tabstop=2       " spaces inserted with a tab keystroke
+set shiftwidth=2    " spaces inserted for indentation
+set softtabstop=-1  " use tabstop value when needed
+set shiftround      " round indent to multiple of 'shiftwidth'
+set noautoindent    " align the new line indent with the previous line
+set expandtab       " insert spaces instead of tabs
+
+" Search
+set hlsearch        " highlight search terms
+set incsearch       " show search matches as you type
+
+" Highlight configuration
+highlight LineNr ctermfg=cyan ctermbg=0
+highlight ColorColumn ctermfg=7 ctermbg=8
+highlight IncSearch cterm=NONE ctermfg=16 ctermbg=10
+highlight Search cterm=NONE ctermfg=18 ctermbg=11
+highlight CursorLine cterm=NONE ctermbg=233
+highlight CursorNumber ctermfg=11 ctermbg=16
+highlight SpecialKey cterm=bold ctermfg=11
+highlight NonText cterm=bold ctermfg=21

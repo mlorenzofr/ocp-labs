@@ -1,0 +1,13 @@
+{{ ansible_managed | comment }}
+
+server 0.europe.pool.ntp.org iburst
+driftfile /var/lib/chrony/drift
+makestep 1.0 3
+rtcsync
+keyfile /etc/chrony.keys
+leapsectz right/UTC
+logdir /var/log/chrony
+bindcmdaddress ::
+{% for network in lab_host_networks %}
+allow {{ network.cidr }}
+{% endfor %}

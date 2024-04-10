@@ -1,0 +1,39 @@
+{{ ansible_managed | comment }}
+
+bind-dynamic
+bogus-priv
+dhcp-authoritative
+dhcp-leasefile=/opt/dnsmasq/hosts.leases
+dhcp-lease-max=81
+enable-ra
+except-interface=eno3,cni-podman*,vnet*,lo
+log-dhcp
+no-hosts
+strict-order
+resolv-file=/opt/dnsmasq/upstream-resolv.conf
+
+{% for network in lab_host_networks %}
+{% if 'dhcp_range' in network.keys() %}
+{% if not network.ipv6 | default(False) %}
+{% set option = 'option' %}
+{% set dhcp_opts = network.netmask | default(lab_host_dhcp_netmask) %}
+{% else %}
+{% set option = 'option6' %}
+{% set dhcp_opts = 'constructor:{},ra-only'.format(network.iface) %}
+{% endif %}
+
+# {{ network.name }}
+{% if 'domain' in network.keys() %}
+domain={{ network.domain }},{{ network.cidr }}
+{% endif %}
+dhcp-range={{ network.name }},{{ network.dhcp_range }},{{ dhcp_opts }},{{ network.dhcp_lease | default(lab_host_dhcp_lease) }}
+dhcp-option={{ network.name }},{{ option }}:dns-server,{{ network.dns | default(network.gw) }}
+{% if not network.ipv6 | default(False) %}
+dhcp-option={{ network.name }},option:router,{{ network.gw }}
+{% endif %}
+dhcp-option={{ network.name }},{{ option }}:ntp-server,{{ network.ntp | default(network.gw) }}
+{% endif %}
+{% endfor %}
+
+# Include all files in a directory depending on the suffix
+conf-dir=/opt/dnsmasq/include.d/,*.ipv4

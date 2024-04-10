@@ -1,0 +1,16 @@
+
+frontend service-installer-8090
+    bind :8090
+    mode tcp
+    tcp-request inspect-delay 5s
+    tcp-request content accept if { req_ssl_hello_type 1 }
+    acl ACL_standard req_ssl_sni -i assisted-service-multicluster-engine.apps.standard.local.lab
+    use_backend be_service-installer_standard_6443 if ACL_standard
+
+backend be_service-installer_standard_8090
+    mode tcp
+    balance source
+    option ssl-hello-chk
+    server master0 192.168.125.21:8090 check inter 1s
+    server master1 192.168.125.22:8090 check inter 1s
+    server master2 192.168.125.23:8090 check inter 1s

@@ -1,0 +1,11 @@
+---
+# Run it with: ansible-playbook server.yaml
+#
+# This playbook configures the OS to host Openshift labs.
+
+- name: 'Configure labs server'
+  hosts:
+    - 'lab'
+
+  roles:
+    - 'lab_host'

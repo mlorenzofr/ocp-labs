@@ -1,0 +1,11 @@
+---
+lab_host_dhcp_lease: '24h'
+lab_host_dhcp_netmask: '255.255.255.0'
+lab_host_dnsmasq_upstream: '1.1.1.1'
+lab_host_haproxy_stats_user: 'admin'
+lab_host_haproxy_labs: []
+lab_host_haproxy_snippets: []
+lab_host_squid_networks: "{{ lab_host_networks }}"
+lab_host_networks: []
+lab_host_ocp_versions: []
+lab_host_packages: []

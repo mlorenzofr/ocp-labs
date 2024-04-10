@@ -1,0 +1,39 @@
+---
+- name: 'Import OS version variables'
+  ansible.builtin.include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yaml"
+
+- name: 'Install required packages'
+  ansible.builtin.package:
+    name: "{{ lab_host_packages }}"
+    state: 'present'
+
+- name: 'Allow HAproxy to listen on TCP port 6443'
+  community.general.seport:
+    ports: 6443
+    proto: 'tcp'
+    setype: 'http_port_t'
+    state: 'present'
+
+- name: 'Disable firewalld service'
+  ansible.builtin.service:
+    name: 'firewalld'
+    enabled: false
+    state: 'stopped'
+  notify:
+    - 'flush iptables'
+    - 'svc restart libvirtd'
+
+- name: 'Configure software'
+  ansible.builtin.import_tasks: 'configure.yaml'
+
+- name: 'Install kcli'
+  ansible.builtin.import_tasks: 'kcli.yaml'
+  tags: ['kcli']
+
+- name: 'Configure dnsmasq'
+  ansible.builtin.import_tasks: 'dnsmasq.yaml'
+  tags: ['dnsmasq']
+
+- name: 'Install openshift tools'
+  ansible.builtin.include_tasks: 'oc.yaml'
+  loop: "{{ lab_host_ocp_versions }}"

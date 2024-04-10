@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  role_name: lab_host
+  namespace: mlorenzofr
+  author: 'Manuel Lorenzo'
+  description: 'Set up a RHEL system to host our lab environments'
+  company: 'Red Hat'
+  license: 'BSD'
+  min_ansible_version: '2.12'
+  platforms:
+    - name: 'EL'
+      versions:
+        - '8'
+  galaxy_tags: []
+dependencies: []

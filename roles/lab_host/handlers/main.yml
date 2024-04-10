@@ -1,0 +1,65 @@
+---
+- name: 'Reload systemd daemon'
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+  listen: 'systemd daemon-reload'
+
+- name: 'Mask dnsmasq service'
+  ansible.builtin.systemd_service:
+    name: 'dnsmasq'
+    state: 'stopped'
+    enabled: false
+    masked: true
+  listen: 'svc mask dnsmasq'
+
+- name: 'Apply SELinux file context for hosts.leases'
+  ansible.builtin.command:
+    cmd: 'restorecon -iR /opt/dnsmasq'
+  listen: 'selinux dnsmasq'
+
+- name: 'Flush iptables rules'
+  ansible.builtin.command:
+    cmd: 'iptables -F'
+  listen: 'flush iptables'
+
+- name: 'Restart libvirtd service'
+  ansible.builtin.service:
+    name: 'libvirtd'
+    state: 'restarted'
+    enabled: true
+  listen: 'svc restart libvirtd'
+
+- name: 'Reload HAproxy service'
+  ansible.builtin.service:
+    name: 'haproxy'
+    state: 'reloaded'
+    enabled: true
+  listen: 'svc reload haproxy'
+
+- name: 'Restart dnsmasq-virt service'
+  ansible.builtin.service:
+    name: 'dnsmasq-virt'
+    state: 'restarted'
+    enabled: true
+  listen: 'svc restart dnsmasq-virt'
+
+- name: 'Restart chronyd service'
+  ansible.builtin.service:
+    name: 'chronyd'
+    state: 'restarted'
+    enabled: true
+  listen: 'svc restart chronyd'
+
+- name: 'Restart squid service'
+  ansible.builtin.service:
+    name: 'squid'
+    state: 'restarted'
+    enabled: true
+  listen: 'svc restart squid'
+
+- name: 'Restart ksushy service'
+  ansible.builtin.service:
+    name: 'ksushy'
+    state: 'restarted'
+    enabled: true
+  listen: 'svc restart ksushy'
