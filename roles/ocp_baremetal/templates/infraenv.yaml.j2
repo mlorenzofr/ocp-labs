@@ -22,7 +22,7 @@ rules:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: pull-secret
+  name: pull-secret-{{ item.name }}
   namespace: {{ item.ns }}
 stringData:
   .dockerconfigjson: '{{ item.pullsecret }}'
@@ -46,5 +46,5 @@ spec:
       cluster-name: "{{ item.name }}"
 {% endif %}
   pullSecretRef:
-    name: pull-secret
+    name: pull-secret-{{ item.name }}
   sshAuthorizedKey: {{ item.sshkey }}
