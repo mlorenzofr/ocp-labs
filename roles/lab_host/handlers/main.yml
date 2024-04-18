@@ -35,6 +35,8 @@
     state: 'reloaded'
     enabled: true
   listen: 'svc reload haproxy'
+  tags:
+    - 'haproxy'
 
 - name: 'Restart dnsmasq-virt service'
   ansible.builtin.service:
