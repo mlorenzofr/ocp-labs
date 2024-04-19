@@ -8,7 +8,11 @@ metadata:
 spec:
   controllerAvailabilityPolicy: {{ item.ctl_availability | default('SingleReplica') }}
   release:
+{% if 'image' in item.keys() %}
+    image: {{ item.image }}
+{% else %}
     image: quay.io/openshift-release-dev/ocp-release:{{ item.version }}-{{ item.arch | default('x86_64') }}
+{% endif %}
   pullSecret:
     name: pullsecret-cluster-{{ item.name }}
   sshKey:
@@ -61,7 +65,11 @@ spec:
       agentLabelSelector:
         matchLabels: {}
   release:
+{% if 'image' in item.keys() %}
+    image: {{ item.image }}
+{% else %}
     image: quay.io/openshift-release-dev/ocp-release:{{ item.version }}-{{ item.arch | default('x86_64') }}
+{% endif %}
 ---
 apiVersion: cluster.open-cluster-management.io/v1
 kind: ManagedCluster
