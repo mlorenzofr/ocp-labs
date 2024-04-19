@@ -1,0 +1,82 @@
+---
+# This playbook installs a lab with an Openshift Cluster and an OKD spoke
+#  cluster inside (HostedCluster)
+#
+# Run it with:
+#   ap labs/okd/okd.yaml
+
+- name: 'Import compact playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/multinode.yml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'okd'
+    lab_node_memory: 28000
+    lab_node_disk_data: 60
+    start_install: true
+
+- name: 'Import HCP setup playbook'
+  ansible.builtin.import_playbook: ../../playbooks/setup/hcp.yaml
+  tags:
+    - 'postinst'
+  vars:
+    lab_name: 'okd'
+    lab_mac_base: 'be:be:ca:fe:02:'
+
+    ocp_assisted_service_images:
+      - ocp_version: '4.12'
+        arch: 'x86_64'
+        version: '37.20221225.3.0'
+        url: 'https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/37.20221225.3.0/x86_64/fedora-coreos-37.20221225.3.0-live.x86_64.iso'
+        rootfs: ''
+#      - ocp_version: '4.15'
+#        arch: 'x86_64'
+#        version: '39.20240322.3.1'
+#        url: 'https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/39.20240322.3.1/x86_64/fedora-coreos-39.20240322.3.1-live.x86_64.iso'
+#        rootfs: 'https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/39.20240322.3.1/x86_64/fedora-coreos-39.20240322.3.1-live-rootfs.x86_64.img'
+    ocp_baremetal_infras:
+      - name: 'hosted'
+        ns: 'hardware-inventory'
+        hypershift: true
+        ntp: ['192.168.125.1']
+        pullsecret: "{{ lab_pull_secret }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        redfish: '192.168.125.1'
+        inventory:
+          - {'name': "{{ lab_name }}-bmh-1", 'id': '25'}
+
+    ocp_hcp_clusters:
+      - name: 'spoke'
+        ns: 'spoke'
+        infra: 'hosted'
+        agent_ns: 'hardware-inventory'
+        pullsecret: "{{ lab_pull_secret_b64 }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        service_network: '172.32.0.0/16'
+        domain: 'local.lab'
+        lb: '192.168.125.50'
+        replicas: 1
+        image: 'quay.io/openshift/okd:4.12.0-0.okd-2023-03-18-084815'
+
+- name: 'Prepare okd cluster configuration'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hcp/create-config.yml
+  vars:
+    lab_name: 'okd'
+    lab_path: '/root/labs'
+    spoke_name: 'spoke'
+  tags:
+    - 'postinst'
+    - 'okd'
+    - 'okd-config'
+
+- name: 'Install MetalLB on okd cluster'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hcp/create-ingress.yml
+  vars:
+    lab_name: 'okd'
+    lab_path: '/root/labs'
+    spoke_name: 'spoke'
+    spoke_lb_ips: '192.168.125.50-192.168.125.50'
+  tags:
+    - 'postinst'
+    - 'okd'
+    - 'okd-ingress'

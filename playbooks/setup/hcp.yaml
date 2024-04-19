@@ -1,0 +1,26 @@
+---
+# Install Hypershift on Openshift Cluster
+- name: 'Install hosted control plane (HCP / Hypershift)'
+  hosts:
+    - 'lab'
+
+  gather_facts: false
+
+  vars:
+    lab_dnsmasq_root: '/opt/dnsmasq'
+    lab_name: 'standard'
+    lab_configs: "/root/labs/{{ lab_name }}/config"
+    lab_network_name: 'lab-network'
+    lab_install: true
+
+    ocp_metallb_pool_ips: '192.168.125.40-192.168.125.45'
+    ocp_metallb_pool_name: "{{ lab_network_name }}"
+
+    ocp_baremetal_infras: []
+    ocp_hcp_clusters: []
+
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  roles:
+    - 'ocp_hcp'
