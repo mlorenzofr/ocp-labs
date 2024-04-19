@@ -1,0 +1,145 @@
+---
+# This playbook installs a lab with Hypershift running on a compact Openshift
+#   control plane. The management control plane and the hosted control plane
+#   will share the same nodes.
+#
+# We need to increase the memory on the nodes to host the nested Openshift
+#   clusters. Each HostedCluster uses about 4 GiB of memory
+#
+# Run it with:
+#   ap labs/hcp-compact/hcp-compact.yaml
+
+- name: 'Import compact playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/compact.yml
+  vars:
+    lab_name: 'hcp'
+    lab_node_memory: 32000
+    lab_node_disk_data: 60
+    start_install: true
+  tags:
+    - 'ocp'
+
+- name: 'Prepare Openshift nodes for Hypershift HighAvailable control plane'
+  hosts:
+    - 'lab'
+  gather_facts: false
+  vars:
+    lab_name: 'hcp'
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+  pre_tasks:
+    - name: 'Set different hypershift zones in nodes to ensure balanced distribution in HCP pods'
+      ansible.builtin.command:
+        cmd: >
+          /usr/local/bin/oc label node {{ item }} topology.kubernetes.io/zone={{ item }}
+      loop:
+        - "{{ lab_name }}-master-1"
+        - "{{ lab_name }}-master-2"
+        - "{{ lab_name }}-master-3"
+
+    - name: 'Set hypershift control plane label'
+      ansible.builtin.command:
+        cmd: >
+          /usr/local/bin/oc label node {{ item }} hypershift.openshift.io/control-plane=true
+      loop:
+        - "{{ lab_name }}-master-1"
+        - "{{ lab_name }}-master-2"
+        - "{{ lab_name }}-master-3"
+
+- name: 'Import hcp-compact setup playbook'
+  ansible.builtin.import_playbook: ../../playbooks/setup/hcp.yaml
+  vars:
+    lab_name: 'hcp'
+    lab_mac_base: 'be:be:ca:fe:02:'
+    lab_node_network_base: '192.168.125'
+    ocp_metallb_pool_ips: "{{ lab_node_network_base }}.40-{{ lab_node_network_base }}.45"
+    ocp_baremetal_infras:
+      - name: 'hcp1'
+        ns: 'hardware-inventory'
+        hypershift: true
+        pullsecret: "{{ lab_pull_secret }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        ntp: ["{{ lab_node_network_base }}.1"]
+        redfish: "{{ lab_node_network_base }}.1"
+        inventory:
+          - {'name': 'hcp1-worker-1', 'id': '51'}
+      - name: 'hcp2'
+        ns: 'hardware-inventory'
+        hypershift: true
+        pullsecret: "{{ lab_pull_secret }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        ntp: ["{{ lab_node_network_base }}.1"]
+        redfish: "{{ lab_node_network_base }}.1"
+        inventory:
+          - {'name': 'hcp2-worker-1', 'id': '61'}
+    ocp_hcp_clusters:
+      - name: 'hcp1'
+        ns: 'hcp1'
+        ctl_availability: 'HighlyAvailable'  # Cluster controllers (etcd, kube-apiserver, ...)
+        infra: 'hcp1'
+        agent_ns: 'hardware-inventory'
+        pullsecret: "{{ lab_pull_secret_b64 }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        version: '4.14.8'
+        service_network: '172.32.0.0/16'
+        domain: 'local.lab'
+        lb: "{{ lab_node_network_base }}.50"
+        replicas: 1  # In this scenario we need at least 1 worker to start the installation
+      - name: 'hcp2'
+        ns: 'hcp2'
+        ctl_availability: 'HighlyAvailable'  # Cluster controllers (etcd, kube-apiserver, ...)
+        infra: 'hcp2'
+        agent_ns: 'hardware-inventory'
+        pullsecret: "{{ lab_pull_secret_b64 }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        version: '4.14.13'
+        service_network: '172.33.0.0/16'
+        domain: 'local.lab'
+        lb: "{{ lab_node_network_base }}.60"
+        replicas: 1  # In this scenario we need at least 1 worker to start the installation
+  tags:
+    - 'postinst'
+
+- name: 'Prepare cluster "hcp1" configuration'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hcp/create-config.yml
+  vars:
+    lab_name: 'hcp'
+    lab_path: '/root/labs'
+    spoke_name: 'hcp1'
+  tags:
+    - 'postinst'
+    - 'hcp1'
+
+- name: 'Prepare cluster "hcp2" configuration'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hcp/create-config.yml
+  vars:
+    lab_name: 'hcp'
+    lab_path: '/root/labs'
+    spoke_name: 'hcp2'
+  tags:
+    - 'postinst'
+    - 'hcp2'
+
+- name: 'Install MetalLB on spoke cluster hcp1'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hcp/create-ingress.yml
+  vars:
+    lab_name: 'hcp'
+    lab_path: '/root/labs'
+    lab_node_network_base: '192.168.125'
+    spoke_name: 'hcp1'
+    spoke_lb_ips: "{{ lab_node_network_base }}.50-{{ lab_node_network_base }}.50"
+  tags:
+    - 'postinst'
+    - 'hcp1'
+
+- name: 'Install MetalLB on spoke cluster hcp2'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hcp/create-ingress.yml
+  vars:
+    lab_name: 'hcp'
+    lab_path: '/root/labs'
+    lab_node_network_base: '192.168.125'
+    spoke_name: 'hcp2'
+    spoke_lb_ips: "{{ lab_node_network_base }}.60-{{ lab_node_network_base }}.60"
+  tags:
+    - 'postinst'
+    - 'hcp2'
