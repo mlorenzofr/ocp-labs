@@ -6,15 +6,12 @@
   gather_facts: false
 
   vars:
+    lab_name: ''
     lab_path: '/root/labs'
+    spoke_name: ''
 
-  vars_prompt:
-    - name: lab_name
-      prompt: 'lab name'
-      private: false
-    - name: hcp_name
-      prompt: 'hosted cluster name'
-      private: false
+  environment:
+    KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
 
   tasks:
     - name: 'Test lab_name'
@@ -22,30 +19,40 @@
         msg: 'Variable lab_name is empty'
       when: lab_name | length == 0
 
+    - name: 'Test spoke_name'
+      ansible.builtin.fail:
+        msg: 'Variable spoke_name is empty'
+      when: spoke_name | length == 0
+
     - name: 'Create hosted cluster deploy directory'
       ansible.builtin.file:
-        path: "{{ lab_path }}/{{ lab_name }}/{{ hcp_name }}/auth"
+        path: "{{ lab_path }}/{{ lab_name }}/{{ spoke_name }}/auth"
         mode: '0750'
         state: 'directory'
+
+    - name: 'Wait for HostedCluster secrets'
+      ansible.builtin.command:
+        cmd: >
+          /usr/local/bin/oc get -n {{ spoke_name }}-{{ spoke_name }} secret/kubeadmin-password
+      register: __hcp_secrets
+      until: __hcp_secrets.rc == 0
+      retries: 25
+      delay: 30
 
     - name: 'Extract hosted cluster kubeconfig'
       ansible.builtin.command:
         cmd: >
-          /usr/local/bin/oc extract -n {{ hcp_name }}-{{ hcp_name }}
+          /usr/local/bin/oc extract -n {{ spoke_name }}-{{ spoke_name }}
           secret/admin-kubeconfig
-          --to={{ lab_path }}/{{ lab_name }}/{{ hcp_name }}/auth
+          --to={{ lab_path }}/{{ lab_name }}/{{ spoke_name }}/auth
           --confirm
-        creates: "{{ lab_path }}/{{ lab_name }}/{{ hcp_name }}/auth/kubeconfig"
-      environment:
-        KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+        creates: "{{ lab_path }}/{{ lab_name }}/{{ spoke_name }}/auth/kubeconfig"
 
     - name: 'Extract hosted cluster kubeadmin console password'
       ansible.builtin.command:
         cmd: >
-          /usr/local/bin/oc extract -n {{ hcp_name }}-{{ hcp_name }}
+          /usr/local/bin/oc extract -n {{ spoke_name }}-{{ spoke_name }}
           secret/kubeadmin-password
-          --to={{ lab_path }}/{{ lab_name }}/{{ hcp_name }}/auth
+          --to={{ lab_path }}/{{ lab_name }}/{{ spoke_name }}/auth
           --confirm
-        creates: "{{ lab_path }}/{{ lab_name }}/{{ hcp_name }}/auth/password"
-      environment:
-        KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+        creates: "{{ lab_path }}/{{ lab_name }}/{{ spoke_name }}/auth/password"

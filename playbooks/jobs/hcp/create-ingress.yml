@@ -6,32 +6,52 @@
   gather_facts: false
 
   vars:
+    lab_name: ''
     lab_path: '/root/labs'
     lab_install: true
-    ocp_metallb_path: "{{ lab_path }}/{{ lab_name }}/{{ hcp_name }}"
-    ocp_metallb_pool_name: "{{ hcp_name }}-lb-pool"
-
-  vars_prompt:
-    - name: lab_name
-      prompt: 'lab name'
-      private: false
-    - name: hcp_name
-      prompt: 'hosted cluster name'
-      private: false
-    - name: ocp_metallb_pool_ips
-      prompt: 'IP pool (Ex: 192.168.125.50-192.168.125.55)'
-      private: false
+    ocp_metallb_path: "{{ lab_path }}/{{ lab_name }}/{{ spoke_name }}"
+    ocp_metallb_pool_name: "{{ spoke_name }}-lb-pool"
+    ocp_metallb_pool_ips: "{{ spoke_lb_ips }}"
+    spoke_name: ''
+    spoke_lb_ips: ''
 
   environment:
-    KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/{{ hcp_name }}/auth/kubeconfig"
+    KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/{{ spoke_name }}/auth/kubeconfig"
 
   roles:
     - ocp_metallb
 
+  pre_tasks:
+    - name: 'Test lab_name'
+      ansible.builtin.fail:
+        msg: 'Variable lab_name is empty'
+      when: lab_name | length == 0
+
+    - name: 'Test spoke_name'
+      ansible.builtin.fail:
+        msg: 'Variable spoke_name is empty'
+      when: spoke_name | length == 0
+
+    - name: 'Test spoke_lb_ips'
+      ansible.builtin.fail:
+        msg: 'Variable spoke_lb_ips is empty'
+      when: spoke_lb_ips | length == 0
+
+    - name: 'Wait for OLM'
+      ansible.builtin.command:
+        cmd: >
+          /usr/local/bin/oc get clusteroperator
+          operator-lifecycle-manager-catalog
+          -o jsonpath='{.status.conditions[?(@.type=="Available")].status}'
+      register: __hcp_olm
+      until: __hcp_olm.stdout == 'True'
+      retries: 25
+      delay: 50
+
   tasks:
     - name: 'Create metallb ingress'
       ansible.builtin.copy:
-        dest: "{{ lab_path }}/{{ lab_name }}/{{ hcp_name }}/metallb-ingress.yaml"
+        dest: "{{ lab_path }}/{{ lab_name }}/{{ spoke_name }}/metallb-ingress.yaml"
         content: |
           ---
           kind: Service
@@ -60,5 +80,5 @@
     - name: 'Create metallb-ingress'
       ansible.builtin.command:
         cmd: >
-          /usr/local/bin/oc apply -f {{ lab_path }}/{{ lab_name }}/{{ hcp_name }}/metallb-ingress.yaml
+          /usr/local/bin/oc apply -f {{ lab_path }}/{{ lab_name }}/{{ spoke_name }}/metallb-ingress.yaml
       when: lab_install
