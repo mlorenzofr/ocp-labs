@@ -4,6 +4,7 @@ ocp_lvms_ns: 'openshift-storage'
 ocp_lvms_path: "{{ lab_configs }}"
 ocp_lvms_clusters:
   - name: 'mce-data'
+    default: True
     ns: 'openshift-storage'
     classes:
       - name: 'vg1'
