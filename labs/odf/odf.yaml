@@ -2,10 +2,10 @@
 # This playbook installs a complete lab with ODF
 #
 # Run it with:
-#   ap playbooks/labs/odf.yaml -e lab_name=abc
+#   ap labs/odf/odf.yaml
 
 - name: 'Import compact playbook'
-  ansible.builtin.import_playbook: ../base/compact.yml
+  ansible.builtin.import_playbook: ../../playbooks/base/compact.yml
   vars:
     lab_name: 'odf'
     lab_node_memory: 32000
@@ -13,6 +13,6 @@
     start_install: true
 
 - name: 'Import odf setup playbook'
-  ansible.builtin.import_playbook: ../setup/odf.yaml
+  ansible.builtin.import_playbook: ../../playbooks/setup/odf.yaml
   vars:
     lab_name: 'odf'
