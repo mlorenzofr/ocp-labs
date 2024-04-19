@@ -1,0 +1,79 @@
+---
+apiVersion: hypershift.openshift.io/v1beta1
+kind: HostedCluster
+metadata:
+  name: spoke
+  namespace: spoke
+  labels:
+spec:
+  controllerAvailabilityPolicy: SingleReplica
+  release:
+    image: quay.io/openshift/okd:4.12.0-0.okd-2023-03-18-084815
+  pullSecret:
+    name: pullsecret-cluster-spoke
+  sshKey:
+    name: sshkey-cluster-spoke
+  networking:
+    clusterNetwork:
+      - cidr: 10.132.0.0/14
+    serviceNetwork:
+      - cidr: 172.32.0.0/16
+    networkType: OVNKubernetes
+  platform:
+    type: Agent
+    agent:
+      agentNamespace: 'hardware-inventory'
+  infraID: 'hosted'
+  infrastructureAvailabilityPolicy: SingleReplica
+  dns:
+    baseDomain: 'local.lab'
+  services:
+  - service: APIServer
+    servicePublishingStrategy:
+      type: LoadBalancer
+  - service: OAuthServer
+    servicePublishingStrategy:
+      type: Route
+  - service: OIDC
+    servicePublishingStrategy:
+      type: Route
+  - service: Konnectivity
+    servicePublishingStrategy:
+      type: Route
+  - service: Ignition
+    servicePublishingStrategy:
+      type: Route
+---
+apiVersion: hypershift.openshift.io/v1beta1
+kind: NodePool
+metadata:
+  name: 'nodepool-spoke-1'
+  namespace: 'spoke'
+spec:
+  clusterName: 'spoke'
+  replicas: 1
+  management:
+    autoRepair: false
+    upgradeType: InPlace
+  platform:
+    type: Agent
+    agent:
+      agentLabelSelector:
+        matchLabels: {}
+  release:
+    image: quay.io/openshift/okd:4.12.0-0.okd-2023-03-18-084815
+---
+apiVersion: cluster.open-cluster-management.io/v1
+kind: ManagedCluster
+metadata:
+  annotations:
+    import.open-cluster-management.io/hosting-cluster-name: local-cluster
+    import.open-cluster-management.io/klusterlet-deploy-mode: Hosted
+    open-cluster-management/created-via: hypershift
+  labels:
+    cloud: BareMetal
+    vendor: OpenShift
+    name: 'spoke'
+  name: 'spoke'
+spec:
+  hubAcceptsClient: true

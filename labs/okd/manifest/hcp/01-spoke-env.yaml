@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: spoke
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pullsecret-cluster-spoke
+  namespace: spoke
+data:
+  '.dockerconfigjson': '{"auths":{<redacted>}}'
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sshkey-cluster-spoke
+  namespace: spoke
+stringData:
+  id_rsa.pub: <redacted>
