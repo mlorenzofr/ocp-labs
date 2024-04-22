@@ -43,6 +43,10 @@
 - name: 'Create LVMS clusters'
   ansible.builtin.command:
     cmd: "/usr/local/bin/oc apply -f {{ ocp_lvms_path }}/lvmcluster-{{ item.name }}.yaml"
+  register: __lvms_clusters
+  until: __lvms_clusters is not failed
+  retries: 10
+  delay: 30
   loop: "{{ ocp_lvms_clusters }}"
   when: ocp_lvms_install
   listen: 'lvms install'
