@@ -4,15 +4,14 @@ kind: LVMCluster
 metadata:
   name: {{ item.name }}
   namespace: {{ item.ns }}
-{% if item.default | default(False) %}
-  annotations:
-    storageclass.kubernetes.io/is-default-class: true
-{% endif %}
 spec:
   storage:
     deviceClasses:
 {% for class in item.classes %}
       - name: {{ class.name }}
+{% if class.default | default(False) %}
+        default: true
+{% endif %}
         deviceSelector:
           paths:
 {% for dev in class.devices %}
