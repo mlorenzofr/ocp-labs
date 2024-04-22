@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hcp2
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pullsecret-cluster-hcp2
+  namespace: hcp2
+data:
+  '.dockerconfigjson': '{"auths":{<redacted>}}'
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sshkey-cluster-hcp2
+  namespace: hcp2
+stringData:
+  id_rsa.pub: <redacted>

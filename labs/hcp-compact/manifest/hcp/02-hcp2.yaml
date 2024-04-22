@@ -1,0 +1,79 @@
+---
+apiVersion: hypershift.openshift.io/v1beta1
+kind: HostedCluster
+metadata:
+  name: hcp2
+  namespace: hcp2
+  labels:
+spec:
+  controllerAvailabilityPolicy: HighlyAvailable
+  release:
+    image: quay.io/openshift-release-dev/ocp-release:4.14.13-x86_64
+  pullSecret:
+    name: pullsecret-cluster-hcp2
+  sshKey:
+    name: sshkey-cluster-hcp2
+  networking:
+    clusterNetwork:
+      - cidr: 10.132.0.0/14
+    serviceNetwork:
+      - cidr: 172.33.0.0/16
+    networkType: OVNKubernetes
+  platform:
+    type: Agent
+    agent:
+      agentNamespace: 'hardware-inventory'
+  infraID: 'hcp2'
+  infrastructureAvailabilityPolicy: SingleReplica
+  dns:
+    baseDomain: 'local.lab'
+  services:
+  - service: APIServer
+    servicePublishingStrategy:
+      type: LoadBalancer
+  - service: OAuthServer
+    servicePublishingStrategy:
+      type: Route
+  - service: OIDC
+    servicePublishingStrategy:
+      type: Route
+  - service: Konnectivity
+    servicePublishingStrategy:
+      type: Route
+  - service: Ignition
+    servicePublishingStrategy:
+      type: Route
+---
+apiVersion: hypershift.openshift.io/v1beta1
+kind: NodePool
+metadata:
+  name: 'nodepool-hcp2-1'
+  namespace: 'hcp2'
+spec:
+  clusterName: 'hcp2'
+  replicas: 1
+  management:
+    autoRepair: false
+    upgradeType: InPlace
+  platform:
+    type: Agent
+    agent:
+      agentLabelSelector:
+        matchLabels: {}
+  release:
+    image: quay.io/openshift-release-dev/ocp-release:4.14.13-x86_64
+---
+apiVersion: cluster.open-cluster-management.io/v1
+kind: ManagedCluster
+metadata:
+  annotations:
+    import.open-cluster-management.io/hosting-cluster-name: local-cluster
+    import.open-cluster-management.io/klusterlet-deploy-mode: Hosted
+    open-cluster-management/created-via: hypershift
+  labels:
+    cloud: BareMetal
+    vendor: OpenShift
+    name: 'hcp2'
+  name: 'hcp2'
+spec:
+  hubAcceptsClient: true
