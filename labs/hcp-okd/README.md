@@ -1,4 +1,4 @@
-# OKD lab
+# hcp-okd lab
 In this lab the goal is install an Openshift Cluster with an OKD _spoke cluster_ (`HostedCluster`) inside.  
 We will use **Hypershift** to do it.
 
@@ -10,9 +10,9 @@ This lab has been tested with these software versions:
 Other versions may not work. For example, Fedora Core OS 39 supports OKD version 4.14.0, but 4.15.0 does not.
 
 ## Steps
-1. Execute the playbook `okd.yaml`:
+1. Execute the playbook `deploy.yaml`:
 ```shell
-ap labs/okd/okd.yaml
+ap labs/hcp-okd/deploy.yaml
 ```
 
 ## Validation
