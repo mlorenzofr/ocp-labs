@@ -1,0 +1,23 @@
+---
+# This playbook installs a lab with an Openshift Cluster and an OKD spoke
+#  cluster inside (HostedCluster)
+#
+# Run it with:
+#   ap labs/okd/okd.yaml
+
+- name: 'Import compact playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/compact.yml
+  tags:
+    - 'ocp'
+  vars:
+    lab_api_ips: ["{{ lab_node_network_base }}85"]
+    lab_bootstrap_ip: "{{ lab_node_network_base }}150"
+    lab_bootstrap_mac: "{{ lab_mac_base }}ff"
+    lab_ingress_ips: ["{{ lab_node_network_base }}86"]
+    lab_name: 'okdb'
+    lab_mac_base: 'be:be:ca:fe:08:'
+    lab_hosts:
+      - {'id': '81'}
+      - {'id': '82'}
+      - {'id': '83'}
+    start_install: true
