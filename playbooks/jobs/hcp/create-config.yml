@@ -36,6 +36,7 @@
           /usr/local/bin/oc get -n {{ spoke_name }}-{{ spoke_name }} secret/kubeadmin-password
       register: __hcp_secrets
       until: __hcp_secrets.rc == 0
+      changed_when: false
       retries: 25
       delay: 30
 

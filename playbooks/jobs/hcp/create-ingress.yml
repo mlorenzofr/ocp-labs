@@ -45,6 +45,7 @@
           -o jsonpath='{.status.conditions[?(@.type=="Available")].status}'
       register: __hcp_olm
       until: __hcp_olm.stdout == 'True'
+      changed_when: False
       retries: 25
       delay: 50
 
