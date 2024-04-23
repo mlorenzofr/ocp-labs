@@ -1,4 +1,12 @@
 ---
+- name: 'Enable default CatalogSources in OLM'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc patch OperatorHub cluster
+      --type json
+      -p '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": false}]'
+  listen: 'enable default CatalogSources'
+
 - name: 'Install MetalLB Operator'
   ansible.builtin.command:
     cmd: "/usr/local/bin/oc apply -f {{ ocp_metallb_path }}/metallb-subscription.yaml"
@@ -11,6 +19,20 @@
       /usr/local/bin/oc -n openshift-operators wait
       --for=jsonpath='{.status.state}'=AtLatestKnown
       subscription/metallb --timeout=300s
+  changed_when: false
+  failed_when: false
+  when: ocp_metallb_install
+  listen: 'metallb install'
+
+- name: 'Wait until the network ClusterOperator is available'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc get clusteroperator/network
+      -o jsonpath='{.status.conditions[?(@.type=="Available")].status}'
+  register: __metallb_network
+  until: __metallb_network.stdout == 'True'
+  retries: 54
+  delay: 50
   changed_when: false
   failed_when: false
   when: ocp_metallb_install

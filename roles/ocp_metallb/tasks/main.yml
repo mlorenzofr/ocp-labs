@@ -12,3 +12,13 @@
     dest: "{{ ocp_metallb_path }}/metallb-setup.yaml"
     mode: '0644'
   notify: 'metallb setup'
+
+- name: 'Check if CatalogSource redhat-operators is available'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc get catalogsource redhat-operators -n openshift-marketplace
+  register: __metallb_catalog
+  changed_when: __metallb_catalog.rc != 0
+  failed_when: false
+  notify:
+    - 'enable default CatalogSources'
