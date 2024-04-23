@@ -3,7 +3,11 @@ In this lab the goal is install an Openshift Cluster with an OKD _spoke cluster_
 We will use **Hypershift** to do it.
 
 ## Requirements
-None.
+This lab has been tested with these software versions:
+* Openshift Container Platform **4.15.4**
+* Fedora CoreOS **37** (20221225.3.0)
+* OKD **4.12.0** (2023-03-18-084815)
+Other versions may not work. For example, Fedora Core OS 39 supports OKD version 4.14.0, but 4.15.0 does not.
 
 ## Steps
 1. Execute the playbook `okd.yaml`:
