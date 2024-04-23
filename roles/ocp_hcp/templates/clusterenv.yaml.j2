@@ -19,4 +19,4 @@ metadata:
   name: sshkey-cluster-{{ item.name }}
   namespace: {{ item.ns }}
 stringData:
-  id_rsa.pub: {{ item.sshkey | b64encode }}
+  id_rsa.pub: '{{ item.sshkey }}'
