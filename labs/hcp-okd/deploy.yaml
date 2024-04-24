@@ -24,10 +24,10 @@
     lab_mac_base: 'be:be:ca:fe:02:'
 
     ocp_assisted_service_images:
-      - ocp_version: '4.12'
+      - ocp_version: '4.14'
         arch: 'x86_64'
-        version: '37.20221225.3.0'
-        url: 'https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/37.20221225.3.0/x86_64/fedora-coreos-37.20221225.3.0-live.x86_64.iso'
+        version: '39.20240322.3.1'
+        url: 'https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/39.20240322.3.1/x86_64/fedora-coreos-39.20240322.3.1-live.x86_64.iso'
         rootfs: ''
     ocp_baremetal_infras:
       - name: 'hosted'
@@ -51,7 +51,7 @@
         domain: 'local.lab'
         lb: '192.168.125.50'
         replicas: 1
-        image: 'quay.io/openshift/okd:4.12.0-0.okd-2023-03-18-084815'
+        image: 'quay.io/openshift/okd:4.14.0-0.okd-2024-01-26-175629'
 
 - name: 'Prepare okd cluster configuration'
   ansible.builtin.import_playbook: ../../playbooks/jobs/hcp/create-config.yml
