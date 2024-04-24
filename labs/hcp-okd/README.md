@@ -3,11 +3,14 @@ In this lab the goal is install an Openshift Cluster with an OKD _spoke cluster_
 We will use **Hypershift** to do it.
 
 ## Requirements
+Not all combinations of OKD and Fedora Core OS work well.  
 This lab has been tested with these software versions:
-* Openshift Container Platform **4.15.4**
-* Fedora CoreOS **37** (20221225.3.0)
-* OKD **4.12.0** (2023-03-18-084815)
-Other versions may not work. For example, Fedora Core OS 39 supports OKD version 4.14.0, but 4.15.0 does not.
+|  OCP     | Fedora Core OS     | OKD                        | status             | comment                                                                                        |
+|  :---:   | :------:           | :-------:                  | :--------:         | :--------------------------------------:                                                       |
+|  **4.15.4**  | **37** (20221225.3.0)  | **4.12.0** (2023-03-18-084815) | :white_check_mark: | Could not update machineconfig "99-okd-master-disable-mitigations"                             |
+|  **4.15.4**  | **39** (20240322.3.1)  | **4.15.0** (2024-03-10-010116) | :x:                | the latest version supported is: "4.14.0". Attempting to use: "4.15.0-0.okd-2024-03-10-010116" |
+|  **4.15.4**  | **39** (20240322.3.1)  | **4.14.0** (2024-01-26-175629) | :white_check_mark: | Could not update machineconfig "99-okd-master-disable-mitigations"                             |
+|  **4.15.4**  | **38** (20231027.3.2)  | **4.13.0** (2023-10-28-065448) | :x:                | okd cluster installs but ingress controller does not work                                      |
 
 ## Steps
 1. Execute the playbook `deploy.yaml`:
