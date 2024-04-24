@@ -5,6 +5,14 @@
     mode: '0750'
     state: 'directory'
 
+- name: 'Create custom ClusterImageSets'
+  ansible.builtin.template:
+    src: 'clusterimageset.yaml.j2'
+    dest: "{{ ocp_hive_path }}/clusterimageset.yaml"
+    mode: '0644'
+  ignore_errors: "{{ ansible_check_mode }}"
+  notify: 'hive clusterimagesets'
+
 - name: 'Prepare hive clusters'
   ansible.builtin.include_tasks:
     file: 'cluster.yml'

@@ -1,4 +1,12 @@
 ---
+- name: 'Apply custom ClusterImageSets'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc apply -f {{ ocp_hive_path }}/clusterimageset.yaml
+  when: ocp_hive_install
+  listen:
+    - 'hive clusterimagesets'
+
 - name: 'Apply hive clusters changes'
   ansible.builtin.command:
     cmd: >

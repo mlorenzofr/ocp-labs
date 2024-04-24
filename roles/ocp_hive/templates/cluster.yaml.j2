@@ -1,5 +1,10 @@
 ---
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ item.ns }}
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: extra-manifests
@@ -32,6 +37,15 @@ data:
             path: /etc/kubernetes/openshift-workload-pinning
             user:
               name: root
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pullsecret-cluster-{{ item.name }}
+  namespace: {{ item.ns }}
+data:
+  '.dockerconfigjson': '{{ item.pullsecret }}'
+type: kubernetes.io/dockerconfigjson
 ---
 apiVersion: extensions.hive.openshift.io/v1beta1
 kind: AgentClusterInstall
@@ -82,4 +96,4 @@ spec:
         matchLabels:
           cluster-name: "{{ item.name }}"
   pullSecretRef:
-    name: pull-secret
+    name: pullsecret-cluster-{{ item.name }}

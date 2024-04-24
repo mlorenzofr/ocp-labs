@@ -1,0 +1,14 @@
+{% for image in ocp_hive_clusterimagesets %}
+---
+apiVersion: hive.openshift.io/v1
+kind: ClusterImageSet
+metadata:
+  labels:
+{% if 'channel' in image.keys() %}
+    channel: fast
+{% endif %}
+    visible: "{{ image.visible | default('false') }}"
+  name: {{ image.name }}
+spec:
+  releaseImage: {{ image.image }}
+{% endfor %}

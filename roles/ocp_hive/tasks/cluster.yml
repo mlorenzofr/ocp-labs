@@ -11,7 +11,7 @@
   ansible.builtin.command:
     cmd: >
       /usr/local/bin/oc label clusterimageset {{ item.image }} visible=true --overwrite
-  when: __hive_image_visibility.stdout != 'true'
+  when: __hive_image_visibility.stdout == 'false'
 
 - name: 'Create DNS resolution for cluster services'
   ansible.builtin.template:
