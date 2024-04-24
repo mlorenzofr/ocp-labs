@@ -1,7 +1,4 @@
 ---
-# Run example:
-#   hive-config.yml -e lab_name=standard -e cluster_name=sno1 -e cluster_ns=hive-sno
-
 - name: 'Extract the auth configuration of an hive cluster'
   hosts:
     - 'lab'
@@ -9,44 +6,69 @@
   gather_facts: false
 
   vars:
+    lab_name: ''
     lab_path: '/root/labs'
+    hive_cluster_name: ''
+    hive_ns: ''
 
-  vars_prompt:
-    - name: lab_name
-      prompt: 'lab name'
-      private: false
-    - name: cluster_ns
-      prompt: 'cluster namespace'
-      private: false
-    - name: cluster_name
-      prompt: 'cluster name'
-      private: false
+  environment:
+    KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
 
   tasks:
+    - name: 'Test lab_name'
+      ansible.builtin.fail:
+        msg: 'Variable lab_name is empty'
+      when: lab_name | length == 0
+
+    - name: 'Test hive_cluster_name'
+      ansible.builtin.fail:
+        msg: 'Variable hive_cluster_name is empty'
+      when: hive_cluster_name | length == 0
+
     - name: 'Create cluster auth directory'
       ansible.builtin.file:
-        path: "{{ lab_path }}/{{ lab_name }}/{{ cluster_name }}/auth"
+        path: "{{ lab_path }}/{{ lab_name }}/{{ hive_cluster_name }}/auth"
         mode: '0750'
         state: 'directory'
+
+    - name: 'Wait for Hive cluster secrets'
+      ansible.builtin.command:
+        cmd: >
+          /usr/local/bin/oc get -n {{ hive_ns }}
+          secret {{ hive_cluster_name }}-admin-kubeconfig
+      register: __hive_secrets
+      until: __hive_secrets.rc == 0
+      changed_when: false
+      retries: 25
+      delay: 30
 
     - name: 'Extract cluster kubeconfig'
       ansible.builtin.command:
         cmd: >
-          /usr/local/bin/oc extract -n {{ cluster_ns }}
-          secret/{{ cluster_name }}-admin-kubeconfig
-          --to={{ lab_path }}/{{ lab_name }}/{{ cluster_name }}/auth
+          /usr/local/bin/oc extract -n {{ hive_ns }}
+          secret/{{ hive_cluster_name }}-admin-kubeconfig
+          --to={{ lab_path }}/{{ lab_name }}/{{ hive_cluster_name }}/auth
           --confirm
-        creates: "{{ lab_path }}/{{ lab_name }}/{{ cluster_name }}/auth/kubeconfig"
+        creates: "{{ lab_path }}/{{ lab_name }}/{{ hive_cluster_name }}/auth/kubeconfig"
       environment:
         KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+
+    - name: 'Wait for console password secret'
+      ansible.builtin.command:
+        cmd: >
+          /usr/local/bin/oc get -n {{ hive_ns }}
+          secret {{ hive_cluster_name }}-admin-password
+      register: __hive_kubeadmin
+      until: __hive_kubeadmin.rc == 0
+      changed_when: false
+      retries: 25
+      delay: 30
 
     - name: 'Extract cluster kubeadmin console password'
       ansible.builtin.command:
         cmd: >
-          /usr/local/bin/oc extract -n {{ cluster_ns }}
-          secret/{{ cluster_name }}-admin-password
-          --to={{ lab_path }}/{{ lab_name }}/{{ cluster_name }}/auth
+          /usr/local/bin/oc extract -n {{ hive_ns }}
+          secret/{{ hive_cluster_name }}-admin-password
+          --to={{ lab_path }}/{{ lab_name }}/{{ hive_cluster_name }}/auth
           --confirm
-        creates: "{{ lab_path }}/{{ lab_name }}/{{ cluster_name }}/auth/password"
-      environment:
-        KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+        creates: "{{ lab_path }}/{{ lab_name }}/{{ hive_cluster_name }}/auth/password"
