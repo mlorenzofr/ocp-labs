@@ -2,6 +2,7 @@
 lab_host_haproxy_labs:
   - {'name': 'standard', 'backends': ['192.168.125.11']}
   - {'name': 'okd', 'backends': ['192.168.125.11']}
+  - {'name': 'spoke', 'backends': ['192.168.125.50']}
   - {'name': 'dan', 'domain': 'manor.lab', 'backends': ['192.168.128.11']}
   - name: 'cnv'
     backends: ['[fd00:0:0:1::11]']
