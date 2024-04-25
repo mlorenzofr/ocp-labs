@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hive-sno
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pull-secret-spoke
+  namespace: hive-sno
+stringData:
+  .dockerconfigjson: '{"auths":{<redacted>}}'
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: agent-install.openshift.io/v1beta1
+kind: InfraEnv
+metadata:
+  name: spoke
+  namespace: hive-sno
+spec:
+  additionalNTPSources:
+    - 192.168.125.1
+  clusterRef:
+    name: spoke
+    namespace: hive-sno
+  agentLabels:
+    cluster-name: "spoke"
+  pullSecretRef:
+    name: pull-secret-spoke
+  sshAuthorizedKey: <redacted>

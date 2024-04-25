@@ -1,6 +1,5 @@
 ---
-# Installs a SNO spoke cluster using hive
-# This lab expects an OCP cluster and disks for assisted-service in master nodes
+# Install a SNO spoke cluster using hive
 - name: 'Deploy a SNO spoke cluster using hive'
   hosts:
     - 'lab'
@@ -13,28 +12,9 @@
     lab_configs: "/root/labs/{{ lab_name }}/config"
     lab_network_name: 'lab-network'
     lab_install: true
-    ocp_baremetal_infras:
-      - name: 'sno1'
-        ns: 'hive-sno'
-        pullsecret: "{{ lab_pull_secret }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
-        ntp: ['192.168.125.1']
-        redfish: '192.168.125.1'
-        inventory:
-          - name: "{{ lab_name }}-sno-1"
-            mac: 'be:be:ca:fe:02:05'
-            ip: '192.168.125.25'
-            role: 'master'
-    ocp_hive_clusters:
-      - name: 'sno1'
-        ns: 'hive-sno'
-        image: 'img4.14.8-x86-64-appsub'
-        service_network: '172.32.0.0/16'
-        host_network: '192.168.125.0/24'
-        masters: 1
-        sshkey: "{{ lab_ssh_pubkey }}"
-        domain: 'local.lab'
-        ip: '192.168.125.25'
+
+    ocp_baremetal_infras: []
+    ocp_hive_clusters: []
 
   environment:
     KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"

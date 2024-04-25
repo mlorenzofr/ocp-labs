@@ -61,7 +61,7 @@
       register: __hive_kubeadmin
       until: __hive_kubeadmin.rc == 0
       changed_when: false
-      retries: 25
+      retries: 120
       delay: 30
 
     - name: 'Extract cluster kubeadmin console password'

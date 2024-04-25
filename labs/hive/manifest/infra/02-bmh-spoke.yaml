@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hive-bmh-1-bmc-secret
+  namespace: hive-sno
+data:
+  password: <redacted>
+  username: <redacted>
+type: Opaque
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: hive-bmh-1
+  namespace: hive-sno
+  labels:
+    infraenvs.agent-install.openshift.io: spoke
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: hive-bmh-1
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: be:be:ca:fe:02:25
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.125.1:9000/redfish/v1/Systems/local/hive-bmh-1
+    credentialsName: hive-bmh-1-bmc-secret

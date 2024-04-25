@@ -11,6 +11,7 @@
     dest: "{{ ocp_hive_path }}/clusterimageset.yaml"
     mode: '0644'
   ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_hive_clusterimagesets | length > 0
   notify: 'hive clusterimagesets'
 
 - name: 'Prepare hive clusters'

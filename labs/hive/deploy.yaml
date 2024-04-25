@@ -1,0 +1,51 @@
+---
+- name: 'Import compact playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/compact.yml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'hive'
+    lab_node_memory: 28000
+    lab_node_disk_data: 60
+    start_install: true
+
+- name: 'Import HCP setup playbook'
+  ansible.builtin.import_playbook: ../../playbooks/setup/hive.yml
+  tags:
+    - 'postinst'
+  vars:
+    lab_name: 'hive'
+    lab_mac_base: 'be:be:ca:fe:02:'
+
+    ocp_baremetal_infras:
+      - name: 'spoke'
+        ns: 'hive-sno'
+        ntp: ['192.168.125.1']
+        pullsecret: "{{ lab_pull_secret }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        redfish: '192.168.125.1'
+        inventory:
+          - {'name': "{{ lab_name }}-bmh-1", 'id': '25'}
+
+    ocp_hive_clusters:
+      - name: 'spoke'
+        ns: 'hive-sno'
+        image: 'img4.14.8-x86-64-appsub'
+        service_network: '172.32.0.0/16'
+        host_network: '192.168.125.0/24'
+        masters: 1
+        pullsecret: "{{ lab_pull_secret_b64 }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        domain: 'local.lab'
+        ip: '192.168.125.25'
+
+- name: 'Extract spoke cluster configuration'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml
+  vars:
+    lab_name: 'hive'
+    lab_path: '/root/labs'
+    hive_cluster_name: 'spoke'
+    hive_ns: 'hive-sno'
+  tags:
+    - 'postinst'
+    - 'hive-config'
