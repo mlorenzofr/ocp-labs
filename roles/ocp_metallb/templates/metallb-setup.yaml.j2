@@ -3,13 +3,13 @@ apiVersion: metallb.io/v1beta1
 kind: MetalLB
 metadata:
   name: metallb
-  namespace: openshift-operators
+  namespace: {{ ocp_metallb_ns }}
 ---
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
   name: {{ ocp_metallb_pool_name }}
-  namespace: openshift-operators
+  namespace: {{ ocp_metallb_ns }}
 spec:
   autoAssign: true
   addresses:
@@ -19,7 +19,7 @@ apiVersion: metallb.io/v1beta1
 kind: L2Advertisement
 metadata:
   name: advertise-{{ ocp_metallb_pool_name }}
-  namespace: openshift-operators
+  namespace: {{ ocp_metallb_ns }}
 spec:
   ipAddressPools:
-  - {{ ocp_metallb_pool_name }}
+    - {{ ocp_metallb_pool_name }}
