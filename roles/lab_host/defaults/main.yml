@@ -9,3 +9,4 @@ lab_host_squid_networks: "{{ lab_host_networks }}"
 lab_host_networks: []
 lab_host_ocp_versions: []
 lab_host_packages: []
+lab_host_repos: []

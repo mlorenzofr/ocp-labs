@@ -2,10 +2,29 @@
 - name: 'Import OS version variables'
   ansible.builtin.include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yaml"
 
+- name: 'Setup software repositories'
+  ansible.builtin.yum_repository:
+    name: "{{ item.name }}"
+    baseurl: "{{ item.baseurl }}"
+    description: "{{ item.description | default(item.name) }}"
+    enabled: "{{ item.enable | default(true) }}"
+    gpgcheck: "{{ item.gpgcheck | default(false) }}"
+    skip_if_unavailable: "{{ item.skip_if_unavailable | default(true) }}"
+    state: 'present'
+  loop: "{{ lab_host_repos }}"
+  tags:
+    - 'dnf'
+    - 'packages'
+    - 'yum'
+
 - name: 'Install required packages'
   ansible.builtin.package:
     name: "{{ lab_host_packages }}"
     state: 'present'
+  tags:
+    - 'dnf'
+    - 'packages'
+    - 'yum'
 
 - name: 'Allow HAproxy to listen on TCP port 6443'
   community.general.seport:
