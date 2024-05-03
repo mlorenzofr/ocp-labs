@@ -8,6 +8,8 @@ lab_host_packages:
   - 'haproxy'
   - 'jq'
   - 'kpartx'
+  - 'libguestfs'
+  - 'libguestfs-tools-c'
   - 'libvirt'
   - 'libvirt-daemon-driver-qemu'
   - 'nmap'
