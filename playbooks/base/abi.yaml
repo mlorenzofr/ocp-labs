@@ -56,7 +56,7 @@
     - name: 'Generate cluster manifests'
       ansible.builtin.command:
         cmd: >
-          openshift-baremetal-install create cluster-manifests
+          openshift-install agent create cluster-manifests
           --dir {{ lab_path }}/{{ lab_name }}/deploy
         creates: "{{ lab_path }}/{{ lab_name }}/deploy/.openshift_install_state.json"
 
