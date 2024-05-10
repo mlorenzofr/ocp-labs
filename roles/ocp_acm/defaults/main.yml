@@ -3,4 +3,5 @@ ocp_acm_install: "{{ lab_install | default(false) }}"
 ocp_acm_ns: 'openshift-acm'
 ocp_acm_path: "{{ lab_configs }}"
 ocp_acm_pullsecret: "{{ lab_pull_secret }}"
+ocp_acm_source: 'redhat-operators'
 ocp_acm_subscription_channel: ''

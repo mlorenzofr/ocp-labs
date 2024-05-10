@@ -23,7 +23,7 @@ spec:
 {% endif %}
   installPlanApproval: Automatic
   name: advanced-cluster-management
-  source: redhat-operators
+  source: {{ ocp_acm_source }}
   sourceNamespace: openshift-marketplace
 ---
 apiVersion: v1
