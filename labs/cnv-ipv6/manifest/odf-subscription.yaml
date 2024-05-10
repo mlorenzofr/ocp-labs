@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    openshift.io/cluster-monitoring: "true"
+  name: openshift-storage-odf
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: openshift-storage-odf-operatorgroup
+  namespace: openshift-storage-odf
+spec:
+  targetNamespaces:
+    - openshift-storage-odf
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: odf-operator
+  namespace: openshift-storage-odf
+spec:
+  installPlanApproval: Automatic
+  name: odf-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace

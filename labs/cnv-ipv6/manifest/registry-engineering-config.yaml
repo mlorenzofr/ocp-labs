@@ -1,0 +1,7 @@
+---
+apiVersion: v1
+data: <redacted>
+kind: ConfigMap
+metadata:
+  name: registry-engineering-config
+  namespace: openshift-config

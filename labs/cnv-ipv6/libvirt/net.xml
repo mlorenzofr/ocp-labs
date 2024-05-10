@@ -1,0 +1,19 @@
+<network connections='6'>
+  <name>cnv-ipv6</name>
+  <metadata>
+    <kvirt:info xmlns:kvirt="kvirt">
+      <kvirt:plan>kvirt</kvirt:plan>
+    </kvirt:info>
+  </metadata>
+  <forward mode='nat'>
+    <nat ipv6='yes'>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  <bridge name='cnv-ipv6' stp='on' delay='0'/>
+  <mac address='52:54:00:80:cd:57'/>
+  <domain name='cnv.lab'/>
+  <dns enable='no'/>
+  <ip family='ipv6' address='fd00:0:0:1::1' prefix='64'>
+  </ip>
+</network>

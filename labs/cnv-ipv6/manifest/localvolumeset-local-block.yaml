@@ -1,0 +1,30 @@
+apiVersion: local.storage.openshift.io/v1alpha1
+kind: LocalVolumeDiscovery
+metadata:
+ name: auto-discover-devices
+ namespace: openshift-storage-local
+spec:
+  nodeSelector:
+    nodeSelectorTerms:
+      - matchExpressions:
+        - key: cluster.ocs.openshift.io/openshift-storage
+          operator: Exists
+---
+apiVersion: local.storage.openshift.io/v1alpha1
+kind: LocalVolumeSet
+metadata:
+  name: local-block
+  namespace: openshift-storage-local
+spec:
+  nodeSelector:
+    nodeSelectorTerms:
+      - matchExpressions:
+        - key: cluster.ocs.openshift.io/openshift-storage
+          operator: Exists
+  storageClassName: localblock
+  volumeMode: Block
+  fstype: ext4
+  maxDeviceCount: 1
+  deviceInclusionSpec:
+    deviceTypes:
+      - disk

@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+items:
+  - apiVersion: operator.openshift.io/v1alpha1
+    kind: ImageContentSourcePolicy
+    metadata:
+      name: brew
+    spec:
+      repositoryDigestMirrors:
+        - mirrors:
+            - <redacted>
+          source: <redacted registry redhat>
+        - mirrors:
+            - <redacted>
+          source: <redacted stage redhat>
+        - mirrors:
+            - <redacted>
+          source: <redacted engineering redhat >
+kind: List
+metadata:
+  resourceVersion: ""

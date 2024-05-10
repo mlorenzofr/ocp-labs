@@ -1,0 +1,201 @@
+---
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: cnv
+rendezvousIP: fd00:0:0:1::21
+additionalNTPSources:
+  - 'fd00:0:0:1::1'
+hosts:
+  - hostname: cnv-node-1
+    interfaces:
+      - name: eth0
+        macAddress: be:be:ca:fe:06:21
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: be:be:ca:fe:06:21
+          ipv4:
+            enabled: False
+          ipv6:
+            enabled: True
+            dhcp: False
+            address:
+              - ip: 'fd00:0:0:1::21'
+                prefix-length: 64
+      routes:
+        config:
+          - destination: ::/0
+            next-hop-interface: eth0
+            next-hop-address: fd00:0:0:1::1
+            table-id: 254
+      dns-resolver:
+        config:
+          search:
+            - cnv.local.lab
+          server:
+            - fd00:0:0:1::1
+    rootDeviceHints:
+      deviceName: "/dev/vda"
+  - hostname: cnv-node-2
+    interfaces:
+      - name: eth0
+        macAddress: be:be:ca:fe:06:22
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: be:be:ca:fe:06:22
+          ipv4:
+            enabled: False
+          ipv6:
+            enabled: True
+            dhcp: False
+            address:
+              - ip: 'fd00:0:0:1::22'
+                prefix-length: 64
+      routes:
+        config:
+          - destination: ::/0
+            next-hop-interface: eth0
+            next-hop-address: fd00:0:0:1::1
+            table-id: 254
+      dns-resolver:
+        config:
+          search:
+            - cnv.local.lab
+          server:
+            - fd00:0:0:1::1
+    rootDeviceHints:
+      deviceName: "/dev/vda"
+  - hostname: cnv-node-3
+    interfaces:
+      - name: eth0
+        macAddress: be:be:ca:fe:06:23
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: be:be:ca:fe:06:23
+          ipv4:
+            enabled: False
+          ipv6:
+            enabled: True
+            dhcp: False
+            address:
+              - ip: 'fd00:0:0:1::23'
+                prefix-length: 64
+      routes:
+        config:
+          - destination: ::/0
+            next-hop-interface: eth0
+            next-hop-address: fd00:0:0:1::1
+            table-id: 254
+      dns-resolver:
+        config:
+          search:
+            - cnv.local.lab
+          server:
+            - fd00:0:0:1::1
+    rootDeviceHints:
+      deviceName: "/dev/vda"
+  - hostname: cnv-node-4
+    interfaces:
+      - name: eth0
+        macAddress: be:be:ca:fe:06:24
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: be:be:ca:fe:06:24
+          ipv4:
+            enabled: False
+          ipv6:
+            enabled: True
+            dhcp: False
+            address:
+              - ip: 'fd00:0:0:1::24'
+                prefix-length: 64
+      routes:
+        config:
+          - destination: ::/0
+            next-hop-interface: eth0
+            next-hop-address: fd00:0:0:1::1
+            table-id: 254
+      dns-resolver:
+        config:
+          search:
+            - cnv.local.lab
+          server:
+            - fd00:0:0:1::1
+    rootDeviceHints:
+      deviceName: "/dev/vda"
+  - hostname: cnv-node-5
+    interfaces:
+      - name: eth0
+        macAddress: be:be:ca:fe:06:25
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: be:be:ca:fe:06:25
+          ipv4:
+            enabled: False
+          ipv6:
+            enabled: True
+            dhcp: False
+            address:
+              - ip: 'fd00:0:0:1::25'
+                prefix-length: 64
+      routes:
+        config:
+          - destination: ::/0
+            next-hop-interface: eth0
+            next-hop-address: fd00:0:0:1::1
+            table-id: 254
+      dns-resolver:
+        config:
+          search:
+            - cnv.local.lab
+          server:
+            - fd00:0:0:1::1
+    rootDeviceHints:
+      deviceName: "/dev/vda"
+  - hostname: cnv-node-6
+    interfaces:
+      - name: eth0
+        macAddress: be:be:ca:fe:06:26
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: be:be:ca:fe:06:26
+          ipv4:
+            enabled: False
+          ipv6:
+            enabled: True
+            dhcp: False
+            address:
+              - ip: 'fd00:0:0:1::26'
+                prefix-length: 64
+      routes:
+        config:
+          - destination: ::/0
+            next-hop-interface: eth0
+            next-hop-address: fd00:0:0:1::1
+            table-id: 254
+      dns-resolver:
+        config:
+          search:
+            - cnv.local.lab
+          server:
+            - fd00:0:0:1::1
+    rootDeviceHints:
+      deviceName: "/dev/vda"
