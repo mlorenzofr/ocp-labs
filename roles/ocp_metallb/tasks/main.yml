@@ -13,10 +13,10 @@
     mode: '0644'
   notify: 'metallb setup'
 
-- name: 'Check if CatalogSource redhat-operators is available'
+- name: 'Check if CatalogSource is available'
   ansible.builtin.command:
     cmd: >
-      /usr/local/bin/oc get catalogsource redhat-operators -n openshift-marketplace
+      /usr/local/bin/oc get catalogsource {{ ocp_metallb_source }} -n openshift-marketplace
   register: __metallb_catalog
   changed_when: __metallb_catalog.rc != 0
   failed_when: false

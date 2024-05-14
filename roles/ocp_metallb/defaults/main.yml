@@ -4,3 +4,4 @@ ocp_metallb_ns: 'metallb-system'
 ocp_metallb_path: "{{ lab_configs }}"
 ocp_metallb_pool_ips: ''
 ocp_metallb_pool_name: ''
+ocp_metallb_source: 'redhat-operators'
