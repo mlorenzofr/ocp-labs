@@ -12,7 +12,7 @@ networking:
       hostPrefix: {{ lab_cluster_network_prefix | default('23') }}
   serviceNetwork:
     - {{ lab_service_network }}
-{% if lab_proxy_http != '' or lab_proxy_https != '' %}
+{% if lab_proxy_http != '' %}
 additionalTrustBundlePolicy: Proxyonly
 proxy:
   httpProxy: {{ lab_proxy_http | default('') }}
