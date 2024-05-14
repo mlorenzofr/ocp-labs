@@ -24,7 +24,7 @@ kind: Secret
 metadata:
   name: pull-secret-{{ item.name }}
   namespace: {{ item.ns }}
-stringData:
+{{ 'stringD' if '{' in item.pullsecret else 'd' }}ata:
   .dockerconfigjson: '{{ item.pullsecret }}'
 type: kubernetes.io/dockerconfigjson
 ---
