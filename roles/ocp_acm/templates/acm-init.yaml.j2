@@ -31,6 +31,6 @@ kind: Secret
 metadata:
   name: acm-pull-secret
   namespace: {{ ocp_acm_ns }}
-stringData:
+{{ 'stringD' if '{' in ocp_acm_pullsecret else 'd' }}ata:
   .dockerconfigjson: '{{ ocp_acm_pullsecret }}'
 type: kubernetes.io/dockerconfigjson
