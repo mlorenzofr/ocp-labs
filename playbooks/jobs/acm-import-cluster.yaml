@@ -1,10 +1,10 @@
 ---
 # Execution example:
 #
-# $ ansible-playbook acm-import-cluster.yaml
-# lab name: acm
-# cluster name: cluster-abi
-# kubeconfig path: /root/labs/abi/deploy/auth/kubeconfig
+# $ ansible-playbook acm-import-cluster.yaml \
+#     -e lab_name=acm \
+#     -e cluster_name=cluster-abi \
+#     -e kubeconfig_path=/root/labs/abi/deploy/auth/kubeconfig
 
 - name: 'Import cluster to ACM'
   hosts:
@@ -13,18 +13,10 @@
   gather_facts: false
 
   vars:
+    cluster_name: ''
+    kubeconfig_path: ''
+    lab_name: ''
     lab_path: '/root/labs'
-
-  vars_prompt:
-    - name: lab_name
-      prompt: 'lab name'
-      private: false
-    - name: cluster_name
-      prompt: 'cluster name'
-      private: false
-    - name: kubeconfig_path
-      prompt: 'kubeconfig path'
-      private: false
 
   environment:
     PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
@@ -35,6 +27,16 @@
       ansible.builtin.fail:
         msg: 'Variable lab_name is empty'
       when: lab_name | length == 0
+
+    - name: 'Test cluster_name'
+      ansible.builtin.fail:
+        msg: 'Variable cluster_name is empty'
+      when: cluster_name | length == 0
+
+    - name: 'Test kubeconfig_path'
+      ansible.builtin.fail:
+        msg: 'Variable kubeconfig_path is empty'
+      when: kubeconfig_path | length == 0
 
     - name: 'Create import directory'
       ansible.builtin.file:
