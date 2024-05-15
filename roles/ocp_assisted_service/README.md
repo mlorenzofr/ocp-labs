@@ -8,6 +8,7 @@ Additionally, the `ocp_lvms` role will be required for persistent storage.
 
 ## Role Variables
 * `ocp_assisted_service_install`. _Bool_. Set wether the role should apply manifests or simply create them.
+* `ocp_assisted_service_ca_bundle`. _String_. Trusted CA bundle for custom image registries.
 * `ocp_assisted_service_lvms`. _Bool_. Enable/Disable LVMS persistent storage.
 * `ocp_assisted_service_ns`. _String_. Namespace for the Operator.
 * `ocp_assisted_service_op`. _String_. Operator used to install _Assisted Service_ (`acm | mce`).
@@ -17,11 +18,16 @@ Additionally, the `ocp_lvms` role will be required for persistent storage.
 * `ocp_assisted_service_storage_fs_size`. _Number_. _PersistentVolumeClaim_ size for filesystem volume.
 * `ocp_assisted_service_storage_image_size`. _Number_. _PersistentVolumeClaim_ size for image replica volume.
 * `ocp_assisted_service_images`. _List_. List of images available for _Assisted_service_.
+* `ocp_assisted_service_registries`. _List_. List with image registries and mirrors for agent configuration.
 
 ### Variables for `ocp_assisted_service_images` elements
 * `ocp_version`. _String_. Openshift release version.
 * `arch`. _String_. Openshift release CPU architecture.
 * `version`. _String_. Image version.
+
+### Variables for `ocp_assisted_service_registries` elements
+* `location`. _String_. Image registry location.
+* `mirror`. _String_. Mirror registry location.
 
 ## Example Playbook
 ```yaml

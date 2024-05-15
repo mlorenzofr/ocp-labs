@@ -1,5 +1,6 @@
 ---
 ocp_assisted_service_install: "{{ lab_install | default(false) }}"
+ocp_assisted_service_ca_bundle: ''
 ocp_assisted_service_lvms: true
 ocp_assisted_service_ns: 'multicluster-engine'
 ocp_assisted_service_op: 'mce'
@@ -12,3 +13,4 @@ ocp_assisted_service_images:
   - ocp_version: '4.14.0'
     arch: 'x86_64'
     version: '414.92.202310210434-0'
+ocp_assisted_service_registries: []

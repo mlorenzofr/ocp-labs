@@ -6,6 +6,32 @@ metadata:
   namespace: {{ ocp_assisted_service_ns }}
 data:
   ALLOW_CONVERGED_FLOW: "false"
+{% if ocp_assisted_service_registries | length > 0 %}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: assisted-installer-mirror-config
+  namespace: {{ ocp_assisted_service_ns }}
+  labels:
+    app: assisted-service
+data:
+  ca-bundle.crt: |
+{{ ocp_assisted_service_ca_bundle | indent(width=4, first=True) }}
+  registries.conf: |
+    unqualified-search-registries = ["registry.access.redhat.com", "docker.io"]
+    short-name-mode = ""
+{% for registry in ocp_assisted_service_registries %}
+
+    [[registry]]
+      prefix = ""
+      location = "{{ registry.location }}"
+
+        [[registry.mirror]]
+          location = "{{ registry.mirror }}"
+          pull-from-mirror = "digest-only"
+{% endfor %}
+{% endif %}
 ---
 apiVersion: agent-install.openshift.io/v1beta1
 kind: AgentServiceConfig
@@ -36,6 +62,10 @@ spec:
     resources:
       requests:
         storage: {{ ocp_assisted_service_storage_image_size }}Gi
+{% if ocp_assisted_service_registries | length > 0 %}
+  mirrorRegistryRef:
+    name: assisted-installer-mirror-config
+{% endif %}
   osImages:
 {% for image in ocp_assisted_service_images %}
 {% set version_major = '.'.join(image.ocp_version.split('.')[0:2]) %}
