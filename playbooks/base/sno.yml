@@ -81,3 +81,23 @@
       loop_control:
         extended: true
       when: start_install | default(False)
+
+    - name: 'Wait for kubeconfig file'
+      ansible.builtin.wait_for:
+        path: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+        state: 'present'
+      when: start_install | default(False)
+
+    - name: 'Waiting until the installation finishes'
+      ansible.builtin.command:
+        cmd: >
+          oc get clusterversion -o jsonpath='{.items[*].status.conditions[?(@.type=="Available")].status}'
+      register: install_status
+      environment:
+        KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+        PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
+      retries: 125
+      delay: 30
+      until: install_status.stdout == 'True'
+      changed_when: False
+      when: start_install | default(False)
