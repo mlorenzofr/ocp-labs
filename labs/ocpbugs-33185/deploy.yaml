@@ -1,0 +1,50 @@
+---
+- name: 'Import compact playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/compact.yml
+  vars:
+    lab_name: 'dgon'
+    lab_node_memory: 32000
+    lab_node_disk_data: 60
+    start_install: true
+  tags:
+    - 'ocp'
+
+- name: 'Create SNO cluster'
+  ansible.builtin.import_playbook: ../../playbooks/base/sno.yml
+  vars:
+    start_install: true
+    lab_name: 'dgonspk'
+    lab_abi_ip: "{{ lab_node_network_base }}41"
+    lab_api_ips: ["{{ lab_node_network_base }}41"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}41"]
+    lab_hosts:
+      - {'id': '41', 'iface':'enp1s0'}
+  tags:
+    - 'sno'
+
+- name: 'Setup Advanced Cluster Manager (ACM)'
+  gather_facts: false
+  hosts: ['lab']
+  environment:
+    KUBECONFIG: '/root/labs/dgon/deploy/auth/kubeconfig'
+  roles:
+    - role: 'ocp_acm'
+      vars:
+        ocp_acm_install: true
+        ocp_acm_path: '/root/labs/dgon/config'
+        ocp_acm_source: 'rh-osbs'
+        ocp_acm_pullsecret: "{{ qe_pull_secret_b64 }}"
+      tags:
+        - 'postinst'
+        - 'acm'
+
+- name:
+  ansible.builtin.import_playbook: ../../playbooks/jobs/acm-import-cluster.yaml
+  vars:
+    lab_name: 'dgon'
+    cluster_name: 'dgonspk'
+    kubeconfig_path: '/root/labs/dgonspk/deploy/auth/kubeconfig'
+  tags:
+    - 'postinst'
+    - 'acm'
+    - 'import-spoke'

@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+data:
+  ca-bundle.crt: |
+    <redacted>
+kind: ConfigMap
+metadata:
+  name: redhat-ca
+  namespace: openshift-config

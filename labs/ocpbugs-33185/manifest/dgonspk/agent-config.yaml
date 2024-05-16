@@ -1,0 +1,24 @@
+---
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: dgonspk
+rendezvousIP: 192.168.125.41
+hosts:
+  - hostname: dgonspk-node-1
+    interfaces:
+      - name: enp1s0
+        macAddress: be:be:ca:fe:03:41
+    networkConfig:
+      interfaces:
+        - name: enp1s0
+          type: ethernet
+          state: up
+          mac-address: be:be:ca:fe:03:41
+          ipv4:
+            enabled: True
+            dhcp: True
+          ipv6:
+            enabled: False
+    rootDeviceHints:
+      deviceName: "/dev/vda"
