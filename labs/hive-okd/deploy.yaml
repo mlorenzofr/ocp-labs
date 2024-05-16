@@ -18,6 +18,12 @@
     lab_mac_base: 'be:be:ca:fe:02:'
 
     ocp_assisted_service_images:
+      - ocp_version: '4.13.10'
+        arch: 'x86_64'
+        version: '413.92.202308210212-0'
+      - ocp_version: '4.14.0'
+        arch: 'x86_64'
+        version: '414.92.202310210434-0'
       - ocp_version: '4.15.0'
         arch: 'x86_64'
         version: '415.92.202402130021-0'
@@ -33,14 +39,20 @@
           - {'name': "{{ lab_name }}-bmh-1", 'id': '25'}
 
     ocp_hive_clusterimagesets:
-      - name: 'okd-4.15.0-x86-64-20240118223523'
+      - name: 'okd-4.15'
         image: 'registry.ci.openshift.org/origin/release-scos:4.15.0-0.okd-scos-2024-01-18-223523'
+        visible: 'true'
+      - name: 'okd-4.14'
+        image: 'quay.io/okd/scos-release:4.14.0-0.okd-scos-2024-01-30-032525'
+        visible: 'true'
+      - name: 'okd-4.13'
+        image: 'quay.io/okd/scos-release:4.13.0-0.okd-scos-2023-10-19-111256'
         visible: 'true'
 
     ocp_hive_clusters:
       - name: 'sno'
         ns: 'hive-sno'
-        image: 'okd-4.15.0-x86-64-20240118223523'
+        image: 'okd-4.13'
         service_network: '172.32.0.0/16'
         host_network: '192.168.125.0/24'
         masters: 1

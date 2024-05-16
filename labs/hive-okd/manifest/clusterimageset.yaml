@@ -4,6 +4,24 @@ kind: ClusterImageSet
 metadata:
   labels:
     visible: "true"
-  name: okd-4.15.0-x86-64-20240118223523
+  name: okd-4.15
 spec:
   releaseImage: registry.ci.openshift.org/origin/release-scos:4.15.0-0.okd-scos-2024-01-18-223523
+---
+apiVersion: hive.openshift.io/v1
+kind: ClusterImageSet
+metadata:
+  labels:
+    visible: "true"
+  name: okd-4.14
+spec:
+  releaseImage: quay.io/okd/scos-release:4.14.0-0.okd-scos-2024-01-30-032525
+---
+apiVersion: hive.openshift.io/v1
+kind: ClusterImageSet
+metadata:
+  labels:
+    visible: "true"
+  name: okd-4.13
+spec:
+  releaseImage: quay.io/okd/scos-release:4.13.0-0.okd-scos-2023-10-19-111256
