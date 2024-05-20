@@ -19,6 +19,9 @@ proxy:
   httpsProxy: {{ lab_proxy_https | default(lab_proxy_http) }}
   noProxy: {{ lab_proxy_exceptions | join(',') }}
 {% endif %}
+{% if lab_fips %}
+fips: true
+{% endif %}
 compute:
   - name: worker
     architecture: amd64

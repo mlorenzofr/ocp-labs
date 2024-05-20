@@ -1,0 +1,15 @@
+---
+# Run it with:
+#   ap labs/fips/deploy.yaml
+
+- name: 'Import compact playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/compact.yml
+  vars:
+    lab_name: 'fips'
+    lab_fips: True
+    lab_ssh_pubkey: "{{ lab_ssh_pubkey_fips }}"
+    lab_custom_manifests:
+      - {name: 'cluster-network-03-config.yaml', manifest: '../../files/labs/fips/ovn-ipsec.yaml'}
+    start_install: true
+  tags:
+    - 'ocp'

@@ -50,6 +50,14 @@
         cmd: "/usr/local/bin/openshift-baremetal-install create cluster-manifests --dir {{ lab_path }}/{{ lab_name }}/deploy"
         creates: "{{ lab_path }}/{{ lab_name }}/deploy/.openshift_install_state.json"
 
+    - name: 'Copy custom manifests'
+      ansible.builtin.copy:
+        src: "{{ item.manifest }}"
+        dest: "{{ lab_path }}/{{ lab_name }}/deploy/manifests/{{ item.name }}"
+        mode: '0640'
+      loop: "{{ lab_custom_manifests }}"
+      tags: ['manifests']
+
     - name: 'Launch install process in a tmux session'
       ansible.builtin.command:
         cmd: >
