@@ -7,6 +7,7 @@ lab_host_haproxy_labs: []
 lab_host_haproxy_snippets: []
 lab_host_squid_networks: "{{ lab_host_networks }}"
 lab_host_networks: []
+lab_host_ocp_mirror: 'https://mirror.openshift.com/pub/openshift-v4'
 lab_host_ocp_versions: []
 lab_host_packages: []
 lab_host_repos: []

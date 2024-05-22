@@ -1,9 +1,16 @@
 ---
+- name: 'Test if oc is present'
+  ansible.builtin.stat:
+    path: "/usr/local/bin/oc-{{ item }}"
+  register: __oc
+
 - name: 'Download oc'
-  ansible.builtin.command:
-    cmd: "kcli download oc -P version=stable -P tag='{{ item }}'"
-    chdir: '/tmp'
-    creates: "/usr/local/bin/oc-{{ item }}"
+  ansible.builtin.unarchive:
+    src: "{{ lab_host_ocp_mirror }}/x86_64/clients/ocp/{{ item }}/openshift-client-linux-amd64-rhel8.tar.gz"
+    include: ['oc']
+    remote_src: true
+    dest: '/tmp/'
+  when: not __oc.stat.exists
 
 - name: 'Test oc downloaded file'
   ansible.builtin.stat:
@@ -33,24 +40,18 @@
     state: 'present'
   ignore_errors: "{{ ansible_check_mode }}"
 
-- name: 'Create pull secret'
-  ansible.builtin.copy:
-    dest: '/tmp/pull-secret.txt'
-    content: "{{ lab_host_pull_secret }}"
-    owner: 'root'
-    group: 'root'
-    mode: '0600'
-  no_log: true
+- name: 'Test if openshift-install is present'
+  ansible.builtin.stat:
+    path: "/usr/local/bin/openshift-install-{{ item }}"
+  register: __openshift_install
 
 - name: 'Download openshift-install'
-  ansible.builtin.command:
-    cmd: >
-      /usr/local/bin/oc-{{ item }} adm release extract
-      --registry-config /tmp/pull-secret.txt
-      --command=openshift-install
-      --to /tmp/
-      quay.io/openshift-release-dev/ocp-release:{{ item }}-{{ ansible_machine }}
-    creates: "/usr/local/bin/openshift-install-{{ item }}"
+  ansible.builtin.unarchive:
+    src: "{{ lab_host_ocp_mirror }}/x86_64/clients/ocp/{{ item }}/openshift-install-linux.tar.gz"
+    include: ['openshift-install']
+    remote_src: true
+    dest: '/tmp/'
+  when: not __openshift_install.stat.exists
 
 - name: 'Test openshift-install downloaded file'
   ansible.builtin.stat:
@@ -79,47 +80,4 @@
     path: "/usr/local/bin/openshift-install-{{ item }}"
     state: 'present'
   ignore_errors: "{{ ansible_check_mode }}"
-
-- name: 'Download openshift-baremetal-install'
-  ansible.builtin.command:
-    cmd: >
-      /usr/local/bin/oc-{{ item }} adm release extract
-      --registry-config /tmp/pull-secret.txt
-      --command=openshift-baremetal-install
-      --to /tmp/
-      quay.io/openshift-release-dev/ocp-release:{{ item }}-{{ ansible_machine }}
-    creates: "/usr/local/bin/openshift-baremetal-install-{{ item }}"
-
-- name: 'Test openshift-baremetal-install downloaded file'
-  ansible.builtin.stat:
-    path: '/tmp/openshift-baremetal-install'
-  register: __tmp_openshift_baremetal_install
-
-- name: 'Move openshift-install to /usr/local/bin'
-  ansible.builtin.copy:
-    src: '/tmp/openshift-baremetal-install'
-    dest: "/usr/local/bin/openshift-baremetal-install-{{ item }}"
-    owner: 'root'
-    group: 'root'
-    mode: '0755'
-    remote_src: true
-  when: __tmp_openshift_baremetal_install.stat.exists
-
-- name: 'Remove openshift-baremetal-install temporal file'
-  ansible.builtin.file:
-    path: '/tmp/openshift-baremetal-install'
-    state: 'absent'
-
-- name: 'Add openshift-baremetal-install alternative'
-  community.general.alternatives:
-    name: 'openshift-baremetal-install'
-    link: '/usr/local/bin/openshift-baremetal-install'
-    path: "/usr/local/bin/openshift-baremetal-install-{{ item }}"
-    state: 'present'
-  ignore_errors: "{{ ansible_check_mode }}"
-
-- name: 'Remove personal pull-secret'
-  ansible.builtin.file:
-    path: '/tmp/pull-secret.txt'
-    state: 'absent'
 ...
