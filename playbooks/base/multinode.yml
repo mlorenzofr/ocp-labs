@@ -45,14 +45,19 @@
 
     - name: 'Generate cluster manifests'
       ansible.builtin.command:
-        cmd: "/usr/local/bin/openshift-baremetal-install create cluster-manifests --dir {{ lab_path }}/{{ lab_name }}/deploy"
+        cmd: >
+          openshift-install create manifests
+          --dir {{ lab_path }}/{{ lab_name }}/deploy
         creates: "{{ lab_path }}/{{ lab_name }}/deploy/.openshift_install_state.json"
+      environment:
+        PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
+
 
     - name: 'Launch install process in a tmux session'
       ansible.builtin.command:
         cmd: >
           /usr/bin/tmux new-session -s ocp-install-{{ lab_name }} -d
-          "/usr/local/bin/openshift-baremetal-install --dir {{ lab_path }}/{{ lab_name }}/deploy --log-level debug create cluster"
+          "/usr/local/bin/openshift-install --dir {{ lab_path }}/{{ lab_name }}/deploy --log-level debug create cluster"
       register: tmux_status
       when: start_install | default(False)
 
