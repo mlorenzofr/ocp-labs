@@ -21,7 +21,10 @@ metadata:
   name: multicluster-engine
   namespace: {{ ocp_mce_ns }}
 spec:
-  channel: "stable-2.4"
+{% if ocp_mce_channel != '' %}
+  channel: "{{ ocp_mce_channel }}"
+{% endif %}
   name: multicluster-engine
-  source: redhat-operators
+  source: {{ ocp_mce_source }}
   sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic
