@@ -29,7 +29,7 @@
 - name: 'Waiting until the MultiCluster engine is available'
   ansible.builtin.command:
     cmd: >
-      /usr/local/bin/oc wait multiclusterengine/multiclusterengine
+      /usr/local/bin/oc wait multiclusterengine/{{ ocp_mce_name }}
       --for=jsonpath='{.status.phase}'=Available
       --timeout=300s
   changed_when: false
