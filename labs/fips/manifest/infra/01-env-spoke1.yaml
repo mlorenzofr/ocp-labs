@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: spoke1
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pull-secret-spoke1
+  namespace: spoke1
+data:
+  .dockerconfigjson: '{"auths":{<redacted>}}'
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: agent-install.openshift.io/v1beta1
+kind: InfraEnv
+metadata:
+  name: spoke1
+  namespace: spoke1
+spec:
+  additionalNTPSources:
+    - 192.168.125.1
+  clusterRef:
+    name: spoke1
+    namespace: spoke1
+  agentLabels:
+      cluster-name: "spoke1"
+  pullSecretRef:
+    name: pull-secret-spoke1
+  sshAuthorizedKey: <redacted>

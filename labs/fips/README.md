@@ -56,6 +56,14 @@ $ oc describe mc rendered-master-1f71f198d2a4be7c117fd6247a9498e7 | grep Fips
 $ oc describe mc rendered-worker-381cbeaef988898e1226447e971a5ca6 | grep Fips
   Fips:  true
 ```
+5. Check if `ClusterDeployments` are provisioned. The spoke cluster **4.15** should work, the version **4.16** should not.
+The Agent-Installer for version 4.16 is not yet FIPS compliant.
+```shell
+$ oc get ClusterDeployment -A
+NAMESPACE   NAME     INFRAID                                PLATFORM          REGION   VERSION   CLUSTERTYPE   PROVISIONSTATUS   POWERSTATE   AGE
+spoke1      spoke1                                          agent-baremetal                                    Provisioning                   3d14h
+spoke2      spoke2   112b1ef5-8d6d-4ff9-ac0a-6b3155e906ef   agent-baremetal            4.15.14                 Provisioned       Running      3d18h
+```
 
 ## Optional tasks
 Encrypt `etcd` data:

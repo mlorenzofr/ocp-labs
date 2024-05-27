@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fips-bmh-1-bmc-secret
+  namespace: spoke1
+data:
+  password: <redacted>
+  username: <redacted>
+type: Opaque
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: fips-bmh-1
+  namespace: spoke1
+  labels:
+    infraenvs.agent-install.openshift.io: spoke1
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: fips-bmh-1
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: be:be:ca:fe:02:25
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.125.1:9000/redfish/v1/Systems/local/fips-bmh-1
+    credentialsName: fips-bmh-1-bmc-secret

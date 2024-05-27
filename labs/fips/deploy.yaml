@@ -8,8 +8,98 @@
     lab_name: 'fips'
     lab_fips: True
     lab_ssh_pubkey: "{{ lab_ssh_pubkey_fips }}"
-    lab_custom_manifests:
-      - {name: 'cluster-network-03-config.yaml', manifest: '../../files/labs/fips/ovn-ipsec.yaml'}
+    lab_node_memory: 32000
+    lab_node_disk_data: 60
     start_install: true
+    lab_custom_manifests:
+      - {name: 'cluster-network-03-config.yaml', manifest: '../../labs/fips/files/ovn-ipsec.yaml'}
   tags:
     - 'ocp'
+
+- name: 'Import hive playbook'
+  ansible.builtin.import_playbook: ../../playbooks/setup/hive.yml
+  tags:
+    - 'postinst'
+    - 'hive'
+  vars:
+    lab_name: 'fips'
+    lab_mac_base: 'be:be:ca:fe:02:'
+
+    ocp_assisted_service_images:
+      - ocp_version: '4.15.0'
+        arch: 'x86_64'
+        version: '415.92.202402130021-0'
+      - ocp_version: '4.16.0-rc.2'
+        arch: 'x86_64'
+        version: '416.94.202403071059-0'
+        url: 'https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/pre-release/latest-4.16/rhcos-4.16.0-ec.4-x86_64-live.x86_64.iso'
+        rootfs: 'https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/pre-release/latest-4.16/rhcos-4.16.0-ec.4-x86_64-live-rootfs.x86_64.img'
+
+    ocp_baremetal_infras:
+      - name: 'spoke1'
+        ns: 'spoke1'
+        ntp: ['192.168.125.1']
+        pullsecret: "{{ qe_pull_secret_b64 }}"
+        sshkey: "{{ lab_ssh_pubkey_fips }}"
+        redfish: '192.168.125.1'
+        inventory:
+          - {'name': "{{ lab_name }}-bmh-1", 'id': '25'}
+      - name: 'spoke2'
+        ns: 'spoke2'
+        ntp: ['192.168.125.1']
+        pullsecret: "{{ qe_pull_secret_b64 }}"
+        sshkey: "{{ lab_ssh_pubkey_fips }}"
+        redfish: '192.168.125.1'
+        inventory:
+          - {'name': "{{ lab_name }}-bmh-2", 'id': '30'}
+
+    ocp_hive_clusterimagesets:
+      - name: 'img4.16.0-rc.2-x86-64-appsub'
+        image: 'quay.io/openshift-release-dev/ocp-release:4.16.0-rc.2-x86_64'
+        visible: 'true'
+
+    ocp_hive_clusters:
+      - name: 'spoke1'
+        ns: 'spoke1'
+        image: 'img4.16.0-rc.2-x86-64-appsub'
+        service_network: '172.32.0.0/16'
+        host_network: '192.168.125.0/24'
+        masters: 1
+        pullsecret: "{{ qe_pull_secret_b64 }}"
+        sshkey: "{{ lab_ssh_pubkey_fips }}"
+        domain: 'local.lab'
+        ip: '192.168.125.25'
+      - name: 'spoke2'
+        ns: 'spoke2'
+        image: 'img4.15.14-x86-64-appsub'
+        service_network: '172.34.0.0/16'
+        host_network: '192.168.125.0/24'
+        masters: 1
+        pullsecret: "{{ qe_pull_secret_b64 }}"
+        sshkey: "{{ lab_ssh_pubkey_fips }}"
+        domain: 'local.lab'
+        ip: '192.168.125.30'
+
+- name: 'Extract spoke1 cluster configuration'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml
+  vars:
+    lab_name: 'fips'
+    lab_path: '/root/labs'
+    hive_cluster_name: 'spoke1'
+    hive_ns: 'spoke1'
+  tags:
+    - 'postinst'
+    - 'hive'
+    - 'spoke-config'
+
+- name: 'Extract spoke2 cluster configuration'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml
+  vars:
+    lab_name: 'fips'
+    lab_path: '/root/labs'
+    hive_cluster_name: 'spoke2'
+    hive_ns: 'spoke2'
+  tags:
+    - 'postinst'
+    - 'hive'
+    - 'spoke-config'
