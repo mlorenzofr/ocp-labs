@@ -24,6 +24,7 @@
   vars:
     lab_name: 'fips'
     lab_mac_base: 'be:be:ca:fe:02:'
+    lab_install: false
 
     ocp_assisted_service_images:
       - ocp_version: '4.15.0'
@@ -39,7 +40,7 @@
       - name: 'spoke1'
         ns: 'spoke1'
         ntp: ['192.168.125.1']
-        pullsecret: "{{ qe_pull_secret_b64 }}"
+        pullsecret: "{{ lab_pull_secret }}"
         sshkey: "{{ lab_ssh_pubkey_fips }}"
         redfish: '192.168.125.1'
         inventory:
@@ -47,7 +48,7 @@
       - name: 'spoke2'
         ns: 'spoke2'
         ntp: ['192.168.125.1']
-        pullsecret: "{{ qe_pull_secret_b64 }}"
+        pullsecret: "{{ lab_pull_secret }}"
         sshkey: "{{ lab_ssh_pubkey_fips }}"
         redfish: '192.168.125.1'
         inventory:
@@ -65,7 +66,7 @@
         service_network: '172.32.0.0/16'
         host_network: '192.168.125.0/24'
         masters: 1
-        pullsecret: "{{ qe_pull_secret_b64 }}"
+        pullsecret: "{{ lab_pull_secret_b64 }}"
         sshkey: "{{ lab_ssh_pubkey_fips }}"
         domain: 'local.lab'
         ip: '192.168.125.25'
@@ -75,7 +76,7 @@
         service_network: '172.34.0.0/16'
         host_network: '192.168.125.0/24'
         masters: 1
-        pullsecret: "{{ qe_pull_secret_b64 }}"
+        pullsecret: "{{ lab_pull_secret_b64 }}"
         sshkey: "{{ lab_ssh_pubkey_fips }}"
         domain: 'local.lab'
         ip: '192.168.125.30'
