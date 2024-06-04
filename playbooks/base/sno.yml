@@ -60,6 +60,7 @@
         src: "{{ lab_path }}/{{ lab_name }}/deploy/agent.x86_64.iso"
         dest: "{{ libvirt_image_dir }}/{{ lab_name }}-agent-installer.iso"
         remote_src: true
+      ignore_errors: "{{ ansible_check_mode }}"
 
     - name: 'Change CD-ROM source to ABI iso image'
       ansible.builtin.command:
