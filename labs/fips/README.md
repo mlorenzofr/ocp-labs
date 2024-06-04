@@ -73,5 +73,7 @@ $ oc patch apiserver cluster --type merge --patch '{"spec":{"encryption":{"type"
 
 ## Links
 * [Support for FIPS cryptography](https://docs.openshift.com/container-platform/4.15/installing/installing-fips.html)
+* [General FAQ for OpenShift and FIPS compliance](https://access.redhat.com/articles/openshift_fips_compliance_faq)
 * [Red Hat Compliance Activities and Government Standards](https://access.redhat.com/articles/compliance_activities_and_gov_standards#fips-140-2-and-fips-140-3-2)
 * [Encrypting etcd data](https://docs.openshift.com/container-platform/4.15/security/encrypting-etcd.html)
+* [Openshift dev releases](https://quay.io/repository/openshift-release-dev/ocp-release?tab=tags)
