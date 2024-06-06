@@ -1,0 +1,24 @@
+---
+# Run it with:
+#   ap labs/pinned-image-set/deploy.yaml
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'pinnedis'
+    lab_abi_ip: "{{ lab_node_network_base }}21"
+    lab_api_ips: ["{{ lab_node_network_base }}10"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}11"]
+    lab_mac_base: 'be:be:ca:fe:04:'
+    lab_worker_replicas: 0
+    lab_node_network_base: '192.168.129.'
+    lab_network_name: 'pinnedis-net'
+    lab_node_memory: 32000
+    lab_node_disk_data: 150
+    lab_hosts:
+      - {id: '21'}
+      - {id: '22'}
+      - {id: '23'}
+    start_install: true
