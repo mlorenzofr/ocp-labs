@@ -18,6 +18,7 @@ lab_host_packages:
   # - 'python3-cherrypy'
   - 'qemu-kvm'
   - 'rsync'
+  - 'skopeo'
   - 'squid'
   - 'tar'
   - 'telnet'
