@@ -3,6 +3,8 @@ apiVersion: machineconfiguration.openshift.io/v1alpha1
 kind: PinnedImageSet
 metadata:
   name: v417
+  labels:
+    machineconfiguration.openshift.io/role: "master"
 spec:
   pinnedImages:
     - name: 'quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a6247db1a0193fa0bcbb0e2995dc9bd8678d289f9bd81f7b125162500780a929'
