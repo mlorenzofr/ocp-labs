@@ -7,11 +7,12 @@ storageConfig:
 mirror:
   platform:
     channels:
-#      - name: stable-4.16
-#        type: ocp
+      - name: stable-4.16
+        type: ocp
       - name: stable-4.17
         type: ocp
     graph: true
   operators: []
-  additionalImages: []
+  additionalImages:
+    - name: registry.access.redhat.com/ubi8/ubi:latest
   helm: {}
