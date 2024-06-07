@@ -1,0 +1,43 @@
+---
+apiVersion: v1
+data:
+  pinnedis-registry.pinnedis.local.lab: |
+    -----BEGIN CERTIFICATE-----
+    MIIGDzCCA/egAwIBAgIUI2resDXoWsyV6SSPoeBqIleW/LUwDQYJKoZIhvcNAQEL
+    BQAweTELMAkGA1UEBhMCVVMxFzAVBgNVBAgMDk5vcnRoIENhcm9saW5hMRAwDgYD
+    VQQHDAdSYWxlaWdoMRAwDgYDVQQKDAdSZWQgSGF0MS0wKwYDVQQDDCRwaW5uZWRp
+    cy1yZWdpc3RyeS5waW5uZWRpcy5sb2NhbC5sYWIwHhcNMjQwNjA2MTAyMjIyWhcN
+    MjYwNjA2MTAyMjIyWjB5MQswCQYDVQQGEwJVUzEXMBUGA1UECAwOTm9ydGggQ2Fy
+    b2xpbmExEDAOBgNVBAcMB1JhbGVpZ2gxEDAOBgNVBAoMB1JlZCBIYXQxLTArBgNV
+    BAMMJHBpbm5lZGlzLXJlZ2lzdHJ5LnBpbm5lZGlzLmxvY2FsLmxhYjCCAiIwDQYJ
+    KoZIhvcNAQEBBQADggIPADCCAgoCggIBAL6Htl06GcEADUWaBWXJncLVKtyY9DMG
+    m5ycv8Ksc/gtiYFzqJSZ9+8VRaU6WoV6mYlfNz/Ya7CaVoijo1u6wtZgHqJ5c0tK
+    /grW7lIuK30s9LJqaHPLYvnsfY55Wk5V1uhmBZjrbMdctBnp1/3lvOTSgtrYnfME
+    AvdBsWkm0wT673OL+D0B0+JsP7OC9XNhw03zyFxbImxXZ1gaL2bz5WWinYaghPNV
+    i7t+jNUOokgSHU0faZyp+L3dSCXxkRycPbmWkUPrciYVQzE/ToQGUuiB2XAI4HDb
+    5ilNoTqVuMDDgHWl0PUVTyoLMq33u5yxchrnxhl+XZMd63ptB6qI6x5aPVCwfXRP
+    HgNgfkglXinqXFI/5E3rvcdmXACY0Puw8uvvoyHgoMBtQkowb4ioEo0E2AtkqssE
+    ZcLO0a+irXMacliAOQ3hA50Ha+/38tGGjJ//b4UPS5f3klca/WoepZG3M22Dy+tn
+    UZ3hyDagV1E70sIfZ/CPwoxsu49FLA3I/+cAkWD3NcM4Vq5cs0wZuiO4cZOM3xmX
+    naZCPqq4JivzIa/airkpiP+c7Blql/DDPwjs3ZwxAFcEKTik4NPSPbyzKTlvlB//
+    lFoa/Hgpi1SpZr1nPNl6xIyFT/goZnUPJuoFLskPT7AwXl6Rt+rDYysFqiCWAtYC
+    fmPx7hCGRuCFAgMBAAGjgY4wgYswHQYDVR0OBBYEFBVMFJDX71UDYTDN+sQ0fw4A
+    FdPhMB8GA1UdIwQYMBaAFBVMFJDX71UDYTDN+sQ0fw4AFdPhMA8GA1UdEwEB/wQF
+    MAMBAf8wOAYDVR0RBDEwL4IkcGlubmVkaXMtcmVnaXN0cnkucGlubmVkaXMubG9j
+    YWwubGFiggdxdWF5LmlvMA0GCSqGSIb3DQEBCwUAA4ICAQB33ThU3lucHyA/7OkS
+    ToZnboptJZ1jlyQGG4g2iiLa9dGrixI2HCSdvFnbKAh+Lh/jrPdnGqsrebWdOtRZ
+    mNqoJrTZ1p6As0+myO2bD+biO6PQSX66jsCrvRHdlr//895vvgCDvC6y9Lp1Jxmv
+    U0dDUQi/EA4/e7IFTzj4L0X584mOxB3Ed68KmAA5ueyEGeExflbkzCjo4d2ooWPi
+    gAiLs+/vqaIWiNLZ+9yHb3W4lQidau9/wERdTZM4tJnNpvGzwPxFvX0GkVnoaV21
+    LhIzl/mGYM32uNABClbT3wo1bMhsX6iGKym6QIzGKmU1n+G/phia/3d9EBcG18h5
+    ua88MqIJN2aKJI3i7TcNuRkLEczpTS/Yc1OvnCh+i4WDabZNCn1osVLwEQnTOWK2
+    3dIIs4c1CpZ3GosLx61A5e9RW+u6BTZ7FNPRP/aF4AnizGHuw4BqAJ1B3pDfP/Mb
+    vUI8orjJFFQHSnAxr1RGmutNuBt/8Pl0Jb6y+kRMz6mmwIS2QjXhxhLQibcds3vp
+    PHGmAx8D+Kn6AyGeu25EVnDha+4v5YYtoaGp4Ojt+tQ8s+vfJ7bDMqzdOomTCiwa
+    MuT+CnZ5ofKmV+Zhn4/i8dnHBSO6oBY3G9bYzUKhE2f3CLEH4vl+XG865pHHZ/ho
+    YV03P8LJyYv1TiFXdB2MNo0XCg==
+    -----END CERTIFICATE-----
+kind: ConfigMap
+metadata:
+  name: registry-ca
+  namespace: openshift-config
