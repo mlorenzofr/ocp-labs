@@ -13,10 +13,7 @@ The configuration of this additional server is explained [here](docs/registry-se
 ```shell
 ap labs/pinned-image-set/deploy.yaml
 ```
-2. Enable Technology Preview features:
-```shell
-oc create -f enable-techpreview.yaml
-```
+2. Mirror the CI registry. It is explained [here](docs/oc-mirror.md)
 3. Disable default operators to avoid noise in the tests. We are not using here.
 ```shell
 oc patch OperatorHub cluster --type json -p '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": true}]'
@@ -31,11 +28,14 @@ oc patch images.config/cluster --type=merge --patch='{"spec":{"additionalTrusted
 oc patch clusterversion/version --patch '{"spec":{"upstream":"https://amd64.ocp.releases.ci.openshift.org/graph"}}' --type=merge
 oc patch clusterversion/version --patch '{"spec":{"channel":"nightly"}}' --type merge
 ```
-6. Set the registries configuration to use the internal registry:
+6. Enable Technology Preview features:
+```shell
+oc apply -f enable-techpreview.yaml
+```
+7. Set the registries configuration to use the internal registry:
 ```shell
 oc apply -f imageContentSourcePolicy.yaml
 ```
-7. Mirror the CI registry. It is explained [here](docs/oc-mirror.md)
 8. Block Internet access from the lab network. This way we can be sure that only internal registry is used.
 ```shell
 iptables -I LIBVIRT_FWO 1 -s 192.168.129.0/24 ! -d 192.168.129.0/24 -j REJECT
@@ -44,11 +44,15 @@ iptables -I LIBVIRT_FWO 1 -s 192.168.129.0/24 ! -d 192.168.129.0/24 -j REJECT
 ```shell
 oc apply -f pinned-image-set.yaml
 ```
-10. Stop the internal registry
+10. Stop the internal registry <------ The upgrade is not possible without registry
 ```shell
 pinnedis-registry:~# podman stop registry
 ```
-11. For the cluster upgrade:
+11. Disable tech-preview for the upgrade
+```shell
+oc edit featuregate cluster
+```
+12. For the cluster upgrade:
 ```shell
 oc adm upgrade --to-image=pinnedis-registry.pinnedis.local.lab/openshift/release-images@sha256:2aaae0f0129e2ed2237d56fd7c3e90ec54cac46da7c70a66671868262e88f3a6 --force --allow-not-recommended=true --allow-explicit-upgrade
 ```
@@ -148,6 +152,11 @@ $ oc delete pod ubi8
 ```shell
 pinnedis-node-1 $ crictl images --digests --no-trunc | grep sha256:001c49f4fbcc2122066fd53f7f2abb6822ebd1f89cbfcb55a9e58548f33c7289
 quay.io/openshift-release-dev/ocp-v4.0-art-dev   <none>              sha256:001c49f4fbcc2122066fd53f7f2abb6822ebd1f89cbfcb55a9e58548f33c7289   ff6151f6a07831a8bbd32e406a5f302f1bba0e1c39dfcdb772b98c3f15100027   495MB
+```
+6. Check if all images present in the release are in the CRI-O cache:
+```shell
+[root@pinnedis-node-1 ~]# /var/home/core/pinned-images.sh pinnedis-registry.pinnedis.local.lab 4.17.0-ec.0-x86_64 | wc -l
+0
 ```
 
 ## Links
