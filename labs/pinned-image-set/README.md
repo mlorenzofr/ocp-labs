@@ -54,7 +54,7 @@ oc edit featuregate cluster
 ```
 12. For the cluster upgrade:
 ```shell
-oc adm upgrade --to-image=pinnedis-registry.pinnedis.local.lab/openshift/release-images@sha256:2aaae0f0129e2ed2237d56fd7c3e90ec54cac46da7c70a66671868262e88f3a6 --force --allow-not-recommended=true --allow-explicit-upgrade
+oc adm upgrade --to-image=pinnedis-registry.pinnedis.local.lab/openshift/release-images@sha256:1995202f11dc5a4763cdc44ff30d4d4d6560b3a6e29873b51af2992bd8e33109 --force --allow-not-recommended=true --allow-explicit-upgrade
 ```
 
 ## Validation
