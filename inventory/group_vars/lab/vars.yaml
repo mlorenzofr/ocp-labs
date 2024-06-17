@@ -26,7 +26,9 @@ lab_host_networks:
     cidr: '192.168.128.0/24'
   - name: 'pinnedis-network'
     cidr: '192.168.129.0/24'
+    domain: 'pinnedis.local.lab'
     gw: '192.168.129.1'
+    dhcp_range: '192.168.129.100,192.168.129.250'
   - name: 'assisted-net'
     cidr: '192.168.130.0/24'
     gw: '192.168.130.1'
@@ -45,4 +47,5 @@ lab_host_ocp_versions:
   - '4.15.4'
   - '4.14.13'
   - '4.14.8'
+  - '4.13.41'
 ...
