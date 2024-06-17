@@ -16,6 +16,6 @@ address=/apps.{{ lab_name }}.{{ lab_domain }}/{{ lab_ingress_ips[0] }}
 {% set ipaddr = host.ip | default(ipauto.addr) %}
 dhcp-host={{ macaddr }},{{ lab_name }}-{{ host.role | default(lab_node_role) }}-{{ loop.index }},{{ ipaddr }}
 {% endfor %}
-{% if lab_bootstrap_ip != '' %}
+{% if lab_bootstrap_ip != '' and not lab_abi %}
 dhcp-host={{ lab_bootstrap_mac }},{{ lab_name }}-bootstrap,{{ lab_bootstrap_ip }}
 {% endif %}
