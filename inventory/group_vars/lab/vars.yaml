@@ -1,7 +1,8 @@
 ---
 lab_host_haproxy_labs:
-  - {'name': 'standard', 'backends': ['192.168.125.11']}
-  - {'name': 'okd', 'backends': ['192.168.125.11']}
+  # - {'name': 'standard', 'backends': ['192.168.125.11']}
+  # - {'name': 'okd', 'backends': ['192.168.125.11']}
+  - {'name': 'skrenger', 'backends': ['192.168.125.61']}
   - {'name': 'spoke', 'backends': ['192.168.125.50']}
   - {'name': 'dan', 'domain': 'manor.lab', 'backends': ['192.168.128.11']}
   - {'name': 'fips', 'backends': ['192.168.125.11']}
