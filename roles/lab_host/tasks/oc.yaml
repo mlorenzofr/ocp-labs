@@ -6,7 +6,8 @@
 
 - name: 'Download oc'
   ansible.builtin.unarchive:
-    src: "{{ lab_host_ocp_mirror }}/x86_64/clients/ocp/{{ item }}/openshift-client-linux-amd64-rhel8.tar.gz"
+    # src: "{{ lab_host_ocp_mirror }}/x86_64/clients/ocp/{{ item }}/openshift-client-linux-amd64-rhel8.tar.gz"
+    src: "{{ lab_host_ocp_mirror }}/x86_64/clients/ocp/{{ item }}/openshift-client-linux.tar.gz"
     include: ['oc']
     remote_src: true
     dest: '/tmp/'

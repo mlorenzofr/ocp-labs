@@ -1,0 +1,40 @@
+---
+# Run it with:
+#   ap labs/mgmt-17923/deploy.yaml
+
+- name: 'Import compact playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  vars:
+    lab_name: 'skrenger'
+    lab_node_memory: 32000
+    lab_node_disk_data: 60
+    start_install: true
+    lab_abi_ip: "{{ lab_node_network_base }}65"
+    lab_api_ips: ["{{ lab_node_network_base }}60"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}61"]
+    lab_hosts:
+      - {id: '65'}
+      - {id: '66'}
+      - {id: '67'}
+  tags:
+    - 'ocp'
+
+- name: 'Import ACM setup playbook'
+  ansible.builtin.import_playbook: ../../playbooks/setup/acm.yaml
+  vars:
+    lab_name: 'skrenger'
+    lab_install: false
+    ocp_baremetal_infras:
+      - name: 'infra1'
+        ns: 'hardware-inventory'
+        hypershift: true
+        pullsecret: "{{ lab_pull_secret }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        ntp: ["{{ lab_node_network }}.1"]
+        redfish: "{{ lab_node_network }}.1"
+        inventory:
+          - {'name': "{{ lab_name }}-worker-1", 'id': '68'}
+          - {'name': "{{ lab_name }}-worker-2", 'id': '69'}
+    ocp_acm_subscription_channel: 'release-2.9'
+  tags:
+    - 'acm'
