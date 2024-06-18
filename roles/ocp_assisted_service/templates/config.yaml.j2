@@ -58,7 +58,7 @@ spec:
   imageStorage:
     storageClassName: {{ ocp_assisted_service_sc_name }}
     accessModes:
-    - ReadWriteOnce
+      - ReadWriteOnce
     resources:
       requests:
         storage: {{ ocp_assisted_service_storage_image_size }}Gi
