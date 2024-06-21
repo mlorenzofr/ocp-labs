@@ -1,0 +1,12 @@
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: hive-operator
+  namespace: {{ ocp_hive_ns }}
+spec:
+  channel: {{ ocp_hive_channel }}
+  installPlanApproval: Automatic
+  name: hive-operator
+  source: {{ ocp_hive_source }}
+  sourceNamespace: openshift-marketplace

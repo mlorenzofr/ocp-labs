@@ -1,4 +1,13 @@
 ---
+- name: 'Install Hive operator'
+  ansible.builtin.template:
+    src: 'subscription.j2'
+    dest: "{{ ocp_hive_path }}/hive-subscription.yaml"
+    mode: '0644'
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_hive_operator
+  notify: 'hive operator install'
+
 - name: 'Create cluster configurations directory'
   ansible.builtin.file:
     path: "{{ ocp_hive_path }}/hive"

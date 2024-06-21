@@ -5,7 +5,7 @@ kind: ClusterImageSet
 metadata:
   labels:
 {% if 'channel' in image.keys() %}
-    channel: fast
+    channel: {{ image.channel }}
 {% endif %}
     visible: "{{ image.visible | default('false') }}"
   name: {{ image.name }}

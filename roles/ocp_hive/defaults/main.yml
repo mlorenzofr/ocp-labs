@@ -1,8 +1,12 @@
 ---
 ocp_hive_dnsmasq_root: "{{ lab_dnsmasq_root }}"
+ocp_hive_channel: 'alpha'
 ocp_hive_clusters: []
 ocp_hive_clusterimagesets: []
 ocp_hive_install: "{{ lab_install | default(false) }}"
+ocp_hive_ns: 'openshift-operators'
 ocp_hive_lab_name: "{{ lab_name }}"
+ocp_hive_operator: False
 ocp_hive_path: "{{ lab_configs }}"
+ocp_hive_source: 'community-operators'
 ...
