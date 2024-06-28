@@ -1,0 +1,10 @@
+---
+- name: 'Download kind'
+  ansible.builtin.get_url:
+    url: "https://kind.sigs.k8s.io/dl/v{{ lab_host_kind_version }}/kind-linux-amd64"
+    dest: "/usr/local/bin/kind"
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+    force: "{{ lab_host_kind_reinstall }}"
+...
