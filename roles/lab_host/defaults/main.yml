@@ -5,6 +5,7 @@ lab_host_dnsmasq_upstream: '1.1.1.1'
 lab_host_haproxy_stats_user: 'admin'
 lab_host_haproxy_labs: []
 lab_host_haproxy_snippets: []
+lab_host_helm_version: '3.15.2'
 lab_host_kind_reinstall: False
 lab_host_kind_version: '0.23.0'
 lab_host_squid_networks: "{{ lab_host_networks }}"

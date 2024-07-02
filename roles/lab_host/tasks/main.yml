@@ -56,6 +56,10 @@
   ansible.builtin.import_tasks: 'kind.yaml'
   tags: ['kind']
 
+- name: 'Install helm'
+  ansible.builtin.import_tasks: 'helm.yaml'
+  tags: ['helm']
+
 - name: 'Configure dnsmasq'
   ansible.builtin.import_tasks: 'dnsmasq.yaml'
   tags: ['dnsmasq']
