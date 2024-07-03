@@ -1,0 +1,58 @@
+---
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: elior
+rendezvousIP: 192.168.140.31
+hosts:
+  - hostname: elior-node-1
+    interfaces:
+      - name: eth0
+        macAddress: ee:11:00:00:aa:31
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: ee:11:00:00:aa:31
+          ipv4:
+            enabled: True
+            dhcp: True
+          ipv6:
+            enabled: False
+    rootDeviceHints:
+      deviceName: "/dev/vda"
+  - hostname: elior-node-2
+    interfaces:
+      - name: eth0
+        macAddress: ee:11:00:00:aa:32
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: ee:11:00:00:aa:32
+          ipv4:
+            enabled: True
+            dhcp: True
+          ipv6:
+            enabled: False
+    rootDeviceHints:
+      deviceName: "/dev/vda"
+  - hostname: elior-node-3
+    interfaces:
+      - name: eth0
+        macAddress: ee:11:00:00:aa:33
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: ee:11:00:00:aa:33
+          ipv4:
+            enabled: True
+            dhcp: True
+          ipv6:
+            enabled: False
+    rootDeviceHints:
+      deviceName: "/dev/vda"

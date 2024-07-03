@@ -1,0 +1,80 @@
+---
+- name: 'Import compact playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'elior'
+    lab_node_memory: 28000
+    lab_node_disk_data: 60
+    lab_mac_base: 'ee:11:00:00:aa:'
+    lab_node_network_base: '192.168.140.'
+    lab_api_ips: ["{{ lab_node_network_base }}10"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}11"]
+    lab_network_name: 'elior-net'
+    start_install: true
+
+- name: 'Import HCP setup playbook'
+  ansible.builtin.import_playbook: ../../playbooks/setup/hive.yml
+  tags:
+    - 'postinst'
+  vars:
+    lab_name: 'elior'
+    lab_mac_base: 'ee:11:00:00:aa:'
+    lab_install: False
+
+    ocp_assisted_service_images:
+      - ocp_version: '4.13.10'
+        arch: 'x86_64'
+        version: '413.92.202308210212-0'
+      - ocp_version: '4.14.0'
+        arch: 'x86_64'
+        version: '414.92.202310210434-0'
+      - ocp_version: '4.15.0'
+        arch: 'x86_64'
+        version: '415.92.202402130021-0'
+
+    ocp_baremetal_infras:
+      - name: 'sno'
+        ns: 'hive-sno'
+        ntp: ['192.168.140.1']
+        pullsecret: "{{ lab_pull_secret }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        redfish: '192.168.140.1'
+        inventory:
+          - {'name': "{{ lab_name }}-bmh-1", 'id': '35'}
+
+    ocp_hive_clusterimagesets:
+      - name: 'okd-4.15'
+        image: 'registry.ci.openshift.org/origin/release-scos:4.15.0-0.okd-scos-2024-01-18-223523'
+        visible: 'true'
+      - name: 'okd-4.14'
+        image: 'quay.io/okd/scos-release:4.14.0-0.okd-scos-2024-01-30-032525'
+        visible: 'true'
+      - name: 'okd-4.13'
+        image: 'quay.io/okd/scos-release:4.13.0-0.okd-scos-2023-10-19-111256'
+        visible: 'true'
+
+    ocp_hive_clusters:
+      - name: 'sno'
+        ns: 'hive-sno'
+        image: 'okd-4.13'
+        service_network: '172.32.0.0/16'
+        host_network: '192.168.140.0/24'
+        masters: 1
+        pullsecret: "{{ lab_pull_secret_b64 }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        domain: 'local.lab'
+        ip: '192.168.140.25'
+
+- name: 'Prepare okd cluster configuration'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml
+  vars:
+    lab_name: 'elior'
+    lab_path: '/root/labs'
+    hive_cluster_name: 'sno'
+    hive_ns: 'hive-sno'
+  tags:
+    - 'postinst'
+    - 'okd'
+    - 'okd-config'

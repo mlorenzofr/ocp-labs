@@ -1,0 +1,64 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: assisted-installer
+  labels:
+    name: assisted-installer
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: assisted-service-catalog
+  namespace: openshift-marketplace
+spec:
+  sourceType: grpc
+  image: quay.io/edge-infrastructure/assisted-service-index:latest
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: assisted-installer-group
+  namespace: assisted-installer
+spec:
+  targetNamespaces:
+    - assisted-installer
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: assisted-service-operator
+  namespace: assisted-installer
+spec:
+  config:
+    env:
+      - name: SERVICE_IMAGE
+        value: quay.io/edge-infrastructure/assisted-service:latest
+      - name: INSTALLER_IMAGE
+        value: quay.io/edge-infrastructure/assisted-installer:latest
+      - name: AGENT_IMAGE
+        value: quay.io/edge-infrastructure/assisted-installer-agent:latest
+      - name: DATABASE_IMAGE
+        value: quay.io/sclorg/postgresql-12-c8s:latest
+      - name: CONTROLLER_IMAGE
+        value: quay.io/edge-infrastructure/assisted-installer-controller:latest
+      - name: OPENSHIFT_VERSIONS
+        value: >
+          [
+            {
+              "openshift_version": "4.15",
+              "cpu_architecture": "x86_64",
+              "url": "https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.15/4.15.0/rhcos-4.15.0-x86_64-live.x86_64.iso",
+              "version": "415.92.202402130021-0"
+            },
+            {
+              "openshift_version": "4.16",
+              "cpu_architecture": "x86_64",
+              "url": "https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/pre-release/4.16.0-rc.4/rhcos-4.16.0-rc.4-x86_64-live.x86_64.iso",
+              "version": "416.94.202405291527-0"
+            }
+          ]
+  installPlanApproval: Automatic
+  name: assisted-service-operator
+  source: assisted-service-catalog
+  sourceNamespace: openshift-marketplace

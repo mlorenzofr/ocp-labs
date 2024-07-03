@@ -5,6 +5,7 @@ lab_host_haproxy_labs:
   - {'name': 'spoke', 'backends': ['192.168.125.50']}
   - {'name': 'dan', 'domain': 'manor.lab', 'backends': ['192.168.128.11']}
   - {'name': 'fips', 'backends': ['192.168.125.11']}
+  - {'name': 'elior', 'backends': ['192.168.140.11']}
   - name: 'cnv'
     backends: ['[fd00:0:0:1::11]']
     api: True
@@ -40,6 +41,11 @@ lab_host_networks:
     iface: 'cnv-ipv6'
     ipv6: true
     ntp: '[::1]'
+  - name: 'elior-net'
+    cidr: '192.168.140.0/24'
+    domain: 'elior.local.lab'
+    gw: '192.168.140.1'
+    dhcp_range: '192.168.140.100,192.168.140.250'
 # lab_host_haproxy_snippets:
 #  - 'haproxy/assisted-service.j2'
 lab_host_ocp_versions:

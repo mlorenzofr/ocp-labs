@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: elior-bmh-1-bmc-secret
+  namespace: hive-sno
+data:
+  password: <redacted>
+  username: <redacted>
+type: Opaque
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: elior-bmh-1
+  namespace: hive-sno
+  labels:
+    infraenvs.agent-install.openshift.io: sno
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: elior-bmh-1
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: ee:11:00:00:aa:35
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.140.1:9000/redfish/v1/Systems/local/elior-bmh-1
+    credentialsName: elior-bmh-1-bmc-secret

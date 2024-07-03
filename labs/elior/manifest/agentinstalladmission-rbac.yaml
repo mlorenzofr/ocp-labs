@@ -1,0 +1,28 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: system:serviceaccount:assisted-installer:agentinstalladmission
+rules:
+  - apiGroups:
+      - flowcontrol.apiserver.k8s.io
+    resources:
+      - flowschemas
+      - prioritylevelconfigurations
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: assisted-installer-agentinstalladmission
+roleRef:
+  kind: ClusterRole
+  apiGroup: rbac.authorization.k8s.io
+  name: system:serviceaccount:assisted-installer:agentinstalladmission
+subjects:
+  - kind: ServiceAccount
+    namespace: assisted-installer
+    name: agentinstalladmission

@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hive-sno
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pull-secret-sno
+  namespace: hive-sno
+stringData:
+  .dockerconfigjson: '{"auths":{<redacted>}}'
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: agent-install.openshift.io/v1beta1
+kind: InfraEnv
+metadata:
+  name: sno
+  namespace: hive-sno
+spec:
+  additionalNTPSources:
+    - 192.168.140.1
+  clusterRef:
+    name: sno
+    namespace: hive-sno
+  agentLabels:
+    cluster-name: "sno"
+  pullSecretRef:
+    name: pull-secret-sno
+  sshAuthorizedKey: <redacted>
