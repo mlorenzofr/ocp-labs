@@ -5,7 +5,9 @@ metadata:
   name: assisted-service-config
   namespace: {{ ocp_assisted_service_ns }}
 data:
-  ALLOW_CONVERGED_FLOW: "false"
+{% for option, value in ocp_assisted_service_config.items() %}
+  {{ option | upper }}: {{ value }}
+{% endfor %}
 {% if ocp_assisted_service_registries | length > 0 %}
 ---
 apiVersion: v1
