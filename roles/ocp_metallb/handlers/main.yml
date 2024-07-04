@@ -35,7 +35,7 @@
   delay: 50
   changed_when: false
   failed_when: false
-  when: ocp_metallb_install
+  when: ocp_metallb_install and not ansible_check_mode
   listen: 'metallb install'
 
 - name: 'Waiting until speaker pods are ready'
