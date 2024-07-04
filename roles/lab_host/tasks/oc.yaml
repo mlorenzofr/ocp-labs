@@ -41,6 +41,14 @@
     state: 'present'
   ignore_errors: "{{ ansible_check_mode }}"
 
+- name: 'Add kubectl alternative'
+  community.general.alternatives:
+    name: 'kubectl'
+    link: '/usr/local/bin/kubectl'
+    path: "/usr/local/bin/oc-{{ item }}"
+    state: 'present'
+  ignore_errors: "{{ ansible_check_mode }}"
+
 - name: 'Test if openshift-install is present'
   ansible.builtin.stat:
     path: "/usr/local/bin/openshift-install-{{ item }}"
