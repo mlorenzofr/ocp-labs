@@ -1,0 +1,8 @@
+- op: add
+  path: /spec/overrides
+  value:
+  - kind: Deployment
+    group: apps
+    name: infrastructure-operator
+    namespace: multicluster-engine
+    unmanaged: true

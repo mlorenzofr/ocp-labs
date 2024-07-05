@@ -1,0 +1,5 @@
+{
+  "name":"infra2",
+  "pull_secret":"{\"auths\":{<redacted>}}",
+  "openshift_version":"4.14"
+}

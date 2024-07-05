@@ -1,0 +1,48 @@
+---
+# Run it with:
+#   ap labs/neat/deploy.yaml
+
+- name: 'Import compact playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  vars:
+    lab_name: 'neat'
+    lab_node_memory: 32000
+    lab_node_disk_data: 60
+    start_install: true
+    lab_abi_ip: "{{ lab_node_network_base }}65"
+    lab_api_ips: ["{{ lab_node_network_base }}60"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}61"]
+    lab_hosts:
+      - {id: '65'}
+      - {id: '66'}
+      - {id: '67'}
+  tags:
+    - 'ocp'
+
+- name: 'Import ACM setup playbook'
+  ansible.builtin.import_playbook: ../../playbooks/setup/hcp.yaml
+  vars:
+    lab_name: 'neat'
+
+    ocp_assisted_service_op: 'acm'
+    ocp_assisted_service_config:
+      ALLOW_CONVERGED_FLOW: '"false"'
+      LOG_LEVEL: 'debug'
+      ENABLE_KUBE_API: '"false"'
+      AUTH_TYPE: 'none'
+
+    ocp_baremetal_infras:
+      - name: 'infra1'
+        ns: 'hardware-inventory'
+        hypershift: true
+        pullsecret: "{{ lab_pull_secret }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        ntp: ["{{ lab_node_network }}.1"]
+        redfish: "{{ lab_node_network }}.1"
+        inventory: []
+
+    ocp_metallb_pool_ips: '192.168.125.62-192.168.125.64'
+    ocp_metallb_pool_name: "{{ lab_network_name }}"
+  tags:
+    - 'postinst'
+    - 'acm'
