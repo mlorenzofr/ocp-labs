@@ -1,8 +1,0 @@
-- op: add
-  path: /spec/overrides
-  value:
-  - kind: Deployment
-    group: apps
-    name: assisted-service
-    namespace: multicluster-engine
-    unmanaged: true
