@@ -47,7 +47,13 @@ NAMESPACE            NAME     ISO CREATED AT
 hardware-inventory   infra1
 ```
 4. Test the `assisted-service` REST API:
-* Create a new `infra-env`
+* Create a new `cluster`:
+```shell
+curl -sk -X POST -H "Content-Type: application/json" \
+    -d @cluster.json \
+    https://assisted-service-multicluster-engine.apps.neat.local.lab/api/assisted-install/v2/clusters
+```
+* Edit the `infraenv.json`file, add the cluster-id value and Create a new `infra-env`
 ```shell
 $ curl -k -X POST -H "Content-Type: application/json" \
     -d @infraenv.json \
@@ -160,6 +166,70 @@ $ oc run -n default --image=registry.access.redhat.com/ubi8/ubi:latest ubi8 -it 
 [root@ubi8 /]# ls -lh minimal.iso
 -rw-r--r--. 1 root root 106M Jul  8 08:49 minimal.iso
 [root@ubi8 /]# rm -f minimal.iso
+```
+6. Start a cluster installation using the assisted service:
+* Attach the ISO image to the bmh hosts.
+* Setup dnsmasq cluster entries.
+* Wait until the BMHs are in ready state.
+```shell
+$ curl -sk https://assisted-service-multicluster-engine.apps.neat.local.lab/api/assisted-install/v2/infra-envs/ec4feadd-c440-47da-ac80-761409413083/hosts | jq .[].status
+```
+* Start the cluster installation
+```shell
+$ curl -X POST -sk https://assisted-service-multicluster-engine.apps.neat.local.lab/api/assisted-install/v2/clusters/e188ae75-7b11-4902-a4f4-05b736e68287/actions/install
+```
+* Get the kubeconfig credentials
+```shell
+curl -sk https://assisted-service-multicluster-engine.apps.neat.local.lab/api/assisted-install/v2/clusters/e188ae75-7b11-4902-a4f4-05b736e68287/downloads/credentials?file_name=kubeconfig
+```
+* Check the cluster status:
+```shell
+$ export KUBECONFIG=./kubeconfig
+$ oc get nodes
+NAME         STATUS   ROLES                         AGE     VERSION
+neat-bmh-1   Ready    control-plane,master,worker   23m     v1.28.10+a2c84a5
+neat-bmh-2   Ready    control-plane,master,worker   23m     v1.28.10+a2c84a5
+neat-bmh-3   Ready    control-plane,master,worker   9m57s   v1.28.10+a2c84a5
+
+$ oc get clusterversion
+NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+version   4.15.20   True        False         12m     Cluster version is 4.15.20
+
+$ oc get co
+NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+authentication                             4.15.20   True        False         False      14m
+baremetal                                  4.15.20   True        False         False      35m
+cloud-controller-manager                   4.15.20   True        False         False      39m
+cloud-credential                           4.15.20   True        False         False      40m
+cluster-autoscaler                         4.15.20   True        False         False      35m
+config-operator                            4.15.20   True        False         False      36m
+console                                    4.15.20   True        False         False      19m
+control-plane-machine-set                  4.15.20   True        False         False      35m
+csi-snapshot-controller                    4.15.20   True        False         False      36m
+dns                                        4.15.20   True        False         False      34m
+etcd                                       4.15.20   True        False         False      34m
+image-registry                             4.15.20   True        False         False      26m
+ingress                                    4.15.20   True        False         False      26m
+insights                                   4.15.20   True        False         False      30m
+kube-apiserver                             4.15.20   True        False         False      16m
+kube-controller-manager                    4.15.20   True        False         False      33m
+kube-scheduler                             4.15.20   True        False         False      33m
+kube-storage-version-migrator              4.15.20   True        False         False      36m
+machine-api                                4.15.20   True        False         False      30m
+machine-approver                           4.15.20   True        False         False      35m
+machine-config                             4.15.20   True        False         False      35m
+marketplace                                4.15.20   True        False         False      35m
+monitoring                                 4.15.20   True        False         False      17m
+network                                    4.15.20   True        False         False      37m
+node-tuning                                4.15.20   True        False         False      24m
+openshift-apiserver                        4.15.20   True        False         False      17m
+openshift-controller-manager               4.15.20   True        False         False      33m
+openshift-samples                          4.15.20   True        False         False      30m
+operator-lifecycle-manager                 4.15.20   True        False         False      35m
+operator-lifecycle-manager-catalog         4.15.20   True        False         False      35m
+operator-lifecycle-manager-packageserver   4.15.20   True        False         False      13m
+service-ca                                 4.15.20   True        False         False      36m
+storage                                    4.15.20   True        False         False      36m
 ```
 
 ## Links

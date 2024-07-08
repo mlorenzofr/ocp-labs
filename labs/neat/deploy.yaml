@@ -30,6 +30,8 @@
       LOG_LEVEL: 'debug'
       ENABLE_KUBE_API: '"false"'
       AUTH_TYPE: 'none'
+      OS_IMAGES: '[{"openshift_version":"4.15","cpu_architecture":"x86_64","url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.15/4.15.0/rhcos-4.15.0-x86_64-live.x86_64.iso","version":"415.92.202402130021-0"}]'
+      RELEASE_IMAGES: '[{"openshift_version":"4.15","cpu_architecture":"x86_64","cpu_architectures":["x86_64"],"url":"quay.io/openshift-release-dev/ocp-release:4.15.20-x86_64","version":"4.15.20"}]'
 
     ocp_baremetal_infras:
       - name: 'infra1'
@@ -39,7 +41,10 @@
         sshkey: "{{ lab_ssh_pubkey }}"
         ntp: ["{{ lab_node_network }}.1"]
         redfish: "{{ lab_node_network }}.1"
-        inventory: []
+        inventory:
+          - {'name': "{{ lab_name }}-bmh-1", 'id': '68'}
+          - {'name': "{{ lab_name }}-bmh-2", 'id': '69'}
+          - {'name': "{{ lab_name }}-bmh-3", 'id': '70'}
 
     ocp_metallb_pool_ips: '192.168.125.62-192.168.125.64'
     ocp_metallb_pool_name: "{{ lab_network_name }}"

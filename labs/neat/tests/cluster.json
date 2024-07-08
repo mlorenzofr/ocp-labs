@@ -1,0 +1,12 @@
+{
+  "name":"neat-as",
+  "high_availability_mode":"Full",
+  "openshift_version":"4.15",
+  "base_dns_domain":"local.lab",
+  "pull_secret":"{\"auths\":{<redacted>}}",
+  "ssh_public_key": "<redacted>",
+  "ingress_vips": [{"ip":"192.168.125.62"}],
+  "api_vips": [{"ip":"192.168.125.63"}],
+  "additional_ntp_source": "192.168.125.1",
+  "machine_networks": [{"cidr": "192.168.125.0/24"}]
+}
