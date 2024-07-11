@@ -9,6 +9,7 @@ data:
   LOG_LEVEL: debug
   ENABLE_KUBE_API: "false"
   AUTH_TYPE: none
+  RELEASE_IMAGES: '[{"openshift_version":"4.15","cpu_architecture":"x86_64","cpu_architectures":["x86_64"],"url":"quay.io/openshift-release-dev/ocp-release:4.15.20-x86_64","version":"4.15.20"}]'
 ---
 apiVersion: agent-install.openshift.io/v1beta1
 kind: AgentServiceConfig
@@ -40,8 +41,8 @@ spec:
       requests:
         storage: 10Gi
   osImages:
-    - openshiftVersion: "4.14"
-      url: "https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.14/4.14.0/rhcos-4.14.0-x86_64-live.x86_64.iso"
-      rootFSUrl: "https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.14/4.14.0/rhcos-4.14.0-x86_64-live-rootfs.x86_64.img"
+    - openshiftVersion: "4.15"
+      url: "https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.15/4.15.0/rhcos-4.15.0-x86_64-live.x86_64.iso"
+      rootFSUrl: "https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.15/4.15.0/rhcos-4.15.0-x86_64-live-rootfs.x86_64.img"
       cpuArchitecture: "x86_64"
-      version: "414.92.202310210434-0"
+      version: "415.92.202402130021-0"

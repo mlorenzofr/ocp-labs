@@ -1,6 +1,6 @@
 {
   "name":"infra2",
-  "openshift_version":"4.14",
+  "openshift_version":"4.15",
   "pull_secret":"{\"auths\":{<redacted>}}",
   "ssh_authorized_key": "<redacted>",
   "cluster_id": "<cluster-id>"
