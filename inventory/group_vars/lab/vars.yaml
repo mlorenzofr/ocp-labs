@@ -5,11 +5,10 @@ lab_host_haproxy_labs:
   - {'name': 'spoke', 'backends': ['192.168.125.50']}
   - {'name': 'dan', 'domain': 'manor.lab', 'backends': ['192.168.128.11']}
   - {'name': 'fips', 'backends': ['192.168.125.11']}
-  - {'name': 'elior', 'backends': ['192.168.140.11']}
-  - name: 'cnv'
-    backends: ['[fd00:0:0:1::11]']
-    api: True
-    api_ips: ['[fd00:0:0:1::10]']
+  # - name: 'cnv'
+  #   backends: ['[fd00:0:0:1::11]']
+  #   api: True
+  #   api_ips: ['[fd00:0:0:1::10]']
 lab_host_squid_networks:
   - 'fd00:0:0:1::/64'
 lab_host_networks:
@@ -33,27 +32,19 @@ lab_host_networks:
   - name: 'assisted-net'
     cidr: '192.168.130.0/24'
     gw: '192.168.130.1'
-  - name: 'cnv-network'
-    cidr: 'fd00:0:0:1::/64'
-    domain: 'cnv.local.lab'
-    dhcp_range: '::300,::fff'
-    dns: '[fd00:0:0:1::1]'
-    iface: 'cnv-ipv6'
-    ipv6: true
-    ntp: '[::1]'
-  - name: 'elior-net'
-    cidr: '192.168.140.0/24'
-    domain: 'elior.local.lab'
-    gw: '192.168.140.1'
-    dhcp_range: '192.168.140.100,192.168.140.250'
+# - name: 'cnv-network'
+#   cidr: 'fd00:0:0:1::/64'
+#   domain: 'cnv.local.lab'
+#   dhcp_range: '::300,::fff'
+#   dns: '[fd00:0:0:1::1]'
+#   iface: 'cnv-ipv6'
+#   ipv6: true
+#   ntp: '[::1]'
 # lab_host_haproxy_snippets:
 #  - 'haproxy/assisted-service.j2'
 lab_host_ocp_versions:
   - {version: '4.16.3', state: 'present'}
-  - {version: '4.16.0-0.nightly-2024-06-19-080432', state: 'absent'}
   - {version: '4.15.20', state: 'present'}
-  - {version: '4.15.4', state: 'absent'}
   - {version: '4.14.33', state: 'present'}
-  - {version: '4.14.13', state: 'absent'}
-  - {version: '4.14.8', state: 'absent'}
+  # - {version: '4.15.4', state: 'absent'}
 ...
