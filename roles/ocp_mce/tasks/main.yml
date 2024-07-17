@@ -8,8 +8,4 @@
   loop:
     - {template: 'init.yaml.j2', dest: 'mce-subscription.yaml'}
     - {template: 'mce.yaml.j2', dest: 'mce.yaml'}
-
-- name: 'Install MultiCluster Engine'
-  ansible.builtin.include_tasks:
-    file: 'apply.yml'
-  when: ocp_mce_install
+  notify: 'mce install'

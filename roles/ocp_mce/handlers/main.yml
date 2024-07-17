@@ -1,2 +1,45 @@
 ---
-# handlers file for ocp_mce
+- name: 'Install MultiCluster Engine Operator'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_mce_path }}/mce-subscription.yaml"
+  when: ocp_mce_install
+  listen: 'mce install'
+
+- name: 'Waiting until the operator is installed'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc -n {{ ocp_mce_ns }} wait
+      --for=jsonpath='{.status.state}'=AtLatestKnown
+      subscription/multicluster-engine --timeout=300s
+  changed_when: false
+  failed_when: false
+  when: ocp_mce_install
+  listen: 'mce install'
+
+- name: 'Waiting until multicluster-engine-operator pods are ready'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc wait -n {{ ocp_mce_ns }}
+      -l control-plane=backplane-operator
+      --for=condition=Ready
+      pods --timeout=300s
+  changed_when: false
+  failed_when: false
+  when: ocp_mce_install
+  listen: 'mce install'
+
+- name: 'Create MultiClusterEngine resource'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_mce_path }}/mce.yaml"
+  when: ocp_mce_install
+  listen: 'mce install'
+
+- name: 'Waiting until the MultiCluster engine is available'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc wait multiclusterengine/{{ ocp_mce_name }}
+      --for=jsonpath='{.status.phase}'=Available
+      --timeout=300s
+  changed_when: false
+  when: ocp_mce_install
+  listen: 'mce install'
