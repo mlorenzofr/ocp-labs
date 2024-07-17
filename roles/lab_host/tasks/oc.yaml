@@ -1,17 +1,17 @@
 ---
 - name: 'Test if oc is present'
   ansible.builtin.stat:
-    path: "/usr/local/bin/oc-{{ item }}"
+    path: "/usr/local/bin/oc-{{ item.version }}"
   register: __oc
 
 - name: 'Download oc'
   ansible.builtin.unarchive:
     # src: "{{ lab_host_ocp_mirror }}/x86_64/clients/ocp/{{ item }}/openshift-client-linux-amd64-rhel8.tar.gz"
-    src: "{{ lab_host_ocp_mirror }}/x86_64/clients/ocp/{{ item }}/openshift-client-linux.tar.gz"
+    src: "{{ lab_host_ocp_mirror }}/x86_64/clients/ocp/{{ item.version }}/openshift-client-linux.tar.gz"
     include: ['oc']
     remote_src: true
     dest: '/tmp/'
-  when: not __oc.stat.exists
+  when: not __oc.stat.exists and item.state != 'absent'
 
 - name: 'Test oc downloaded file'
   ansible.builtin.stat:
@@ -21,7 +21,7 @@
 - name: 'Move oc to /usr/local/bin'
   ansible.builtin.copy:
     src: '/tmp/oc'
-    dest: "/usr/local/bin/oc-{{ item }}"
+    dest: "/usr/local/bin/oc-{{ item.version }}"
     owner: 'root'
     group: 'root'
     mode: '0755'
@@ -37,30 +37,36 @@
   community.general.alternatives:
     name: 'oc'
     link: '/usr/local/bin/oc'
-    path: "/usr/local/bin/oc-{{ item }}"
-    state: 'present'
+    path: "/usr/local/bin/oc-{{ item.version }}"
+    state: "{{ item.state }}"
   ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Add kubectl alternative'
   community.general.alternatives:
     name: 'kubectl'
     link: '/usr/local/bin/kubectl'
-    path: "/usr/local/bin/oc-{{ item }}"
-    state: 'present'
+    path: "/usr/local/bin/oc-{{ item.version }}"
+    state: "{{ item.state }}"
   ignore_errors: "{{ ansible_check_mode }}"
+
+- name: 'Remove oc'
+  ansible.builtin.file:
+    path: "/usr/local/bin/oc-{{ item.version }}"
+    state: 'absent'
+  when: item.state == 'absent'
 
 - name: 'Test if openshift-install is present'
   ansible.builtin.stat:
-    path: "/usr/local/bin/openshift-install-{{ item }}"
+    path: "/usr/local/bin/openshift-install-{{ item.version }}"
   register: __openshift_install
 
 - name: 'Download openshift-install'
   ansible.builtin.unarchive:
-    src: "{{ lab_host_ocp_mirror }}/x86_64/clients/ocp/{{ item }}/openshift-install-linux.tar.gz"
+    src: "{{ lab_host_ocp_mirror }}/x86_64/clients/ocp/{{ item.version }}/openshift-install-linux.tar.gz"
     include: ['openshift-install']
     remote_src: true
     dest: '/tmp/'
-  when: not __openshift_install.stat.exists
+  when: not __openshift_install.stat.exists and item.state != 'absent'
 
 - name: 'Test openshift-install downloaded file'
   ansible.builtin.stat:
@@ -70,7 +76,7 @@
 - name: 'Move openshift-install to /usr/local/bin'
   ansible.builtin.copy:
     src: '/tmp/openshift-install'
-    dest: "/usr/local/bin/openshift-install-{{ item }}"
+    dest: "/usr/local/bin/openshift-install-{{ item.version }}"
     owner: 'root'
     group: 'root'
     mode: '0755'
@@ -86,7 +92,13 @@
   community.general.alternatives:
     name: 'openshift-install'
     link: '/usr/local/bin/openshift-install'
-    path: "/usr/local/bin/openshift-install-{{ item }}"
-    state: 'present'
+    path: "/usr/local/bin/openshift-install-{{ item.version }}"
+    state: "{{ item.state }}"
   ignore_errors: "{{ ansible_check_mode }}"
+
+- name: 'Remove openshift-install'
+  ansible.builtin.file:
+    path: "/usr/local/bin/openshift-install-{{ item.version }}"
+    state: 'absent'
+  when: item.state == 'absent'
 ...
