@@ -4,10 +4,16 @@
     path: "/usr/local/bin/oc-{{ item.version }}"
   register: __oc
 
+- name: 'Use RHEL 8 oc binary'
+  ansible.builtin.set_fact:
+    lab_host_oc_source: 'openshift-client-linux-amd64-rhel8.tar.gz'
+  when: >
+    item.version is version('4.16.0', '>=') and
+    ansible_distribution_major_version is version('9', '<')
+
 - name: 'Download oc'
   ansible.builtin.unarchive:
-    # src: "{{ lab_host_ocp_mirror }}/x86_64/clients/ocp/{{ item }}/openshift-client-linux-amd64-rhel8.tar.gz"
-    src: "{{ lab_host_ocp_mirror }}/x86_64/clients/ocp/{{ item.version }}/openshift-client-linux.tar.gz"
+    src: "{{ lab_host_ocp_mirror }}/x86_64/clients/ocp/{{ item.version }}/{{ lab_host_oc_source }}"
     include: ['oc']
     remote_src: true
     dest: '/tmp/'
