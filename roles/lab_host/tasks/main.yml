@@ -29,6 +29,15 @@
     - 'packages'
     - 'yum'
 
+- name: 'Install python packes'
+  ansible.builtin.pip:
+    name: "{{ lab_host_pip_packages }}"
+    state: 'present'
+  tags:
+    - 'pip'
+    - 'python'
+    - 'packages'
+
 - name: 'Allow HAproxy to listen on TCP port 6443'
   community.general.seport:
     ports: 6443

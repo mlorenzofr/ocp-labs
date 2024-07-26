@@ -25,4 +25,6 @@ lab_host_packages:
   - 'tmux'
   - 'vim-enhanced'
   - 'virt-install'
+lab_host_pip_packages:
+  - 'strato-skipper==2.0.2'
 ...
