@@ -1,0 +1,16 @@
+---
+- name: 'Test if kustomize is present'
+  ansible.builtin.stat:
+    path: "/usr/local/bin/kustomize"
+  register: __kustomize
+
+- name: 'Download kustomize'
+  ansible.builtin.unarchive:
+    src: "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv{{ lab_host_kustomize_version }}/kustomize_v{{ lab_host_kustomize_version }}_linux_amd64.tar.gz"
+    remote_src: true
+    dest: '/usr/local/bin/'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+  when: not __kustomize.stat.exists or lab_host_kustomize_reinstall
+...

@@ -69,6 +69,10 @@
   ansible.builtin.import_tasks: 'helm.yaml'
   tags: ['helm']
 
+- name: 'Install kustomize'
+  ansible.builtin.import_tasks: 'kustomize.yaml'
+  tags: ['kustomize']
+
 - name: 'Configure dnsmasq'
   ansible.builtin.import_tasks: 'dnsmasq.yaml'
   tags: ['dnsmasq']
