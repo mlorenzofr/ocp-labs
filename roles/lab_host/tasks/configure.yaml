@@ -15,6 +15,21 @@
     group: 'root'
     mode: '0644'
 
+- name: 'Create containers config directory'
+  ansible.builtin.file:
+    path: '/root/.config/containers'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
+- name: 'Create containers authentication file'
+  ansible.builtin.copy:
+    dest: '/root/.config/containers/auth.json'
+    content: "{{ lab_pull_secret }}\n"
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
 - name: 'Configure HAproxy'
   ansible.builtin.template:
     src: 'haproxy.cfg.j2'
