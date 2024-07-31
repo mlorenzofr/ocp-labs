@@ -56,3 +56,14 @@
   when: ocp_localstorage_install
   listen:
     - 'localstorage install'
+
+- name: 'Set default StorageClass'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc patch
+      storageclass/localblock
+      -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "true"}}}'
+  loop: "{{ ocp_localstorage_volumesets }}"
+  when: ocp_localstorage_install and item.sc_default | default(False)
+  listen:
+    - 'localstorage install'

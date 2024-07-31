@@ -14,3 +14,6 @@ galaxy_info:
   galaxy_tags: []
 dependencies:
   - name: 'ocp_localstorage'
+    when: ocp_odf_storage == 'local-storage'
+  - name: 'ocp_lvms'
+    when: ocp_odf_storage == 'lvms'

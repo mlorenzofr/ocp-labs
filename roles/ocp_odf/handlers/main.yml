@@ -40,3 +40,53 @@
   when: ocp_odf_install
   listen:
     - 'odf clusters'
+
+- name: 'Waiting until NooBaa operator pods are ready'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc wait -n {{ ocp_odf_ns }}
+      -l app=noobaa
+      --for=condition=Ready
+      pods --timeout=300s
+  changed_when: false
+  failed_when: false
+  when: ocp_odf_install
+  listen:
+    - 'odf noobaa'
+
+- name: 'Configure ODF Multicloud Object Gateway (Noobaa)'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_odf_path }}/odf-noobaa.yaml"
+  when: ocp_odf_install
+  listen:
+    - 'odf noobaa'
+
+- name: 'Waiting until NooBaa is provisioned'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc -n {{ ocp_odf_ns }} wait
+      --for condition=available
+      noobaas/noobaa --timeout=300s
+  changed_when: false
+  failed_when: false
+  when: ocp_odf_install
+  listen:
+    - 'odf install'
+
+- name: 'Configure BackingStore for Noobaa'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_odf_path }}/odf-noobaa-pv.yaml"
+  when: ocp_odf_install
+  listen:
+    - 'odf noobaa pv'
+
+- name: 'Set Noobaa BackingStore as default for ObjectBucketClaims'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc -n {{ ocp_odf_ns }} patch
+      --type merge
+      --patch '{"spec":{"placementPolicy":{"tiers":[{"backingStores":["noobaa-pv-backing-store"]}]}}}'
+      bucketclass/noobaa-default-bucket-class
+  when: ocp_odf_install
+  listen:
+    - 'odf noobaa pv'

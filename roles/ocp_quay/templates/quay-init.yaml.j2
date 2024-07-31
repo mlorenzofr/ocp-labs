@@ -1,0 +1,19 @@
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: quay-operator
+{% if ocp_quay_ns != '' %}
+  namespace: {{ ocp_quay_ns }}
+{% endif %}
+spec:
+{% if ocp_quay_subscription_channel != '' %}
+  channel: "{{ ocp_quay_subscription_channel }}"
+{% endif %}
+  installPlanApproval: Automatic
+  name: quay-operator
+  source: {{ ocp_quay_subscription_source }}
+  sourceNamespace: openshift-marketplace
+{% if ocp_quay_subscription_version !='' %}
+  startingCSV: quay-operator.v{{ ocp_quay_subscription_version }}
+{% endif %}

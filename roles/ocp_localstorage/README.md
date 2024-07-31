@@ -28,6 +28,7 @@ None.
 ### Variables for `ocp_localstorage_volumesets` elements
 * `name`. _String_. `LocalVolumeSet` name.
 * `node_label`. _String_. Node match label.
+* `sc_default`. _Bool_. Set the `StorageClass` associated as default for the cluster.
 * `sc_name`. _String_. `StorageClassName` to use for set of matched devices.
 * `mode`. _String_. Determines whether the PV created is Block or Filesystem.
 * `fstype`. _String_. Type to create when volumeMode is Filesystem.

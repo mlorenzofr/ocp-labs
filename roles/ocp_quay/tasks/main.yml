@@ -1,0 +1,15 @@
+---
+- name: 'Create Quay installation manifest'
+  ansible.builtin.template:
+    src: 'quay-init.yaml.j2'
+    dest: "{{ ocp_quay_path }}/quay-subscription.yaml"
+    mode: '0644'
+  notify: 'quay install'
+
+- name: 'Create Quay registries manifests'
+  ansible.builtin.template:
+    src: 'quay-registry.yaml.j2'
+    dest: "{{ ocp_quay_path }}/quay-registry-{{ item.name }}.yaml"
+    mode: '0644'
+  loop: "{{ ocp_quay_registries }}"
+  notify: 'quay registries'

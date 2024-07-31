@@ -1,0 +1,29 @@
+---
+# Run it with:
+#   ap labs/quay/deploy.yaml
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  vars:
+    lab_name: 'quay'
+    lab_node_memory: 32000
+    lab_node_disk_data: 60
+    start_install: true
+    lab_abi_ip: "{{ lab_node_network_base }}65"
+    lab_api_ips: ["{{ lab_node_network_base }}60"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}61"]
+    lab_node_network_base: '192.168.129.'
+    lab_network_name: 'pinnedis-net'
+    lab_hosts:
+      - {id: '65'}
+      - {id: '66'}
+      - {id: '67'}
+  tags:
+    - 'ocp'
+
+- name: 'Import Quay setup playbook'
+  ansible.builtin.import_playbook: ../../playbooks/setup/quay.yaml
+  vars:
+    lab_name: 'quay'
+  tags:
+    - 'postinst'

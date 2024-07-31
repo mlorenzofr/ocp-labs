@@ -1,0 +1,40 @@
+---
+- name: 'Install Quay Operator'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_quay_path }}/quay-subscription.yaml"
+  when: ocp_quay_install
+  listen:
+    - 'quay install'
+
+- name: 'Waiting until the operator is installed'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc -n {{ ocp_quay_ns }} wait
+      --for=jsonpath='{.status.state}'=AtLatestKnown
+      subscription/quay-operator --timeout=300s
+  changed_when: false
+  failed_when: false
+  when: ocp_quay_install
+  listen:
+    - 'quay install'
+
+- name: 'Waiting until Quay pods are ready'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc wait -n {{ ocp_quay_ns }}
+      -l name=quay-operator-alm-owned
+      --for=condition=Ready
+      pods --timeout=300s
+  changed_when: false
+  failed_when: false
+  when: ocp_quay_install
+  listen:
+    - 'quay install'
+
+- name: 'Update Quay registries'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_quay_path }}/quay-registry-{{ item.name }}.yaml"
+  loop: "{{ ocp_quay_registries }}"
+  when: ocp_quay_install
+  listen:
+    - 'quay registries'

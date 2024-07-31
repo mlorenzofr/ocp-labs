@@ -1,0 +1,20 @@
+---
+apiVersion: noobaa.io/v1alpha1
+kind: BackingStore
+metadata:
+  finalizers:
+    - noobaa.io/finalizer
+  labels:
+    app: noobaa
+  name: {{ item.name }}
+  namespace: {{ ocp_odf_ns }}
+spec:
+  pvPool:
+    numVolumes: {{ item.volumes | default(1) }}
+    resources:
+      requests:
+        storage: {{ item.storage | default(ocp_odf_noobaa_storage) }}
+{% if ocp_odf_noobaa_storageclass != '' %}
+    storageClass: {{ item.sc | default(ocp_odf_noobaa_storageclass) }}
+{% endif %}
+  type: pv-pool

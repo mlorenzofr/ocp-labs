@@ -29,6 +29,7 @@
         sc_name: "{{ lab_odf_storageclass }}"
         max_devices: 1
 
+    ocp_odf_storage: 'local-storage'
     ocp_odf_ns: 'openshift-storage-odf'
     ocp_odf_clusters:
       - name: 'ocs1'

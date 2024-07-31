@@ -13,3 +13,20 @@
     mode: '0644'
   loop: "{{ ocp_odf_clusters }}"
   notify: 'odf clusters'
+
+- name: 'Create NooBaa (Multicloud Object Gateway) manifest'
+  ansible.builtin.template:
+    src: 'noobaa.yaml.j2'
+    dest: "{{ ocp_odf_path }}/odf-noobaa.yaml"
+    mode: '0644'
+  when: ocp_odf_noobaa
+  notify: 'odf noobaa'
+
+- name: 'Create manifest for NooBaa BackingStore'
+  ansible.builtin.template:
+    src: 'noobaa-pv.yaml.j2'
+    dest: "{{ ocp_odf_path }}/odf-noobaa-pv.yaml"
+    mode: '0644'
+  loop: "{{ ocp_odf_noobaa_backingstores }}"
+  when: ocp_odf_noobaa
+  notify: 'odf noobaa pv'

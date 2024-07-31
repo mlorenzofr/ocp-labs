@@ -23,7 +23,9 @@ spec:
           operator: Exists
   storageClassName: {{ item.sc_name }}
   volumeMode: {{ item.mode | default('Block') }}
+{% if item.mode | default('Block') == 'Filesystem' %}
   fstype: {{ item.fstype | default('ext4') }}
+{% endif %}
 {% if item.max_devices | default(0) > 0 %}
   maxDeviceCount: {{ item.max_devices }}
 {% endif %}

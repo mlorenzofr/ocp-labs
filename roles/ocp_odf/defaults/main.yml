@@ -1,6 +1,14 @@
 ---
 ocp_odf_install: "{{ lab_install | default(false) }}"
 ocp_odf_ns: 'openshift-storage'
+ocp_odf_noobaa: False
+ocp_odf_noobaa_cpu: '0.1'
+ocp_odf_noobaa_dbtype: 'postgres'
+ocp_odf_noobaa_memory: '1Gi'
+ocp_odf_noobaa_storage: '50Gi'
+ocp_odf_noobaa_storageclass: ''
 ocp_odf_path: "{{ lab_configs }}"
 ocp_odf_subscription_channel: ''
+ocp_odf_storage: 'lvms'
 ocp_odf_clusters: []
+ocp_odf_noobaa_backingstores: []

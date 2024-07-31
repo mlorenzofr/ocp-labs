@@ -1,0 +1,27 @@
+---
+# Install Quay on an existing Openshift cluster
+- name: 'Install Quay'
+  hosts:
+    - 'lab'
+
+  gather_facts: false
+
+  vars:
+    lab_dnsmasq_root: '/opt/dnsmasq'
+    lab_name: 'standard'
+    lab_configs: "/root/labs/{{ lab_name }}/config"
+    lab_network_name: 'lab-network'
+    lab_install: true
+
+    ocp_odf_ns: 'openshift-storage'
+    ocp_odf_noobaa: True
+    ocp_odf_noobaa_storageclass: 'lvms-vg1'
+    ocp_quay_registries:
+      - name: 'registry'
+        ns: 'quay'
+
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  roles:
+    - 'ocp_quay'
