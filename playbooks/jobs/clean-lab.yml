@@ -8,6 +8,7 @@
   vars:
     lab_dnsmasq_root: '/opt/dnsmasq'
     lab_path: '/root/labs'
+    libvirt_image_dir: '/home/libvirt-ocp'
 
   vars_prompt:
     - name: lab_name
@@ -34,6 +35,30 @@
         state: 'absent'
       loop: "{{ clean_dnsmasq_files.files | map(attribute='path') }}"
 
+    - name: 'Remove lab files'
+      ansible.builtin.file:
+        path: "{{ lab_path }}/{{ lab_name }}"
+        state: 'absent'
+
+    - name: 'Remove agent ISO image'
+      ansible.builtin.file:
+        path: "{{ libvirt_image_dir }}/{{ lab_name }}-agent-installer.iso"
+        state: 'absent'
+
+    - name: 'Search kcli plan'
+      ansible.builtin.shell:
+        cmd: "kcli list plan -o name | grep -qE \"^\\['{{ lab_name }}',\""
+      register: __kcli_plan
+      changed_when: __kcli_plan.rc == 0
+      failed_when: false
+      notify: 'Remove virtual machines'
+
+  handlers:
+    - name: 'Restart dnsmasq-virt service'
+      ansible.builtin.service:
+        name: 'dnsmasq-virt'
+        state: 'restarted'
+
     # It doesn't work in the ansible module
     # Fix pending
     # - name: 'Remove virtual machines'
@@ -44,14 +69,3 @@
     - name: 'Remove virtual machines'
       ansible.builtin.command:
         cmd: "kcli delete plan {{ lab_name }} -y"
-
-    - name: 'Remove lab files'
-      ansible.builtin.file:
-        path: "{{ lab_path }}/{{ lab_name }}"
-        state: 'absent'
-
-  handlers:
-    - name: 'Restart dnsmasq-virt service'
-      ansible.builtin.service:
-        name: 'dnsmasq-virt'
-        state: 'restarted'
