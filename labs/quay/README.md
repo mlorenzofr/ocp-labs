@@ -83,15 +83,15 @@ Login Succeeded!
 ```
 9. Push a new image to our repository
 ```shell
-$ podman tag 02b9afe55b31 registry-quay-quay.apps.quay.local.lab/mlorenzofr/ubi9
-$ podman push registry-quay-quay.apps.quay.local.lab/mlorenzofr/ubi9 --tls-verify=false --remove-signatures
+$ podman tag 02b9afe55b31 registry-quay-quay.apps.quay.local.lab/username/ubi9
+$ podman push registry-quay-quay.apps.quay.local.lab/username/ubi9 --tls-verify=false --remove-signatures
 Copying blob 5d477c0506fb done   |
 Copying config 02b9afe55b done   |
 Writing manifest to image destination
 ```
 10. Inspect the image pushed in the previous step:
 ```shell
-$ skopeo inspect docker://registry-quay-quay.apps.quay.local.lab/mlorenzofr/ubi9:latest --tls-verify=false
+$ skopeo inspect docker://registry-quay-quay.apps.quay.local.lab/username/ubi9:latest --tls-verify=false
 ```
 
 ## Links
