@@ -27,4 +27,8 @@ lab_host_packages:
   - 'virt-install'
 lab_host_pip_packages:
   - 'strato-skipper==2.0.2'
+lab_host_scripts:
+  - 'extract-ignition.sh'
+  - 'kubelet-renew-certificates.sh'
+  - 'ocp-snapshot.sh'
 ...
