@@ -40,21 +40,36 @@ oc apply -f imageContentSourcePolicy.yaml
 ```shell
 iptables -I LIBVIRT_FWO 1 -s 192.168.129.0/24 ! -d 192.168.129.0/24 -j REJECT
 ```
-9. Apply the `PinnedImageSet`.
+9. Add the images to the `pinned-image-set.yaml` file. They can be obtained with:
+```shell
+oc adm --insecure=true release info pinnedis-registry.pinnedis.local.lab/openshift/release-images:4.17.0-0.nightly-2024-08-01-100805-x86_64 --output=json \
+  | jq "[.references.spec.tags[] | .from.name]" \
+  | grep quay | tr -d '",' \
+  | awk '{ print "    - name: "$1 }'
+```
+10. Apply the `PinnedImageSet` and wait for the images to download.
+> Note: We can verify if the process has finished by checking the images in the nodes or in the nginx access log.
 ```shell
 oc apply -f pinned-image-set.yaml
 ```
-10. Stop the internal registry <------ The upgrade is not possible without registry
+11. Stop the internal registry
+> _WARNING: The upgrade is not possible without registry_
+> This step is not possible right now
 ```shell
 pinnedis-registry:~# podman stop registry
 ```
-11. Disable tech-preview for the upgrade
+12. Disable tech-preview for the upgrade
+> Is it not working with v4.16?
 ```shell
-oc edit featuregate cluster
+oc patch featuregate/cluster --patch '{"spec":{}}' --type merge
 ```
-12. For the cluster upgrade:
+13. For the cluster upgrade:
 ```shell
 oc adm upgrade --to-image=pinnedis-registry.pinnedis.local.lab/openshift/release-images@sha256:1995202f11dc5a4763cdc44ff30d4d4d6560b3a6e29873b51af2992bd8e33109 --force --allow-not-recommended=true --allow-explicit-upgrade
+```
+14. To follow up the upgrade progress:
+```shell
+watch -n 10 "oc adm upgrade && oc get co && oc get nodes -o wide"
 ```
 
 ## Validation

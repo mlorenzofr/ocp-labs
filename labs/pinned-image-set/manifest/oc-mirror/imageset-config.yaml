@@ -1,3 +1,4 @@
+---
 kind: ImageSetConfiguration
 apiVersion: mirror.openshift.io/v1alpha2
 storageConfig:
@@ -7,10 +8,10 @@ storageConfig:
 mirror:
   platform:
     channels:
-      - name: stable-4.16
-        type: ocp
       - name: stable-4.17
         type: ocp
+        minversion: '4.17.0-0.nightly-2024-07-31-100139'
+        maxversion: '4.17.0-0.nightly-2024-08-02-034521'
     graph: true
   operators: []
   additionalImages:
