@@ -53,13 +53,14 @@ oc adm --insecure=true release info pinnedis-registry.pinnedis.local.lab/openshi
 oc apply -f pinned-image-set.yaml
 ```
 11. Stop the internal registry
-> _WARNING: The upgrade is not possible without registry_
+> _WARNING: The upgrade is not possible without registry_  
 > This step is not possible right now
 ```shell
 pinnedis-registry:~# podman stop registry
 ```
 12. Disable tech-preview for the upgrade
-> Is it not working with v4.16?
+> This has been disabled on Jun 2024, and it breaks the laboratory.  
+> [jira issue](https://issues.redhat.com/browse/OCPBUGS-34907) | [Github PR](https://github.com/openshift/api/pull/1932)
 ```shell
 oc patch featuregate/cluster --patch '{"spec":{}}' --type merge
 ```
