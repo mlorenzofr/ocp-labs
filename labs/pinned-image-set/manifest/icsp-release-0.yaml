@@ -1,0 +1,16 @@
+---
+apiVersion: operator.openshift.io/v1alpha1
+kind: ImageContentSourcePolicy
+metadata:
+  name: release-0
+spec:
+  repositoryDigestMirrors:
+    - source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+      mirrors:
+        - pinnedis-registry.pinnedis.local.lab/openshift/release
+    - source: quay.io/openshift-release-dev/ocp-release
+      mirrors:
+        - pinnedis-registry.pinnedis.local.lab/openshift/release-images
+    - source: registry.ci.openshift.org/ocp/release
+      mirrors:
+        - pinnedis-registry.pinnedis.local.lab/openshift/release-images

@@ -1,0 +1,13 @@
+---
+apiVersion: operator.openshift.io/v1alpha1
+kind: ImageContentSourcePolicy
+metadata:
+  name: generic-0
+spec:
+  repositoryDigestMirrors:
+    - source: registry.ci.openshift.org/ocp
+      mirrors:
+        - pinnedis-registry.pinnedis.local.lab/ocp
+    - source: registry.access.redhat.com/ubi8
+      mirrors:
+        - pinnedis-registry.pinnedis.local.lab/ubi8

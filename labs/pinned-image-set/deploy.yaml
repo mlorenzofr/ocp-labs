@@ -27,6 +27,7 @@
     - 'lab'
   gather_facts: false
   vars:
+    lab_install: true
     lab_name: 'pinnedis'
     lab_configs: "/root/labs/{{ lab_name }}/config"
     ocp_mco_icsp:

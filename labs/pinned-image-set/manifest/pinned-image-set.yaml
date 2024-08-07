@@ -6,19 +6,18 @@ metadata:
   labels:
     machineconfiguration.openshift.io/role: "master"
 spec:
-  # 4.17.0-0.nightly-2024-08-01-100805-x86_64
+  # 4.17.0-0.nightly-2024-08-07-043456-x86_64
   pinnedImages:
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:883b14fa1c191acdf72c88620816f4ee3d9fa61e4efd0ec5ac43912c6c1caec1
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f6138de4d534621d2c3f413b7c2d3db86f02839a4a5a9b36a3e5525c5a50f425
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3cd392dba2d606a1e1a922759cfce15f32d55c293fc2d12ab07b629e5fe41acb
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ebeefc6755825652679f8d24fd2c61a4c3e706dd27e9dea545b9e6764e834634
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b06d8772906f2cc85c0963a9f082647f26fd9d2e2fbf69c8a57483d832473c41
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7f44c670379dc8c4ec024a54f352582596f855b49d52e57c243f51c0ade4fb4e
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9bbf3cbd282cb95b5d75dc3b978740209f2e6bb5be4aa2975e985d50d4038545
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:348225d8c9561ef1474259a92c041b80f27d98fac448e2ff1eada9564f86a3f4
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:103f5bb5b69200c8a7454d100b8a658d3e8ace7185d48b14e41d2c3d16d16886
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:870f166e7aa1688685a5f726d8020bc1bca2c9d8d37a41968da7e431e6c1b116
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4437db2b8e708c547eb23f996e303433cd93db205149674d19e0f7190b769d7c
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:2d1ea8dc4685364f5f692499bac8fd615eb87b290c14dc4de97a52daf6378b59
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:fa09f38368d56706d00420bfdf94125dce44f0280a9411011b0aa34168708b19
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:64b2b932982514cee04579c99a761e5bf69c21f49b6240d989031fad699b892f
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:77ccaba130927f26effd55949ac9ef50977df2731e3d72281ebd049403dd62f8
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:fdb8a2b8a2b25272da2139119c2f9187a3572192d8eb756f03cdc064488ea048
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08ef8091b0bcd0f177322e6bcc2f8d5e3e35825dbca5fb8f4cc9c161cb7bd77b
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:af1ac34321af72c9d7000c9ceb4f212e1b9797d34b8a71393053a6644bb2e9d5
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8578458c22b8795449b2c5b0886fa516cc145a88074ee28ed188dfb3614927ba
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1fc6af1cebe6ac61d2dbfc139b870adf7bf68bcb1fe62fc59cda94698591c6ee
@@ -26,20 +25,20 @@ spec:
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4597259a08e22d05ae639025a3986afb7e7ded4d354af6bcfe1b43db989fc4c5
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:23f2cdfcc85cc873806428d2ab567fc97136998b9d216c2d3c5b87e6ff74d66f
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3082a6034405b743cf0292dda2fe07beb4f41612f32facd63c7ce149faa35321
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3e84f9239fa71a746564dd7bf10f87b99083c524e44f77bc801d460a8c586009
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ad428d6dda897620a5305d406ac4623312a08d8ab38926444fe4faf693cbb1c5
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ffc430e92b7672cee1d7f69c4d5c96967031fc34e0adf2d52415f6d1deda7071
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9e1cdb4399645cfe16b92d176285a3d1964022ad8e785dff171bd4054cf9e468
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:df973ced0d02fc0bb11f668437382dcac44f930489890641967898ce1e9585fc
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b9a9b7c6697bd34dd64f4878f43717fc896a004452ee3cda61dac2e5a2ae50bd
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9e399a943ec7bdcc9d1f5be6ffac3a9393cc43a62e3953c9f9a0ee3664d4e24c
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:38b17c5e313f7964f336497b2a4a24af0fb5403954c3249d3a8c2c9844453b42
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ace1fc60c8b9af852a3f8e96d095092bd6585cd8715ac9a26a88bca343f5f2b5
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:48365bac9da42bdf6979e773927c2e047db8f35b981f8a9f486555a128df8482
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:bcaf8536de88932afddcce1afa437a7037017aea72f71712a0c57e7d1ea16df1
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1aba8b04b5eef90676f39b45a1855476235c1e5b4a34c85dd1c33e4e4f464b68
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:abb499ee0ee211db646f974e0dd87f75dc0151f4fb9e7dfdccb90aa7c35a8bc9
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:46c537c5a0b6079d7c96c4fcc457a8f2e3a562f5a747f21c407e89d81a26754c
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:146175c9f4673c17348d65e4cf981d6b71aab54d01aab317cc18548d2d4452ad
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3b455f8d6c77a64057ebdd1c77456d62c1c71ea741a885ecd5b4581c98a2d393
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f1b58776a1af9639a58c1ef3a2eefee8bd359b490128b5d513548cbd7b8fa0c0
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:fd9ded20e7112be022de380866c8d34b804170b5f3bf5bd70671f8906f2a63b1
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:c66879d60b6eefe8f67bf6d1a9c6533b5885b28eae17015f3d490238a34f18a5
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:e09661dec3c7e760efe0346730df6497c7be742c4a4a036dc7ac560c1bea106b
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:33e8a3d5f3f8a0e91740f34d776283179699cd5df2dfce1efe0ccbffe235238e
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1ef972c1df99a3cb56a57a73e7ae6ab141ad8ea3e5c885ad0f47e9ff95e56941
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:aeb891c046ea6c05f900d6d05ee13004c6f9704b3001d009c8bbce863534e68d
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3da50946e996db7319d6243ca377384df0fd2f88c96a4080db2b5a8ac97b914c
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f3fedc831eac358fcc1fc7297412fea72008813e52fbd874f2b62860f9b830fd
@@ -47,41 +46,41 @@ spec:
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0a2b7249e2860515cf08c52fd808206201efaf2d0589fa1b2dc83cda929ee53b
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8e58c4420edc095f2606ca2df42079e22fa2d0425edbb373abc395b591b44f2b
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:13575fc6721a5d835d63f6e0edc3cb8fdc56fd5f5e6f83cf06fd282b3935d7cb
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4188c43dce9f37c513917e3dc4aff5a062839a046d903ac44221d1c38a5418b1
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:317dc9cc154944e43351ded459745fb2e884a7ac84ffc177b8fe57271593d9d6
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7ee8ea9a32da2a06b10486c9efebfe57c7f350cb058dd0bbb62eed700432bb92
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:092974973a227bdf867c334dafbb74aebf16d59d3a8cd0d2b7cb3925a4658a5b
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:51e3ab7193d358293d76eb65bbb62188f38c59e30661c26b089256eacca9ad7f
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:e0b3b849ab40e6d69353f17d0c2f65947b38b2b91e41042252445d4110e9faa7
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7eeaea0c69e82f2c0aef3ac40cf18767e4fa27fb1b860dd29b0eba89d3bde607
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:25aa2da06b4900932d113650284f101cd29fccc59089d75307a70a15e07f99af
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a01ec753f523886d35fd24254e76347535c8f42e553f9fcae4140d110e716884
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0206778ad56f5d5588699c4cfe7175ba513f0535a17b5bf7b64e083cf36abb5f
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:2ffaa71a21b7e7fe8c79fa4e46f704ed4bf5531a743423106eec782c394c420d
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:802c18d7a3a8ded5f7b97a78455721c3aad052395f91ba827c1802d3f7bf01d2
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:73fd41bb44014f9671a29930f8fe8aad9b285073e405aa831280a5e8258116b8
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3e8740b03c832a3393c59d3244422ca407a503ed7a5d9bac02409b2517691976
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5eb66398d90f96a913de0ab15038d0fc946a6172c70e65f27a56dd43cb4888a3
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5871a39cdd705a09754bf55ad86615634ac36e33623b3390a4b18647900e8542
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f44d87ba1936e31f68586ccc5bd5e23df6d5cef4a8d89e7be320e421eeab3298
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d61d281cee556b2b84be5d8b8a9d7c7e280b3ff2c3167fbaa571b72b79bcd670
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9806fe4d47726f3b52fb743c3c177a7b5aa7e704adc5b26fe1ee36890debe343
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4536592f2e7779e1f9d8081f0390f2c1089218dec09594b874f93211d524caa8
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:fe0612a5aaced06c30b421f1890071794bbb61060d3fae0bace070a6e3c28b1d
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:2565661bfe223c8de6cef3b948969f5f38dd46f07c3fc82fe3d5d6622417299a
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:18d884a122841688fd3963db41b0d066fbd789e3d8b699c2e91e91cbc67df453
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3cd9e962bc45075a0dff9765092605952f48762404a07b14210e46008907724f
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:722da77d07baf3926f3d2dda9aa522669e87ad88e6460021b88371a6b94fcba0
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:31430e22b63fd653efbce87a5e0f160ec5ee8fd1ee1d98d91a5bb8d986ac7b19
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:49d120f1a519ce6abde4de12e586033f0bac0006d42787245283aa5d4d6de578
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9dd01e2954f96f825b084175bcb93c391643470d97acff84b96fed6ac40a8257
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:48d2dcca5348c6beb9a236aa06f622d3fc015fc3038ec763cc52ef389807a7d3
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a0fe36f3ecf8627bddfee8eea7b06a5fec7a223ed0e52accdc7494640a49ff84
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b33d9f92bb22e9d208f75e8a29e302d7364d611107da689a621cfa9c4b811ba2
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9138d583bc90ad8570ae83e5c2b1ff5fc56b2ed6438a29f563c23bd57c278b0e
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5857c15dfff1ed13adf3999c3ebec7e76fde64804180cbaf6c687e9883dfeef4
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a6254c381484e70401cd5c5b5fb1c5a5b3b4fa272fd51fee8b18d37270136267
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9589675f0a911e885e562ddf2913017c4c09c4a6740db09621f6fb11fd72f582
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:686ea9d425313dc79265268e894cfa1994687b5292d24f856ec3456ac1d25a3a
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:e7682946ec2f1aa18e310a491b36bec77a64fe00c39f90ade1d147791c740480
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0514223b4f423b51be812beaf9a23fe74e5578ce960c4df75dbfe29ec0ef7ff7
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ec5bf509939a70e7b59dadaa0c706ef3e154b6bf3eb1eadbd9f84295eb186550
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ef12391aa892f76f7220589a477a835863aaca1f3d2817fb255986a043bca4e4
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:cf4e0cdaec3c4bd406151777815da727a08b9026e5620c52b68c8af5942d6512
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:37ef9a13d3cd437951e6a868daf57d8c3988b9988db31dc546adbe808f4be2d5
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:02329d65e0515a23d9a96194488ad4d36fc7b0d270a43979a2978ea1a0591764
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:12bf73a56efaf531bd2203ae8fb13e580543ad6c1c68d322af26953d4b859fb4
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:daaad0fa7d8a501c99af9f68771d805d5ddab3265c6cf3fb2b92c66a6cc9bce5
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:e06839473a75025488f6118a6928bd6e467cbe3dea9ef46f28972ca55219bcac
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ccaee4a25ba6ea1aa9125da726edb3b79f0b6877252702a7358cc225b73c52c3
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:739152e337e82f858ac0d8516c49637ae3de469f1fdac285f041c80fbecc15c7
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0ac117a0be68a1903a7076a2a4137851d4854dba18723ad65e6e001125224b86
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f7c1831b7b03021f21cf2e74e3167997003e3ecf90722031eabf122d1d478593
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:59377719c5be2df7bf8d3b52ec9a4d4482fdb3d4f050c45bf5556a3d508a0433
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6109bd4a2caf7049934ff0ce04ba757db82715dff59a5cc7b94f4d46bb857b55
@@ -94,46 +93,46 @@ spec:
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8b65bd16b6caefecbd305a435bc0829c74a25e2cbdf013df188ccbf64b81488a
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:806f9013e14b883fdb0608d0728fbef06f10f5ece82aa25dfa73dacd5fce7212
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:c3dac8113cfa44fa41f16adf2bde283ed77b3f881d992d9964bf8da77b81a8fc
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:010f00c1fb7e0f500c2b06619b70429f227da925973d3ace4017681d02a3767d
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1c869b0990b0801164ecb88f4b8cd9dd3827a19a826038be53fe450940c5b976
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ddae3555a1732db72f2e0c1ad951d8365d417b5267f0f2678bfd005399fa3d1a
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:bb2d748e4b60b474ac1834df448839c2722be42863899ccd8afd132f3d490f05
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:347c43e653f6fbdbc9b7a1c610d696d232bb79f99b1b75680764d9f3cd4dcc3b
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:69d8ebee34d261fc5bd4e76a484a74f6a9cea6a4e2fe7a389432f90e7a057c70
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:49b4335273589770067575ca4862256ac8d446d78cb779faae77a08fc437a9bd
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8d4483a3df74f6230ca9c5b991513285d41a1c6a1b7e915bc1c08575d275dfb4
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:667e90ed8ff3e9639997592fb85b4e9e867c81c4abc0fb6e71364a78802f7c09
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1d9cf8cac8b53af6121d04742f9f9e2cb67384016545047f6d874e330385d449
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8bf79159eada104ededc025c8c89bf20e04710e0f5825c062ef8cf8535a6f842
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7aaca23c859c1ca1a368959c6393fac06c97d19164d0decb439aee3fe29b3b20
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:fa00998e5bae42fa0306a28a1350594f9d94107410fadef6df03e7a5549d62b1
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a6775a6436d35801acee6161760fa4782fac0a1e6a5fff54806b376a95a2b1f6
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:76bc9c33a3b49c400254c9a306255a169146a3d541802e38bc52449bd9a5aab9
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5fe1f43bb9876dbb7b8927913e8d8e75e7691d0b3d09b3f112edf9c572a92e8a
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:75b8073fad4a6119f00538d51f95c968d131c6b703ea556395bf851c2ac36d43
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:83c91f00f4e1e3c97d69fabca9cf0edb1f4bb3e8cb4a2c7ac016103d659175da
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4fe500b9b084790f414127a4528c53754de274f05ed27fe571434ffadf9b3caa
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:239fc735d796c6b8415e397cd315ad20f24140924ab8208628d3cd002d3d1300
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:029acc1b2ae59380c45d9ba789d4a8513ed94eb57a5c79c49c8693c5dc4b8a26
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7ee116acf43658c10da4a6eed99d76e896b2179bf77700fd1bae851802fb0620
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8221bc371bb4d729b6869434a7db857718cfef00a759952da4fb4ed93b2b79cd
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a255098d03c513378120bdaea9a6d7b66f65147f2338ecd1241e884f35c1a6cd
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:725c9d2fec09a4f52dea3be6e955c96cd5aae15c78c850f666ee6bef1938d7b9
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3ab68a2da2fd9df20364a7d3aa05add21495199cdfb1931b7b6d4c3df18f5fa1
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d00de5032b3813b5b86d2c8aa620c7fb506cf38e6eb46c9973cd78dd55b6ed56
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:2d8c1283c453776845cb9df5ea267331039f59c6f2f0b17dab5aa90beb61b8b1
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8d3f05424e951530020e8ad111d230c819eb119be71af9d38959804c95cd0050
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:106480e52040af143cb6d37c6569314f1574954d0476f7a91b25f977013459d8
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:db5a56c200f77e0fbf5634174d59aa322d99790a57ecd43f27c42ea6a22896d9
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:aeb8a9920770063bdc2865d3c264e2230caca849cf0b6a57528be3dd7b889ed1
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0263136780dc39cbef5e47aab5efab4c36eda9f3161f43dc2526552c51c9e08d
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9573a84dba281c18cba173fb78c984cbe81d6e11085e6cf84cb80fb95e20e1d0
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:04e798c0f6903cc31b140a89d9edbc00a56ee25a0dbb079ec1311dba997feff8
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1d13eb94d204efe568780ee9501308124123e6d625ec44b83a24bb1dadb2e34c
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:26f22842fe7fa3bdd1f48351e096bd1f24b429523824f1071b92f3ef9d39982a
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1e61d3fd24dd39cede053b30c069ff15c35457ac40f08c541b77e27f5be5aaf1
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:eb67bfc50e77f3e37fdae9bf24cea725bce3dfe9044ea81562bbe69a9329104b
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:2a5d7014c770dda32473034497fd161b49f6e3b3d8c43f3e8ed499860ba5f61d
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:dad02395c2ebff788bd3fdb53afff838525c6887d3b7d76e7bb00f031725827e
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0a42053bbef4fa1706578294fef4638ec4b49a61a9cf14c4400e771365302517
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:df47aabf5cd84f98c4c420a4c1cae56225e47907d4370dcab60a0108ad33cd18
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a90e72525eae81be4d29e129420b6683b41c0985065c7c68e4fdf25c334034a0
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:814574604656a220c101a356a57ac131a052573c2d69ed35126d460cac1767ea
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:c41dd5e285d3278afd1a290efdc6dfe88f5321b6d8cfa8b3594669b04b8224d7
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0e9ca74684e4735ac8c8fdde18acdd02f1d88759d15970065bf97812e189b1ac
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7177651883ca3d5c22ade0ff66e8cd4b48c37617dd6054904344a970aa004314
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6025ea7229fa3058441083b818ca628b72729f97ad0022b612f82a078149540c
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:43e279a855ad42c5b6bdf138b9d6204418dbe1fd3a7a73989e35cf0adc14ce41
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:23abbdb42af0bc08f93cd7a3298b3fd5f92a0b048b99c6faa900f51d3d0b9411
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4fa3c515c4c738fe49b1e6dbb66331b6aa7481949ae643668f15df2e5a9dfd2e
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:05d41540e4aab799ce819c3be82f5366c94733898edc3d3837192b755bb76055
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4f0aeb95539172676692b959652fd29610a0f1fa52cee79bb2cd04921d5c9215
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b714f7fafbb99852e744cc8c002a1468d213d00e6da5a38bd8be6f6dbcc06cb4
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:de267f63508e3bb6d4ecf8043cfaca40ea42e6b27dc785df69483b61f6ba9f60
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:239a15e935e20705d0351e1883f3da01737f0e8c3b2bd807a1ae53263796c5b4
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:287925856e6ef9c3b8cd1fcc082ea794a1b71eca5e91fa7f93a8ef92c3be9e94
@@ -141,23 +140,23 @@ spec:
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:481f6ed95e31092fe5ba6caf1c739c792c3ce313890bab15828118f16525cf16
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:297d5c8eb669dd150ecc92692d3632fb125f635a8644718ec5ef3f62399f7f1a
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:cd767889b85963bc911daec2f33eea13f269f9bd826d239cc77de201a45be7c0
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:374304df71873f6b09fa429adfe1acf99e0a1fc0e6a372d19d824a0c12f108c8
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6d65f54d87edc3b37468c9faf05d6b2efec40f8d3ba61244ec2ad5d0219e917d
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:454c8fb7936342140a72867b179c36f0ccec95cdff1678156442cc328915d43b
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d324d4ae553dbfc53685f4dadae626f59e4ad4b8d72883209bfcdf817456bbaf
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:24d70cd6c79fa7a32100439c32500dae6d7aef5a8be4e8d33f916401e2c9ef94
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:390928bd7e3054051a40c7b7dc328daf687c4a02603b8b9000a398ca0534218b
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7989d63f5edc65a4a443cece9bd5a53993b649fa9108b9d0a8a6d91550108502
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:71adb9b32e2e49ead9522984e8fdbd4f82c98881675844e8f4dbb4f45a57d9f2
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f658837e48d31bf1cc34c531c88b239694491654889409e8daebfd78d22f56ba
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:930a72b210713712e8f1a3fdb50394b1b03f7a51245c504a6e190e2ef654d8cf
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f8fc579e69ea07c9bbc490f0dfe9652712ab5a0d1e5475b62d3ae0f3a5719c39
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:fa8f7c4de9e154159c52829c916dd3302b290be116f51eb37af8b6a62a1d61f6
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5c4048f17ad06a66dfb145f95d8323aab81933572981d4160a9616dec0904db4
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d6abc23a921460e43721f9e13bd7cbf0b4716e2009c53c6d21a9ad2907f8b805
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4b97df5dd12433ce1f1ed1d3153334c2bd9fec0afe15f60c65a5955a5ea27b08
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4755a33c1a3605b550bb3998512113e0d41af60ac01b699e4298f5001542da78
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:83704731c6b78280c7943275195092712f7969c8ec9c16413ed1d2a6efa50077
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:20fee542546237a1effe9675966376703ebc7ebda341030bf1aba1c63df4d73c
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8f797a751d6b5873065aa3c8ea29ddb730a3ad3c8d2d8b5689ecd7a80d2db3f4
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d690035d91b80167a4cb9b8d2116013f4b7c441666804eb7e0963b25edf9509f
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b2e049b3a8b65ff71b8265d6d5ed9f0757840cccafd75182c27305413b2f7a3f
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5287e5abca614d91397c4c8be2f69cc95e8d8cd4728af0889cbbbf6f4cb71d90
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:469cb958461aa3619d418b41a29e25f97700e020e01ca92dc37b619502bbb400
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3e586acab76bb2838837089355dd0d67348873696bd4676bf86a01ba19d297ea
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:249fffec4314d209d0c8adfbb56b01a4a5a9f7c9eb7ba7ac7505c99e3cfdb79f
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:fb5a94c9147616de5033c7418daa871f65656c09c0daa92b591b61ee78b895a2
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:188b41c307b3acafc288e6e9dcdb445245be126ad353e613a18c87493d49762f
@@ -168,9 +167,9 @@ spec:
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5df09f1331220d765f48a2dfc4bc2a836e59751466a3af7c7be630f3d9c431de
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:813d5ca4c175707abf95c96ccfebd11a0fed57648216f1ecee3e48b045c134bf
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5a8d61b150193dcae2a8626e67f58069eb4f541c2bc41a32f9d2364a9bb0e371
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:fe52a8abc5ee4c37ff3e11e14bccd6f1b446209718ae11374086f3eace6a3e1b
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:594fe37c5098734cdbe682d9e6054cd9053f9e135eab1257c26f38eac86039df
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:aa34c6254f9c7ce2343d9972e03bccfd75f6055c8e6b2d41d3db55f5bade2d2c
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d27093b06b7fd19732e26306d1c4e777f0854aab01d76651e97d5d77db365232
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:61e7b444af0cb9189bc156ced18c3c63aa4e404dd6c8ec2c04cc13eb0a51eb2a
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:13e890f8679773305aa8e09af3e0c2f56f51a350e43fc8825720e65b09a3dc69
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:da4a74d3a8ca5a7b31b5f4a263b1a5f3657966a7520410320b7dd5c63e28cd63
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4c5a533796536bfbb66cd50e8d67304fb11ced924a158d799d4d541ab61c4a09
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5a1dd4840fdde513abeeba84fd6e21775b8c369ae1562d2b54f2ac6f0abb8383
@@ -182,18 +181,18 @@ spec:
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:81c8437aa7520bc8e4646ab4d71bc2e83078e3f97bee90e86f2892a8165ca428
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1dad1658d08c05c89d70a26c06b58616356efed9156af70d00d9ef9aefee4267
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:24e3a7e104abfa5c65a1df9d268780d163469f7ef1246fe989ca2e83c2142923
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b2909cc2d6a9a65dcf05173c0bdbd44644db86a90959b42d469c3d5e3764a025
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ce85d6492f44cb525fc9f84c67fb8dccbb4b80c35bf50fc6ac9e83c48cdd3fa5
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:203d286d242b02d5f287d5c8aebf5d0eb82579bb40e6864c1eeaf6d39ea23dce
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:2a09080cafa4450666dda0ec1e730b8fb12c931b8acad8cb246e1d0b9843b556
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54a1cffa274ca11eefcd71a9437701593ea24c7a60e766e5bc51e55cf1d0f23f
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1b202402fad083c9d07eb66f8c9e65bc525dad49eb533233b0a625359e5c41ff
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:c54896f16d0d6217d5b3cf40a410c13cc4faa7132e09a54f4284c0e141761b8d
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:c15e1fffffd9c1cc0d63089c352b98d606d6dfebbddab76283b300305b86b5eb
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8f6092d2290d6ac2d857fe9b578c6e6fa802bd2d458f34008b355c93a00999cc
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:caae91873b77850914390e4adca6b2b41425eae25cb8345f405265866d8fdad3
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d3531c5bd856b067897ce5f9621c9ee72670f63619f4d32380c76c03d6f9463b
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:33d8f06a75f251c784f191af22763c4874fda120c1bc6f513d47db9f18d86633
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a8137b100a51ab544ba2b468bee85bbff23525ca3e4d2d958e7ca47f26b1ac6b
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:571eb57cd1b6e61732cfde81b4ccc3c37ecb066aa6cd212a04f0091fc8d9978b
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:70bd411ad61b13c5e2ce7828ca1f43c5864e977aa41b7f8e51ee3591c188edc8
-    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a04319c28caa6107df29bc485c38e6c853fa494fe2b8b597a3f4ad0713f6f1b3
+    - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:bd1acecee053cc1d22efa8eb0e2a29b348272ee9446816c490465293ce5754f9
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a269126bcf982597051f27dce9745ac1f879a7abeea036575b1da1bfbaa7b08c
     - name: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:68b0f8c6a4e70ee60d00ae80ba6b16411a272baae18694aa5e8ddc320d9b8dd1
 ...

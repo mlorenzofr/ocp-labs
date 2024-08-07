@@ -10,8 +10,8 @@ mirror:
     channels:
       - name: stable-4.17
         type: ocp
-        minversion: '4.17.0-0.nightly-2024-07-31-100139'
-        maxversion: '4.17.0-0.nightly-2024-08-02-034521'
+        minversion: '4.17.0-0.nightly-2024-08-07-043456'
+        maxversion: '4.17.0-0.nightly-2024-08-07-043456'
     graph: true
   operators: []
   additionalImages:
