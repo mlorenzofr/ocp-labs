@@ -1,0 +1,7 @@
+---
+- name: 'Create ImageContentSourcePolicies'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_mco_path }}/icsp-{{ item.name }}.yaml"
+  loop: "{{ ocp_mco_icsp }}"
+  when: ocp_mco_install
+  listen: 'update icsp'

@@ -1,0 +1,8 @@
+---
+- name: 'Create ImageContentSourcePolicy manifests'
+  ansible.builtin.template:
+    src: 'icsp.yaml.j2'
+    dest: "{{ ocp_mco_path }}/icsp-{{ item.name }}.yaml"
+    mode: '0644'
+  loop: "{{ ocp_mco_icsp }}"
+  notify: 'update icsp'

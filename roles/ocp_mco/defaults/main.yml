@@ -1,0 +1,4 @@
+---
+ocp_mco_icsp: []
+ocp_mco_install: "{{ lab_install | default(false) }}"
+ocp_mco_path: "{{ lab_configs }}"
