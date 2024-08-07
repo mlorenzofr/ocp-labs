@@ -25,7 +25,7 @@ metadata:
     bmac.agent-install.openshift.io/role: "{{ bmh.role }}"
 {% endif %}
 spec:
-  automatedCleaningMode: disabled
+  automatedCleaningMode: {{ 'enabled' if bmh.cleaning | default(false) else 'disabled' }}
   bootMACAddress: {{ bmh.mac | default('{}{}'.format(lab_mac_base, bmh.id)) }}
   online: true
   rootDeviceHints:
