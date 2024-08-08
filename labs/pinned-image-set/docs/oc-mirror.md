@@ -21,6 +21,36 @@ $ update-alternatives --install /usr/local/bin/oc-mirror oc-mirror /usr/local/bi
 $ update-alternatives --config oc-mirror
 ```
 
+## Configuration file
+The mirror configuration is managed by a CR `ImageSetConfiguration`.  
+It's not strictly necessary, but for our testing and to provide support for original and upgrade versions, we will include fixed versions for 4.16 and 4.17.  
+The `oc-mirror` downloads all versions between _minversion_ and _maxversion_ (only the last version if the parameters are omitted). We set a fixed version to save space.  
+```yaml
+---
+kind: ImageSetConfiguration
+apiVersion: mirror.openshift.io/v1alpha2
+storageConfig:
+  registry:
+    imageURL: pinnedis-registry.pinnedis.local.lab/metadata
+    skipTLS: true
+mirror:
+  platform:
+    channels:
+      - name: stable-4.16
+        type: ocp
+        minversion: '4.16.3'
+        maxversion: '4.16.3'
+      - name: stable-4.17
+        type: ocp
+        minversion: '4.17.0-0.nightly-2024-08-07-043456'
+        maxversion: '4.17.0-0.nightly-2024-08-07-043456'
+    graph: true
+  operators: []
+  additionalImages:
+    - name: registry.access.redhat.com/ubi8/ubi:latest
+  helm: {}
+```
+
 ## Create the mirror
 Once we have the binary and our registry server, we can create a mirror using  
  the configuration and executing the command:

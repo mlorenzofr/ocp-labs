@@ -8,6 +8,10 @@ storageConfig:
 mirror:
   platform:
     channels:
+      - name: stable-4.16
+        type: ocp
+        minversion: '4.16.3'
+        maxversion: '4.16.3'
       - name: stable-4.17
         type: ocp
         minversion: '4.17.0-0.nightly-2024-08-07-043456'
