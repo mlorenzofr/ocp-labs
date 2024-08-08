@@ -29,12 +29,15 @@ oc patch clusterversion/version --patch '{"spec":{"upstream":"https://amd64.ocp.
 oc patch clusterversion/version --patch '{"spec":{"channel":"nightly"}}' --type merge
 ```
 6. Enable Technology Preview features:
+> This step requires deploying a new configuration to the nodes. This will take some time. Monitor the cluster operators and wait until the cluster is stable again.
 ```shell
 oc apply -f enable-techpreview.yaml
+oc adm wait-for-stable-cluster --minimum-stable-period=300s
 ```
 7. Set the registries configuration to use the internal registry:
 ```shell
-oc apply -f imageContentSourcePolicy.yaml
+oc apply -f icsp-generic-0.yaml
+oc apply -f icsp-release-0.yaml
 ```
 8. Block Internet access from the lab network. This way we can be sure that only internal registry is used.
 ```shell
@@ -58,12 +61,7 @@ oc apply -f pinned-image-set.yaml
 ```shell
 pinnedis-registry:~# podman stop registry
 ```
-12. Disable tech-preview for the upgrade
-> This has been disabled on Jun 2024, and it breaks the laboratory.  
-> [jira issue](https://issues.redhat.com/browse/OCPBUGS-34907) | [Github PR](https://github.com/openshift/api/pull/1932)
-```shell
-oc patch featuregate/cluster --patch '{"spec":{}}' --type merge
-```
+12. Disable `TechPreview` for the upgrade. Follow the steps provided [in this document](docs/disable-techpreview.md)
 13. For the cluster upgrade:
 ```shell
 oc adm upgrade --to-image=pinnedis-registry.pinnedis.local.lab/openshift/release-images@sha256:1995202f11dc5a4763cdc44ff30d4d4d6560b3a6e29873b51af2992bd8e33109 --force --allow-not-recommended=true --allow-explicit-upgrade
