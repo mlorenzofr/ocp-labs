@@ -13,6 +13,17 @@
     start_install: true
 
 - name: 'Import ACM setup playbook'
-  ansible.builtin.import_playbook: ../setup/acm.yaml
+  ansible.builtin.import_playbook: ../setup/hive.yml
   vars:
     lab_name: 'acm'
+    ocp_assisted_service_op: 'acm'
+    ocp_baremetal_infras:
+      - name: 'infra1'
+        ns: 'hardware-inventory'
+        pullsecret: "{{ lab_pull_secret }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        ntp: ["{{ lab_node_network }}.1"]
+        redfish: "{{ lab_node_network }}.1"
+        inventory:
+          - {'name': "{{ lab_name }}-worker-1", 'id': '51'}
+          - {'name': "{{ lab_name }}-worker-2", 'id': '52'}
