@@ -1,0 +1,14 @@
+---
+- name: 'Create MultiCluster Global Hub installation manifest'
+  ansible.builtin.template:
+    src: 'mcgh-init.yaml.j2'
+    dest: "{{ ocp_mcgh_path }}/mcgh-subscription.yaml"
+    mode: '0644'
+  notify: 'mcgh install'
+
+- name: 'Create multiclusterglobalhub manifest'
+  ansible.builtin.template:
+    src: 'multiclusterglobalhub.yaml.j2'
+    dest: "{{ ocp_mcgh_path }}/mcgh-multiclusterglobalhub.yaml"
+    mode: '0644'
+  notify: 'mcgh install'

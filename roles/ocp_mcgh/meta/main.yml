@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  role_name: ocp_mcgh
+  namespace: mlorenzofr
+  author: 'Manuel Lorenzo'
+  description: 'Install and configure MultiCluster Global Hub Operator (MCGH)'
+  company: 'Red Hat'
+  license: 'BSD'
+  min_ansible_version: '2.12'
+  platforms:
+    - name: 'EL'
+      versions:
+        - '8'
+  galaxy_tags: []
+dependencies:
+  - name: 'ocp_lvms'
+  - name: 'ocp_acm'

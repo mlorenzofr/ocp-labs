@@ -1,0 +1,57 @@
+---
+- name: 'Install MultiCluster Global Hub Operator'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_mcgh_path }}/mcgh-subscription.yaml"
+  when: ocp_mcgh_install
+  listen:
+    - 'mcgh install'
+
+- name: 'Waiting until the operator is installed'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc -n {{ ocp_mcgh_ns }} wait
+      --for=jsonpath='{.status.state}'=AtLatestKnown
+      subscriptions.operators.coreos.com/multicluster-global-hub-operator-rh
+      --timeout=300s
+  changed_when: false
+  failed_when: false
+  when: ocp_mcgh_install
+  listen:
+    - 'mcgh install'
+
+- name: 'Check MCGH CRDs'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc get crds multiclusterglobalhubs.operator.open-cluster-management.io
+  register: __mcgh_crd
+  until: __mcgh_crd.rc == 0
+  retries: 25
+  delay: 30
+  changed_when: false
+  failed_when: false
+  when: ocp_mcgh_install
+  listen:
+    - 'mcgh install'
+
+- name: 'Setup ACM MultiClusterGlobalHub'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_mcgh_path }}/mcgh-multiclusterglobalhub.yaml"
+  register: __mcgh_setup_cmd
+  until: __mcgh_setup_cmd.rc == 0
+  retries: 10
+  delay: 30
+  when: ocp_mcgh_install
+  listen:
+    - 'mcgh install'
+
+- name: 'Waiting until the MultiClusterGlobalHub is running'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc -n {{ ocp_mcgh_ns }} wait
+      --for=jsonpath='{.status.phase}'=Running
+      mgh/multiclusterglobalhub --timeout=600s
+  changed_when: false
+  failed_when: false
+  when: ocp_mcgh_install
+  listen:
+    - 'mcgh install'
