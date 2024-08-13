@@ -32,6 +32,9 @@
     - 'lab'
 
   tasks:
+    - name: 'Execute base handlers'
+      ansible.builtin.meta: flush_handlers
+
     - name: 'Copy configuration files to deploy directory'
       ansible.builtin.copy:
         src: "{{ lab_path }}/{{ lab_name }}/config/{{ item }}"
