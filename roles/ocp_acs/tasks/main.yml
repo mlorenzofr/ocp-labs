@@ -1,0 +1,14 @@
+---
+- name: 'Create Advanced Cluster Security subscription manifest'
+  ansible.builtin.template:
+    src: 'acs-init.yaml.j2'
+    dest: "{{ ocp_acs_path }}/acs-subscription.yaml"
+    mode: '0644'
+  notify: 'acs install'
+
+- name: 'Create Central manifest'
+  ansible.builtin.template:
+    src: 'central.yaml.j2'
+    dest: "{{ ocp_acs_path }}/acs-central.yaml"
+    mode: '0644'
+  notify: 'acs install'

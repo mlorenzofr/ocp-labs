@@ -1,0 +1,59 @@
+---
+- name: 'Install Advanced Cluster Security Operator'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_acs_path }}/acs-subscription.yaml"
+  when: ocp_acs_install
+  listen:
+    - 'acs install'
+
+- name: 'Waiting until the ACS operator is installed'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc -n {{ ocp_acs_ns }} wait
+      --for=jsonpath='{.status.state}'=AtLatestKnown
+      subscriptions.operators.coreos.com/rhacs-operator
+      --timeout=600s
+  changed_when: false
+  failed_when: false
+  when: ocp_acs_install
+  listen:
+    - 'acs install'
+
+- name: 'Check ACS CRDs'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc get crds centrals.platform.stackrox.io
+  register: __acs_crd
+  until: __acs_crd.rc == 0
+  retries: 25
+  delay: 30
+  changed_when: false
+  failed_when: false
+  when: ocp_acs_install
+  listen:
+    - 'acs install'
+
+- name: 'Setup ACS Central'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_acs_path }}/acs-central.yaml"
+  register: __acs_central_cmd
+  until: __acs_central_cmd.rc == 0
+  retries: 10
+  delay: 30
+  when: ocp_acs_install
+  listen:
+    - 'acs install'
+
+- name: 'Waiting until the ACS Central is running'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc wait -n {{ ocp_acs_ns }}
+      -l app.kubernetes.io/name=stackrox
+      -l app=central
+      --for=condition=Ready
+      pods --timeout=300s
+  changed_when: false
+  failed_when: false
+  when: ocp_acs_install
+  listen:
+    - 'acs install'

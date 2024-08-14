@@ -1,0 +1,19 @@
+---
+ocp_acs_install: "{{ lab_install | default(false) }}"
+ocp_acs_ns: 'rhacs-operator'
+ocp_acs_path: "{{ lab_configs }}"
+ocp_acs_subscription_channel: 'stable'
+ocp_acs_subscription_source: 'redhat-operators'
+ocp_acs_subscription_version: ''
+ocp_acs_scannerv4_indexer_scaling_autoscaling: true
+ocp_acs_scannerv4_indexer_scaling_replicas: 3
+ocp_acs_scannerv4_indexer_scaling_max_replicas: 5
+ocp_acs_scannerv4_indexer_scaling_min_replicas: 2
+ocp_acs_scannerv4_matcher_scaling_autoscaling: true
+ocp_acs_scannerv4_matcher_scaling_replicas: 3
+ocp_acs_scannerv4_matcher_scaling_max_replicas: 5
+ocp_acs_scannerv4_matcher_scaling_min_replicas: 2
+ocp_acs_scanner_analyzer_scaling_autoscaling: true
+ocp_acs_scanner_analyzer_scaling_replicas: 3
+ocp_acs_scanner_analyzer_scaling_max_replicas: 5
+ocp_acs_scanner_analyzer_scaling_min_replicas: 2

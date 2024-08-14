@@ -1,0 +1,18 @@
+---
+# Installs ACS on an existing Openshift cluster
+- name: 'Install Advanced Cluster Security (ACS)'
+  hosts:
+    - 'lab'
+
+  gather_facts: false
+
+  vars:
+    lab_configs: "/root/labs/{{ lab_name }}/config"
+    lab_install: true
+    lab_name: 'standard'
+
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  roles:
+    - 'ocp_acs'

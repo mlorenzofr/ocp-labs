@@ -1,0 +1,60 @@
+---
+apiVersion: platform.stackrox.io/v1alpha1
+kind: Central
+metadata:
+  name: stackrox-central-services
+  namespace: {{ ocp_acs_ns }}
+spec:
+  monitoring:
+    openshift:
+      enabled: true
+  network:
+    policies: Enabled
+  central:
+    notifierSecretsEncryption:
+      enabled: false
+    exposure:
+      loadBalancer:
+        enabled: false
+        port: 443
+      nodePort:
+        enabled: false
+      route:
+        enabled: true
+    telemetry:
+      enabled: true
+    db:
+      isEnabled: Default
+      persistence:
+        persistentVolumeClaim:
+          claimName: central-db
+    persistence:
+      persistentVolumeClaim:
+        claimName: stackrox-db
+  egress:
+    connectivityPolicy: Online
+  scannerV4:
+    db:
+      persistence:
+        persistentVolumeClaim:
+          claimName: scanner-v4-db
+    indexer:
+      scaling:
+        autoScaling: {{ 'Enabled' if ocp_acs_scannerv4_indexer_scaling_autoscaling else 'Disabled' }}
+        maxReplicas: {{ ocp_acs_scannerv4_indexer_scaling_max_replicas }}
+        minReplicas: {{ ocp_acs_scannerv4_indexer_scaling_min_replicas }}
+        replicas: {{ ocp_acs_scannerv4_indexer_scaling_replicas }}
+    matcher:
+      scaling:
+        autoScaling: {{ 'Enabled' if ocp_acs_scannerv4_matcher_scaling_autoscaling else 'Disabled' }}
+        maxReplicas: {{ ocp_acs_scannerv4_matcher_scaling_max_replicas }}
+        minReplicas: {{ ocp_acs_scannerv4_matcher_scaling_min_replicas }}
+        replicas: {{ ocp_acs_scannerv4_matcher_scaling_replicas }}
+    scannerComponent: Default
+  scanner:
+    analyzer:
+      scaling:
+        autoScaling: {{ 'Enabled' if ocp_acs_scanner_analyzer_scaling_autoscaling else 'Disabled' }}
+        maxReplicas: {{ ocp_acs_scanner_analyzer_scaling_max_replicas }}
+        minReplicas: {{ ocp_acs_scanner_analyzer_scaling_min_replicas }}
+        replicas: {{ ocp_acs_scanner_analyzer_scaling_replicas }}
