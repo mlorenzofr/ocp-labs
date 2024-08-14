@@ -1,0 +1,153 @@
+---
+# Run it with:
+#   ap labs/mcgh/deploy.yaml
+
+- name: 'Install global cluster'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  vars:
+    lab_name: 'mcgh'
+    lab_node_disk_data: 60
+    start_install: true
+    lab_abi_ip: "{{ lab_node_network_base }}72"
+    lab_api_ips: ["{{ lab_node_network_base }}70"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}71"]
+    lab_hosts:
+      - {id: '72'}
+      - {id: '73'}
+      - {id: '74'}
+  tags:
+    - 'ocp'
+    - 'global-cluster'
+
+- name: 'Install hub cluster #1'
+  ansible.builtin.import_playbook: ../../playbooks/base/sno.yml
+  vars:
+    lab_name: 'acm1'
+    lab_node_cpus: 24
+    lab_node_memory: 49152
+    lab_node_disk_data: 250
+    start_install: true
+    lab_abi_ip: "{{ lab_node_network_base }}75"
+    lab_api_ips: ["{{ lab_node_network_base }}75"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}75"]
+    lab_hosts:
+      - {id: '75', iface:'enp1s0'}
+  tags:
+    - 'ocp'
+    - 'acm-cluster1'
+
+- name: 'Install hub cluster #2'
+  ansible.builtin.import_playbook: ../../playbooks/base/sno.yml
+  vars:
+    lab_name: 'acm2'
+    lab_node_cpus: 24
+    lab_node_memory: 49152
+    lab_node_disk_data: 250
+    start_install: true
+    lab_abi_ip: "{{ lab_node_network_base }}76"
+    lab_api_ips: ["{{ lab_node_network_base }}76"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}76"]
+    lab_hosts:
+      - {id: '76', iface:'enp1s0'}
+  tags:
+    - 'ocp'
+    - 'acm-cluster2'
+
+- name: 'Import MCGH setup playbook'
+  ansible.builtin.import_playbook: ../../playbooks/setup/mcgh.yaml
+  vars:
+    lab_name: 'mcgh'
+  tags:
+    - 'mcgh'
+    - 'postinst'
+
+- name: 'Install ACM on hub cluster #1'
+  ansible.builtin.import_playbook: ../../playbooks/setup/acm.yaml
+  vars:
+    lab_name: 'acm1'
+  tags:
+    - 'acm'
+    - 'acm-cluster1'
+    - 'postinst'
+
+- name: 'Install ACM on hub cluster #2'
+  ansible.builtin.import_playbook: ../../playbooks/setup/acm.yaml
+  vars:
+    lab_name: 'acm2'
+  tags:
+    - 'acm'
+    - 'acm-cluster2'
+    - 'postinst'
+
+- name: 'Install ACS on hub cluster #1'
+  ansible.builtin.import_playbook: ../../playbooks/setup/acs.yaml
+  vars:
+    lab_name: 'acm1'
+    ocp_acs_scannerv4_indexer_scaling_autoscaling: false
+    ocp_acs_scannerv4_indexer_scaling_replicas: 1
+    ocp_acs_scannerv4_matcher_scaling_autoscaling: false
+    ocp_acs_scannerv4_matcher_scaling_replicas: 1
+    ocp_acs_scanner_analyzer_scaling_autoscaling: false
+    ocp_acs_scanner_analyzer_scaling_replicas: 1
+  tags:
+    - 'acs'
+    - 'acm-cluster1'
+    - 'postinst'
+
+- name: 'Install ACS on hub cluster #2'
+  ansible.builtin.import_playbook: ../../playbooks/setup/acs.yaml
+  vars:
+    lab_name: 'acm2'
+    ocp_acs_scannerv4_indexer_scaling_autoscaling: false
+    ocp_acs_scannerv4_indexer_scaling_replicas: 1
+    ocp_acs_scannerv4_matcher_scaling_autoscaling: false
+    ocp_acs_scannerv4_matcher_scaling_replicas: 1
+    ocp_acs_scanner_analyzer_scaling_autoscaling: false
+    ocp_acs_scanner_analyzer_scaling_replicas: 1
+  tags:
+    - 'acs'
+    - 'acm-cluster2'
+    - 'postinst'
+
+- name: 'Post-configuration tasks for hub clusters'
+  hosts:
+    - 'lab'
+  gather_facts: false
+  environment:
+    PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
+  tasks:
+    # Task disabled
+    - name: 'Patch deploy central-db'
+      ansible.builtin.command:
+        cmd: >
+          oc patch deploy central-db -n rhacs-operator
+          --type json -p='[
+            {"op": "replace", "path": "/spec/template/spec/containers/0/resources/limits/cpu", "value":"4"},
+            {"op": "replace", "path": "/spec/template/spec/containers/0/resources/requests/cpu", "value":"2"},
+            {"op": "replace", "path": "/spec/template/spec/initContainers/0/resources/limits/cpu", "value":"4"},
+            {"op": "replace", "path": "/spec/template/spec/initContainers/0/resources/requests/cpu", "value":"2"}]'
+      environment:
+        KUBECONFIG: "/root/labs/{{ item }}/deploy/auth/kubeconfig"
+      loop:
+        - 'acm1'
+        - 'acm2'
+      tags:
+        - 'acs'
+        - 'acm-clusters'
+        - 'postinst'
+        - 'never'
+
+    - name: 'Disable multiclusterhub self management'
+      ansible.builtin.command:
+        cmd: >
+          oc patch multiclusterhub/multiclusterhub -n open-cluster-management
+            -p '{"spec":{"disableHubSelfManagement":true}}' --type merge
+      environment:
+        KUBECONFIG: "/root/labs/{{ item }}/deploy/auth/kubeconfig"
+      loop:
+        - 'acm1'
+        - 'acm2'
+      tags:
+        - 'acs'
+        - 'acm-clusters'
+        - 'postinst'

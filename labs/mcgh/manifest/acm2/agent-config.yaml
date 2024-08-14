@@ -1,0 +1,24 @@
+---
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: acm2
+rendezvousIP: 192.168.125.76
+hosts:
+  - hostname: acm2-node-1
+    interfaces:
+      - name: eth0
+        macAddress: be:be:ca:fe:03:76
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: be:be:ca:fe:03:76
+          ipv4:
+            enabled: True
+            dhcp: True
+          ipv6:
+            enabled: False
+    rootDeviceHints:
+      deviceName: "/dev/vda"

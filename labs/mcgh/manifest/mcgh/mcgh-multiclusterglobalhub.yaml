@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pull-secret-mcgh
+  namespace: multicluster-global-hub
+stringData:
+  .dockerconfigjson: '{"auths":{<redacted>}}'
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: operator.open-cluster-management.io/v1alpha4
+kind: MulticlusterGlobalHub
+metadata:
+  name: multiclusterglobalhub
+  namespace: multicluster-global-hub
+spec:
+  availabilityConfig: High
+  dataLayer:
+    postgres:
+      retention: 18m
+  enableMetrics: true
+  imagePullPolicy: IfNotPresent
+  imagePullSecret: pull-secret-mcgh

@@ -1,0 +1,60 @@
+---
+apiVersion: platform.stackrox.io/v1alpha1
+kind: Central
+metadata:
+  name: stackrox-central-services
+  namespace: rhacs-operator
+spec:
+  monitoring:
+    openshift:
+      enabled: true
+  network:
+    policies: Enabled
+  central:
+    notifierSecretsEncryption:
+      enabled: false
+    exposure:
+      loadBalancer:
+        enabled: false
+        port: 443
+      nodePort:
+        enabled: false
+      route:
+        enabled: true
+    telemetry:
+      enabled: true
+    db:
+      isEnabled: Default
+      persistence:
+        persistentVolumeClaim:
+          claimName: central-db
+    persistence:
+      persistentVolumeClaim:
+        claimName: stackrox-db
+  egress:
+    connectivityPolicy: Online
+  scannerV4:
+    db:
+      persistence:
+        persistentVolumeClaim:
+          claimName: scanner-v4-db
+    indexer:
+      scaling:
+        autoScaling: Disabled
+        maxReplicas: 5
+        minReplicas: 2
+        replicas: 1
+    matcher:
+      scaling:
+        autoScaling: Disabled
+        maxReplicas: 5
+        minReplicas: 2
+        replicas: 1
+    scannerComponent: Default
+  scanner:
+    analyzer:
+      scaling:
+        autoScaling: Disabled
+        maxReplicas: 5
+        minReplicas: 2
+        replicas: 1
