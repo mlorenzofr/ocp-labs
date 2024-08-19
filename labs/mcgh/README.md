@@ -2,8 +2,10 @@
 This lab is composed by 3 Openshift clusters:
 * 1 node with **MultiCluster Global Hub** (MCGH).
 * 2 Single Node Clusters (SNOs), with **Advanced Cluster Management** (ACM) and **Advanced Cluster Security** (ACS).
+* 2+ Single Node Clusters (SNOs), with **Advanced Cluster Security** (ACS) as secured clusters.
 
-The SNO clusters (hub clusters) will be imported to the MCGH cluster (global cluster).
+The SNO clusters with ACM (hub clusters) will be imported to the MCGH cluster (global cluster).  
+The SNO clusters with ACS only (spoke clusters) will be imported to the hub clusters.
 
 ## Requirements
 The ACM nodes, where ACS is installed, require at least 40 GB of memory and 14 CPUs due to the ACS minimum requirements. Additionally, 100 GiB of local storage will be needed for the **central-db** database.
@@ -15,7 +17,17 @@ All ACS requirements and detailed information are available [here](https://docs.
 ```shell
 ap labs/mcgh/deploy.yaml
 ```
-2. Validate
+2. Create a new ACS init bundle for earch Hub cluster in the `central` web console:  
+	* [Cluster init bundles Hub cluster #1](https://central-rhacs-operator.apps.acm1.local.lab/main/clusters/init-bundles)
+ 	* [Cluster init bundles Hub cluster #2](https://central-rhacs-operator.apps.acm2.local.lab/main/clusters/init-bundles)
+3. Copy the ACS init bundles to the `config` directory of the spoke clusters.
+4. Create the ACS secrets on the spoke clusters:
+```shell
+$ export KUBECONFIG=/root/labs/spoke1/deploy/auth/kubeconfig
+
+$ oc create -f /root/labs/spoke1/config/acm1-Operator-secrets-cluster-init-bundle.yaml -n rhacs-operator
+```
+5. Validate
 
 ## Validation
 1. Check if the MCGH cluster is running:
@@ -105,6 +117,12 @@ $ export KUBECONFIG=/root/labs/mcgh/deploy/auth/kubeconfig
 $ oc get route multicluster-global-hub-grafana -n multicluster-global-hub
 NAME                              HOST/PORT                                                                     PATH   SERVICES                          PORT          TERMINATION          WILDCARD
 multicluster-global-hub-grafana   multicluster-global-hub-grafana-multicluster-global-hub.apps.mcgh.local.lab          multicluster-global-hub-grafana   oauth-proxy   reencrypt/Redirect   None
+```
+
+## ACS
+To get the password for the `admin` user and log in to the [ACS Central Web console](https://central-rhacs-operator.apps.acm1.local.lab), you can use:
+```shell
+oc get secret -n rhacs-operator central-htpasswd -o json | jq -r '.data.password | @base64d'
 ```
 
 ## Links
