@@ -42,7 +42,7 @@
   delay: 30
   when: ocp_acs_install
   listen:
-    - 'acs install'
+    - 'acs central'
 
 - name: 'Waiting until the ACS Central is running'
   ansible.builtin.command:
@@ -56,4 +56,16 @@
   failed_when: false
   when: ocp_acs_install
   listen:
-    - 'acs install'
+    - 'acs central'
+
+- name: 'Setup ACS SecuredCluster'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_acs_path }}/acs-securedcluster-{{ item.name }}.yaml"
+  register: __acs_secured_clusters
+  until: __acs_secured_clusters is not failed
+  retries: 10
+  delay: 30
+  loop: "{{ ocp_acs_secured_clusters }}"
+  when: ocp_acs_install
+  listen:
+    - 'acs securedcluster'

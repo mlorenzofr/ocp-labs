@@ -11,4 +11,13 @@
     src: 'central.yaml.j2'
     dest: "{{ ocp_acs_path }}/acs-central.yaml"
     mode: '0644'
-  notify: 'acs install'
+  notify: 'acs central'
+  when: ocp_acs_central
+
+- name: 'Create SecureCluster manifest'
+  ansible.builtin.template:
+    src: 'securedcluster.yaml.j2'
+    dest: "{{ ocp_acs_path }}/acs-securedcluster-{{ item.name }}.yaml"
+    mode: '0644'
+  loop: "{{ ocp_acs_secured_clusters }}"
+  notify: 'acs securedcluster'

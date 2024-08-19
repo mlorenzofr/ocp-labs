@@ -1,0 +1,50 @@
+---
+apiVersion: platform.stackrox.io/v1alpha1
+kind: SecuredCluster
+metadata:
+  name: stackrox-secured-cluster-services
+  namespace: {{ ocp_acs_ns }}
+spec:
+  admissionControl:
+    bypass: BreakGlassAnnotation
+    contactImageScanners: DoNotScanInline
+    listenOnCreates: true
+    listenOnEvents: true
+    listenOnUpdates: true
+    replicas: {{ item.admission_control_replicas | default(3) }}
+    timeoutSeconds: 10
+  auditLogs:
+    collection: Auto
+  centralEndpoint: https://{{ item.central }}
+  clusterName: {{ item.name }}
+  monitoring:
+    openshift:
+      enabled: true
+  network:
+    policies: Enabled
+  perNode:
+    collector:
+      collection: CORE_BPF
+      forceCollection: false
+      imageFlavor: Regular
+    taintToleration: TolerateTaints
+  scanner:
+    analyzer:
+      scaling:
+        autoScaling: {{ 'Enabled' if item.scanner_analyzer_scaling_autoscaling | default(True) else 'Disabled' }}
+        maxReplicas: {{ item.scanner_analyzer_scaling_max_replicas | default(5) }}
+        minReplicas: {{ item.scanner_analyzer_scaling_min_replicas | default(2) }}
+        replicas: {{ item.scanner_analyzer_scaling_replicas | default(3) }}
+    scannerComponent: AutoSense
+  scannerV4:
+    db:
+      persistence:
+        persistentVolumeClaim:
+          claimName: scanner-v4-db
+    indexer:
+      scaling:
+        autoScaling: {{ 'Enabled' if item.scannerv4_indexer_scaling_autoscaling | default(True) else 'Disabled' }}
+        maxReplicas: {{ item.scannerv4_indexer_scaling_max_replicas | default(5) }}
+        minReplicas: {{ item.scannerv4_indexer_scaling_min_replicas | default(2) }}
+        replicas: {{ item.scannerv4_indexer_scaling_replicas | default(3) }}
+    scannerComponent: Default
