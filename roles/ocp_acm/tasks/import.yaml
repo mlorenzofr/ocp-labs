@@ -2,12 +2,12 @@
 - name: 'Create import manifest'
   ansible.builtin.template:
     src: 'managedcluster.yaml.j2'
-    dest: "{{ import_dir }}/managedcluster.yaml"
+    dest: "{{ import_dir }}/managedcluster-{{ cluster_name }}.yaml"
     owner: 'root'
     group: 'root'
     mode: '0600'
 
 - name: 'Execute import manifest'
   ansible.builtin.command:
-    cmd: "oc apply -f {{ import_dir }}/managedcluster.yaml"
+    cmd: "oc apply -f {{ import_dir }}/managedcluster-{{ cluster_name }}.yaml"
 ...

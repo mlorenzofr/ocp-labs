@@ -1,4 +1,4 @@
-# mgh lab
+# mcgh lab
 This lab is composed by 3 Openshift clusters:
 * 1 node with **MultiCluster Global Hub** (MCGH).
 * 2 Single Node Clusters (SNOs), with **Advanced Cluster Management** (ACM) and **Advanced Cluster Security** (ACS).
@@ -62,6 +62,49 @@ central-db-75c94f999-nd727                           1/1     Running   0        
 rhacs-operator-controller-manager-566d8848dd-fqjwr   1/1     Running   0          9m41s
 scanner-55c8874bdd-4vn8p                             1/1     Running   0          8m49s
 scanner-db-5c99759dc7-rsqrg                          1/1     Running   0          8m49s
+```
+4. On the MultiCluster Global Hub, check if the ACM (hub) clusters have been imported:
+```shell
+$ export KUBECONFIG=/root/labs/mcgh/deploy/auth/kubeconfig
+
+$ oc get managedcluster
+NAME            HUB ACCEPTED   MANAGED CLUSTER URLS              JOINED   AVAILABLE   AGE
+acm1            true           https://api.acm1.local.lab:6443   True     True        11m
+acm2            true           https://api.acm2.local.lab:6443   True     True        7m3s
+local-cluster   true           https://api.mcgh.local.lab:6443   True     True        5d19h
+```
+5. On the MultiCluster Global Hub, check the global hub agent status to ensure that the agent is running:
+```shell
+$ oc get managedclusteraddon multicluster-global-hub-controller -n acm1
+NAME                                 AVAILABLE   DEGRADED   PROGRESSING
+multicluster-global-hub-controller   True                   False
+
+$ oc get managedclusteraddon multicluster-global-hub-controller -n acm2
+NAME                                 AVAILABLE   DEGRADED   PROGRESSING
+multicluster-global-hub-controller   True                   False
+```
+6. On ACM clusters, check if the **MultiCluster Global Hub Agent** is present:
+```shell
+$ export KUBECONFIG=/root/labs/acm1/deploy/auth/kubeconfig
+
+$ oc get all -n multicluster-global-hub-agent
+Warning: apps.openshift.io/v1 DeploymentConfig is deprecated in v4.14+, unavailable in v4.10000+
+NAME                                                READY   STATUS    RESTARTS   AGE
+pod/multicluster-global-hub-agent-9ccb8bf8c-c5mhl   1/1     Running   0          99m
+
+NAME                                            READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/multicluster-global-hub-agent   1/1     1            1           99m
+
+NAME                                                      DESIRED   CURRENT   READY   AGE
+replicaset.apps/multicluster-global-hub-agent-9ccb8bf8c   1         1         1       99m
+```
+7. The Grafana dashboards are available in the [URL](https://multicluster-global-hub-grafana-multicluster-global-hub.apps.mcgh.local.lab):
+```shell
+$ export KUBECONFIG=/root/labs/mcgh/deploy/auth/kubeconfig
+
+$ oc get route multicluster-global-hub-grafana -n multicluster-global-hub
+NAME                              HOST/PORT                                                                     PATH   SERVICES                          PORT          TERMINATION          WILDCARD
+multicluster-global-hub-grafana   multicluster-global-hub-grafana-multicluster-global-hub.apps.mcgh.local.lab          multicluster-global-hub-grafana   oauth-proxy   reencrypt/Redirect   None
 ```
 
 ## Links

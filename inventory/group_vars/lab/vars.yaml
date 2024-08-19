@@ -5,9 +5,9 @@ lab_host_haproxy_labs:
   # - {'name': 'spoke', 'backends': ['192.168.125.50']}
   - {'name': 'dan', 'domain': 'manor.lab', 'backends': ['192.168.128.11']}
   - {'name': 'fips', 'backends': ['192.168.125.11']}
-  - {'name': 'mcgh', 'backends': ['192.168.125.71']}
-  - {'name': 'acm1', 'backends': ['192.168.125.75']}
-  - {'name': 'acm2', 'backends': ['192.168.125.76']}
+  - {'name': 'mcgh', 'backends': ['192.168.125.71'], api: True, api_ips: ['192.168.125.70']}
+  - {'name': 'acm1', 'backends': ['192.168.125.75'], api: True, api_ips: ['192.168.125.75']}
+  - {'name': 'acm2', 'backends': ['192.168.125.76'], api: True, api_ips: ['192.168.125.76']}
   # - name: 'cnv'
   #   backends: ['[fd00:0:0:1::11]']
   #   api: True

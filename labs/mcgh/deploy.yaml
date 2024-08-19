@@ -151,3 +151,25 @@
         - 'acs'
         - 'acm-clusters'
         - 'postinst'
+
+- name: 'Import hub cluster #1'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/acm-import-cluster.yaml
+  vars:
+    lab_name: 'mcgh'
+    cluster_name: 'acm1'
+    kubeconfig_path: '/root/labs/acm1/deploy/auth/kubeconfig'
+  tags:
+    - 'postinst'
+    - 'import'
+    - 'import-acm1'
+
+- name: 'Import hub cluster #2'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/acm-import-cluster.yaml
+  vars:
+    lab_name: 'mcgh'
+    cluster_name: 'acm2'
+    kubeconfig_path: '/root/labs/acm2/deploy/auth/kubeconfig'
+  tags:
+    - 'postinst'
+    - 'import'
+    - 'import-acm2'
