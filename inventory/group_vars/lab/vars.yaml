@@ -9,6 +9,7 @@ lab_host_haproxy_labs:
   - {'name': 'acm1', 'backends': ['192.168.125.75'], api: True, api_ips: ['192.168.125.75']}
   - {'name': 'acm2', 'backends': ['192.168.125.76'], api: True, api_ips: ['192.168.125.76']}
   - {'name': 'spoke1', 'backends': ['192.168.125.77']}
+  - {'name': 'spoke2', 'backends': ['192.168.125.78']}
   # - name: 'cnv'
   #   backends: ['[fd00:0:0:1::11]']
   #   api: True

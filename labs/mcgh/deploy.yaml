@@ -67,6 +67,20 @@
     - 'ocp'
     - 'spoke-cluster1'
 
+- name: 'Install spoke cluster #2'
+  ansible.builtin.import_playbook: ../../playbooks/base/sno.yml
+  vars:
+    lab_name: 'spoke2'
+    start_install: true
+    lab_abi_ip: "{{ lab_node_network_base }}78"
+    lab_api_ips: ["{{ lab_node_network_base }}78"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}78"]
+    lab_hosts:
+      - {id: '78', iface:'enp1s0'}
+  tags:
+    - 'ocp'
+    - 'spoke-cluster2'
+
 - name: 'Import MCGH setup playbook'
   ansible.builtin.import_playbook: ../../playbooks/setup/mcgh.yaml
   vars:
@@ -140,6 +154,23 @@
   tags:
     - 'acs'
     - 'spoke-cluster1'
+    - 'postinst'
+
+- name: 'Install ACS on spoke cluster #2'
+  ansible.builtin.import_playbook: ../../playbooks/setup/acs.yaml
+  vars:
+    lab_name: 'spoke2'
+    ocp_acs_secured_clusters:
+      - name: 'spoke2'
+        central: 'central-rhacs-operator.apps.acm2.local.lab'
+        admission_control_replicas: 1
+        scannerv4_indexer_scaling_autoscaling: false
+        scannerv4_indexer_scaling_replicas: 1
+        scanner_analyzer_scaling_autoscaling: false
+        scanner_analyzer_scaling_replicas: 1
+  tags:
+    - 'acs'
+    - 'spoke-cluster2'
     - 'postinst'
 
 - name: 'Post-configuration tasks for hub clusters'
