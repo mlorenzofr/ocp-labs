@@ -50,6 +50,11 @@ oc adm --insecure=true release info pinnedis-registry.pinnedis.local.lab/openshi
   | grep quay | tr -d '",' \
   | awk '{ print "    - name: "$1 }'
 ```
+Besides that we should add the release image to the list:
+```shell
+oc adm release info pinnedis-registry.pinnedis.local.lab/openshift/release-images:4.17.0-0.nightly-2024-08-01-100805-x86_64 --insecure=true \
+  | awk '/Pull From/ { print "    - name: "$3 }'
+```
 10. Apply the `PinnedImageSet` and wait for the images to download.
 > Note: We can verify if the process has finished by checking the images in the nodes or in the nginx access log.
 ```shell

@@ -33,9 +33,9 @@
     ocp_mco_icsp:
       - name: 'generic-0'
         repo_mirrors:
-          - source: 'registry.ci.openshift.org/ocp'
+          - source: 'registry.ci.openshift.org/ocp/4.17-2024-08-28-230925'
             mirrors:
-              - 'pinnedis-registry.pinnedis.local.lab/ocp'
+              - 'pinnedis-registry.pinnedis.local.lab/openshift/release'
           - source: 'registry.access.redhat.com/ubi8'
             mirrors:
               - 'pinnedis-registry.pinnedis.local.lab/ubi8'
