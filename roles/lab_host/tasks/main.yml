@@ -29,7 +29,7 @@
     - 'packages'
     - 'yum'
 
-- name: 'Install python packes'
+- name: 'Install python packages'
   ansible.builtin.pip:
     name: "{{ lab_host_pip_packages }}"
     state: 'present'
