@@ -33,8 +33,10 @@ controlPlane:
   hyperthreading: Enabled
   replicas: {{ lab_master_replicas }}
 platform:
-{% if lab_platform == 'baremetal' %}
-  baremetal:
+{% if lab_master_replicas == 1 %}
+  none: {}
+{% else %}
+  {{ lab_platform }}:
     apiVIPs: {{ lab_api_ips }}
     ingressVIPs: {{ lab_ingress_ips }}
 {% if not lab_appliance %}
@@ -59,8 +61,6 @@ platform:
 {% endfor %}
 {% endif %}
 {% endif %}
-{% else %}
-  none: {}
 {% endif %}
 pullSecret: '{{ lab_pull_secret_install | default(lab_pull_secret) }}'
 sshKey: '{{ lab_ssh_pubkey }}'

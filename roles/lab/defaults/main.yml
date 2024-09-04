@@ -36,7 +36,7 @@ lab_mac_base: '52:54:00:ff:ff:'
 lab_cluster_network: '10.132.0.0/14'
 lab_service_network: '172.30.0.0/16'
 lab_path: '/root/labs'
-lab_platform: 'none'
+lab_platform: 'baremetal'
 lab_proxy_exceptions:
   - "{{ lab_name }}.{{ lab_domain }}"
   - "api-int.{{ lab_name }}.{{ lab_domain }}"

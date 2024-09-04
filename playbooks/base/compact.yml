@@ -17,9 +17,7 @@
     lab_bootstrap_mac: "{{ lab_mac_base }}00"
     lab_ingress_ips: ["{{ lab_node_network_base }}11"]
     lab_name: 'standard'
-    lab_master_replicas: 3
     lab_mac_base: 'be:be:ca:fe:02:'
-    lab_platform: 'baremetal'
     lab_redfish_ip: "{{ lab_node_network_base }}1"
     lab_node_disk_data: 1
     lab_node_network_base: '192.168.125.'
