@@ -7,27 +7,20 @@
 
   vars:
     lab_appliance: True
-    lab_appliance_version: '4.14.11'
-    lab_abi_ip: "{{ lab_node_network_base }}31"
-    lab_api_ips: ["{{ lab_node_network_base }}15"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}16"]
-    lab_name: 'apls'
-    lab_master_replicas: 3
-    lab_worker_replicas: 1
     lab_mac_base: 'be:be:ca:fe:03:'
     lab_node_disk_sys: 150
     lab_node_disk_data: 1
     lab_node_network_base: '192.168.125.'
     lab_node_role: 'node'
     lab_path: '/home/ocp-labs'
-    lab_platform: 'baremetal'
     lab_pull_secret_install: '{"auths":{"":{"auth":"dXNlcjpwYXNz"}}}'
-    lab_hosts:
-      - {'id': '31'}
-      - {'id': '32'}
-      - {'id': '33'}
-      - {'id': '34'}
     libvirt_image_dir: '/home/libvirt-ocp'
+
+    lab_name: 'appliance'
+    lab_hosts: []
+    lab_abi_ip: ""
+    lab_api_ips: []
+    lab_ingress_ips: []
 
   environment:
     PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
@@ -36,6 +29,9 @@
     - 'lab'
 
   tasks:
+    - name: 'Execute base handlers'
+      ansible.builtin.meta: flush_handlers
+
     - name: 'Copy configuration files to deploy directory'
       ansible.builtin.copy:
         src: "{{ lab_path }}/{{ lab_name }}/config/appliance-config.yaml"
