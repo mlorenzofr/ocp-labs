@@ -10,11 +10,6 @@
     lab_path: '/root/labs'
     libvirt_image_dir: '/home/libvirt-ocp'
 
-  vars_prompt:
-    - name: lab_name
-      prompt: 'lab name to remove'
-      private: false
-
   tasks:
     - name: 'Test lab_name'
       ansible.builtin.fail:
