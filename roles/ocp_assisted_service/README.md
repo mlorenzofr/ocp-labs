@@ -19,6 +19,8 @@ Additionally, the `ocp_lvms` role will be required for persistent storage.
 * `ocp_assisted_service_storage_image_size`. _Number_. _PersistentVolumeClaim_ size for image replica volume.
 * `ocp_assisted_service_images`. _List_. List of images available for _Assisted_service_.
 * `ocp_assisted_service_registries`. _List_. List with image registries and mirrors for agent configuration.
+* `ocp_assisted_service_ui`. _Bool_. Set this tu `true` to install the assisted-installer-ui.
+* `ocp_assisted_service_ui_image`. _String_. Image used to install the assisted-installer-ui.
 
 ### Variables for `ocp_assisted_service_images` elements
 * `ocp_version`. _String_. Openshift release version.

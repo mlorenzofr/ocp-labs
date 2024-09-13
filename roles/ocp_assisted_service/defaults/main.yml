@@ -16,3 +16,5 @@ ocp_assisted_service_images:
     arch: 'x86_64'
     version: '414.92.202310210434-0'
 ocp_assisted_service_registries: []
+ocp_assisted_service_ui: false
+ocp_assisted_service_ui_image: 'quay.io/edge-infrastructure/assisted-installer-ui:latest'

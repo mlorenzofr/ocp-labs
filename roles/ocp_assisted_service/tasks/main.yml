@@ -16,3 +16,11 @@
   failed_when: false
   when: ocp_assisted_service_install
   notify: 'apply AgentServiceConfig'
+
+- name: 'Create assisted-service-ui manifest'
+  ansible.builtin.template:
+    src: 'assisted-service-ui.yaml.j2'
+    dest: "{{ ocp_assisted_service_path }}/assisted-service-ui.yaml"
+    mode: '0644'
+  when: ocp_assisted_service_ui
+  notify: 'install assisted-service-ui'

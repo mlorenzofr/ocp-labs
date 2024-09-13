@@ -1,0 +1,43 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: assisted-service-ui
+  namespace: {{ ocp_assisted_service_ns }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: assisted-service-ui
+  template:
+    metadata:
+      labels:
+        app: assisted-service-ui
+    spec:
+      containers:
+        - name: assisted-service-ui
+          image: {{ ocp_assisted_service_ui_image }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: ASSISTED_SERVICE_URL
+              value: {{ ocp_assisted_service_url | default('http://assisted-service.{}.svc.cluster.local:8090'.format(ocp_assisted_service_ns)) }}
+          ports:
+            - containerPort: 8080
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: assisted-service-ui
+  name: assisted-service-ui
+  namespace: {{ ocp_assisted_service_ns }}
+spec:
+  type: ClusterIP
+  ports:
+  - name: assisted-service-ui
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: assisted-service-ui

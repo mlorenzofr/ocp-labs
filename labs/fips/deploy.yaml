@@ -2,6 +2,14 @@
 # Run it with:
 #   ap labs/fips/deploy.yaml
 
+- name: 'Clean appliance-sno lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'fips'
+  tags:
+    - 'clean'
+    - 'never'
+
 - name: 'Import compact playbook'
   ansible.builtin.import_playbook: ../../playbooks/base/compact.yml
   vars:
@@ -26,6 +34,7 @@
     lab_mac_base: 'be:be:ca:fe:02:'
     lab_install: false
 
+    ocp_assisted_service_ui: true
     ocp_assisted_service_images:
       - ocp_version: '4.15.0'
         arch: 'x86_64'

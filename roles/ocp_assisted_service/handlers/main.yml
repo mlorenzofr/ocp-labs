@@ -24,7 +24,7 @@
 - name: 'Waiting until assisted-service pods are ready'
   ansible.builtin.command:
     cmd: >
-      /usr/local/bin/oc wait -n {{ ocp_mce_ns }}
+      /usr/local/bin/oc wait -n {{ ocp_assisted_service_ns }}
       -l app="assisted-service"
       --for=condition=Ready
       pods --timeout=300s
@@ -33,3 +33,21 @@
   when: ocp_assisted_service_install
   listen:
     - 'apply AgentServiceConfig'
+
+- name: 'Install assisted-service-ui'
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/oc apply -f {{ ocp_assisted_service_path }}/assisted-service-ui.yaml"
+  when: ocp_assisted_service_install
+  listen:
+    - 'install assisted-service-ui'
+
+- name: 'Expose assisted-service-ui'
+  ansible.builtin.command:
+    cmd: >
+      /usr/local/bin/oc create route edge assisted-service-ui
+      -n {{ ocp_assisted_service_ns }}
+      --service=assisted-service-ui
+      --port=8080
+  when: ocp_assisted_service_install
+  listen:
+    - 'install assisted-service-ui'
