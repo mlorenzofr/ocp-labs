@@ -1,0 +1,11 @@
+apiVersion: v1beta1
+kind: ApplianceConfig
+ocpRelease:
+  version: 4.16.8
+  channel: stable
+  cpuArchitecture: x86_64
+pullSecret: '{"auths":{<redacted>}}'
+sshKey: <redacted>
+userCorePass: <redacted>
+diskSizeGB: 150
+stopLocalRegistry: True

@@ -1,0 +1,6 @@
+---
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: applianceiso
+rendezvousIP: 192.168.125.51
