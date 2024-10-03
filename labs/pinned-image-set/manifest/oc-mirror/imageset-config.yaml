@@ -14,8 +14,8 @@ mirror:
         maxversion: '4.16.9'
       - name: stable-4.17
         type: ocp
-        minversion: '4.17.0-0.ci-2024-08-28-230925'
-        maxversion: '4.17.0-0.ci-2024-08-28-230925'
+        minversion: '4.17.0'
+        maxversion: '4.17.0'
     graph: true
   operators: []
   additionalImages:

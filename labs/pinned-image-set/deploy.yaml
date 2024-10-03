@@ -2,6 +2,14 @@
 # Run it with:
 #   ap labs/pinned-image-set/deploy.yaml
 
+- name: 'Clean pinned-image-set lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'pinnedis'
+  tags:
+    - 'clean'
+    - 'never'
+
 - name: 'Import ABI playbook'
   ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
   tags:
@@ -33,7 +41,7 @@
     ocp_mco_icsp:
       - name: 'generic-0'
         repo_mirrors:
-          - source: 'registry.ci.openshift.org/ocp/4.17-2024-08-28-230925'
+          - source: 'quay.io/openshift-release-dev/ocp-release:4.17.0-x86_64'
             mirrors:
               - 'pinnedis-registry.pinnedis.local.lab/openshift/release'
           - source: 'registry.access.redhat.com/ubi8'
