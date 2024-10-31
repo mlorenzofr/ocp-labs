@@ -62,5 +62,15 @@ platform:
 {% endif %}
 {% endif %}
 {% endif %}
+{% if lab_custom_capability_set != '' %}
+capabilities:
+  baselineCapabilitySet: {{ lab_custom_capability_set }}
+{% if lab_custom_capabilities | length > 0 %}
+  additionalEnabledCapabilities:
+{% for capability in lab_custom_capabilities %}
+    - {{ capability }}
+{% endfor %}
+{% endif %}
+{% endif %}
 pullSecret: '{{ lab_pull_secret_install | default(lab_pull_secret) }}'
 sshKey: '{{ lab_ssh_pubkey }}'

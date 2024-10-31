@@ -10,6 +10,8 @@ lab_appliance_local_registry: false
 lab_appliance_version: '4.15.0'
 lab_bootstrap_ip: ''
 lab_bootstrap_mac: ''
+lab_custom_capabilities: []
+lab_custom_capability_set: ''
 lab_custom_manifests: []
 lab_dnsmasq_root: '/opt/dnsmasq'
 lab_dns_servers: []

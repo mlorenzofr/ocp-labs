@@ -8,6 +8,8 @@ None.
 * `lab_api_ips`. _List_. List of IP addresses assigned OCP API.
 * `lab_bootstrap_ip`. _String_. IP address of the machine used for bootstrap OCP cluster.
 * `lab_bootstrap_mac`. _String_. MAC address of the machine used for bootstrap OCP cluster.
+* `lab_custom_capabilities`. _List_. List of cluster capabilities to enable.
+* `lab_custom_capability_set`. _String_. Apply a baseline capability set to the cluster.
 * `lab_cluster_network`. _String_. k8s internal network CIDR.
 * `lab_domain`. _String_. Base domain used in the OCP cluster.
 * `lab_dnsmasq_root`. _String_. Path to the directory where the dnsmasq snippets are hosted.
@@ -80,6 +82,36 @@ None.
     lab_domain: 'example.com'
     lab_network_name: 'example-network'
     lab_worker_replicas: 2
+
+  roles:
+    - lab
+```
+
+### Setting custom capabilities
+```yaml
+- hosts: servers
+
+  vars:
+    lab_domain: 'example.com'
+    lab_network_name: 'example-network'
+    lab_worker_replicas: 2
+    lab_custom_capability_set: 'None'
+    lab_custom_capabilities:
+      - baremetal
+      - MachineAPI
+      - marketplace
+      - OperatorLifecycleManager
+      - Console
+      - Ingress
+      - Insights
+      - Storage
+      - CSISnapshot
+      - NodeTuning
+      - ImageRegistry
+      - Build
+      - CloudCredential
+      - DeploymentConfig
+      - CloudControllerManager
 
   roles:
     - lab
