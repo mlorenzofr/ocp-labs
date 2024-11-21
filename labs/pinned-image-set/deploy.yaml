@@ -28,6 +28,23 @@
       - {id: '21'}
       - {id: '22'}
       - {id: '23'}
+    lab_custom_capability_set: 'None'
+    lab_custom_capabilities:
+      - baremetal
+      - MachineAPI
+      - marketplace
+      - OperatorLifecycleManager
+      - Console
+      - Ingress
+      - Insights
+      - Storage
+      - CSISnapshot
+      - NodeTuning
+      - ImageRegistry
+      - Build
+      - CloudCredential
+      - DeploymentConfig
+      - CloudControllerManager
     start_install: true
 
 - name: 'Configure Openshift cluster'
