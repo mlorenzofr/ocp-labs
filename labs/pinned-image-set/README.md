@@ -34,16 +34,48 @@ oc patch clusterversion/version --patch '{"spec":{"channel":"nightly"}}' --type 
 oc apply -f enable-techpreview.yaml
 oc adm wait-for-stable-cluster --minimum-stable-period=300s
 ```
-7. Set the registries configuration to use the internal registry:
+7. Disable the `ImageStreamTags` _samples_ because they will cause [problems](https://issues.redhat.com/browse/OCPBUGS-35199) during the upgrade.
 ```shell
-oc apply -f icsp-generic-0.yaml
+declare -a tags
+tags+=( "cli:latest" )
+tags+=( "cli-artifacts:latest" )
+tags+=( "installer:latest" )
+tags+=( "installer-artifacts:latest" )
+tags+=( "must-gather:latest" )
+tags+=( "network-tools:latest" )
+tags+=( "oauth-proxy:v4.4" )
+tags+=( "tests:latest" )
+tags+=( "tools:latest" )
+for tag in "${tags[@]}"; do
+    oc patch imagestreamtags "${tag}" -n openshift --type json -p '[{"op": "add", "path": "/tag/reference", "value": true}]'
+done
+```
+If we need to re-enable them:
+```shell
+declare -a imgstreams
+imgstreams+=( "cli" )
+imgstreams+=( "cli-artifacts" )
+imgstreams+=( "installer" )
+imgstreams+=( "installer-artifacts" )
+imgstreams+=( "must-gather" )
+imgstreams+=( "network-tools" )
+imgstreams+=( "oauth-proxy" )
+imgstreams+=( "tests" )
+imgstreams+=( "tools" )
+for img in "${imgstreams[@]}"; do
+    oc patch imagestream "${img}" -n openshift --type json -p '[{"op": "add", "path": "/spec/tags/0/reference", "value": false}]'
+done
+```
+8. Set the registries configuration to use the internal registry:
+```shell
+# oc apply -f icsp-generic-0.yaml
 oc apply -f icsp-release-0.yaml
 ```
-8. Block Internet access from the lab network. This way we can be sure that only internal registry is used.
+9. Block Internet access from the lab network. This way we can be sure that only internal registry is used.
 ```shell
 iptables -I LIBVIRT_FWO 1 -s 192.168.129.0/24 ! -d 192.168.129.0/24 -j REJECT
 ```
-9. Add the images to the `pinned-image-set.yaml` file. They can be obtained with:
+10. Add the images to the `pinned-image-set.yaml` file. They can be obtained with:
 ```shell
 oc adm --insecure=true release info pinnedis-registry.pinnedis.local.lab/openshift/release-images:4.17.0-0.nightly-2024-08-01-100805-x86_64 --output=json \
   | jq "[.references.spec.tags[] | .from.name]" \
@@ -55,23 +87,23 @@ Besides that we should add the release image to the list:
 oc adm release info pinnedis-registry.pinnedis.local.lab/openshift/release-images:4.17.0-0.nightly-2024-08-01-100805-x86_64 --insecure=true \
   | awk '/Pull From/ { print "    - name: "$3 }'
 ```
-10. Apply the `PinnedImageSet` and wait for the images to download.
+11. Apply the `PinnedImageSet` and wait for the images to download.
 > Note: We can verify if the process has finished by checking the images in the nodes or in the nginx access log.
 ```shell
 oc apply -f pinned-image-set.yaml
 ```
-11. Stop the internal registry
+12. Stop the internal registry
 > _WARNING: The upgrade is not possible without registry_  
 > This step is not possible right now
 ```shell
 pinnedis-registry:~# podman stop registry
 ```
-12. Disable `TechPreview` for the upgrade. Follow the steps provided [in this document](docs/disable-techpreview.md)
-13. For the cluster upgrade:
+13. Disable `TechPreview` for the upgrade. Follow the steps provided [in this document](docs/disable-techpreview.md)
+14. For the cluster upgrade:
 ```shell
 oc adm upgrade --to-image=pinnedis-registry.pinnedis.local.lab/openshift/release-images@sha256:1995202f11dc5a4763cdc44ff30d4d4d6560b3a6e29873b51af2992bd8e33109 --force --allow-not-recommended=true --allow-explicit-upgrade
 ```
-14. To follow up the upgrade progress:
+15. To follow up the upgrade progress:
 ```shell
 watch -n 10 "oc adm upgrade && oc get co && oc get nodes -o wide"
 ```
