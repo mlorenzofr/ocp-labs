@@ -2,6 +2,51 @@
 # Run it with:
 #   ap labs/mcgh/deploy.yaml
 
+- name: 'Clean global cluster'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'mcgh'
+  tags:
+    - 'clean'
+    - 'global-cluster'
+    - 'never'
+
+- name: 'Clean hub cluster #1'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'acm1'
+  tags:
+    - 'clean'
+    - 'acm-cluster1'
+    - 'never'
+
+- name: 'Clean hub cluster #2'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'acm2'
+  tags:
+    - 'clean'
+    - 'acm-cluster2'
+    - 'never'
+
+- name: 'Clean spoke cluster #1'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'spoke1'
+  tags:
+    - 'clean'
+    - 'spoke-cluster1'
+    - 'never'
+
+- name: 'Clean spoke cluster #2'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'spoke2'
+  tags:
+    - 'clean'
+    - 'spoke-cluster2'
+    - 'never'
+
 - name: 'Install global cluster'
   ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
   vars:
