@@ -15,18 +15,8 @@
     lab_network_name: 'lab-network'
     lab_install: true
     lab_mac_base: 'be:be:ca:fe:02:'
-    ocp_baremetal_infras:
-      - name: 'hosted'
-        ns: 'hardware-inventory'
-        hypershift: true
-        ntp: ['192.168.125.1']
-        pullsecret: "{{ lab_pull_secret }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
-        redfish: '192.168.125.1'
-        inventory:
-          - {'name': "{{ lab_name }}-bmh-1", 'id': '25'}
-          - {'name': "{{ lab_name }}-bmh-2", 'id': '26'}
-          - {'name': "{{ lab_name }}-bmh-3", 'id': '27'}
+    lab_node_network_base: '192.168.125.'
+    ocp_baremetal_infras: []
 
   environment:
     KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"

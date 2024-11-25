@@ -1,0 +1,70 @@
+---
+# Run it with:
+#   ap labs/std-slim/deploy.yaml
+
+- name: 'Clean std-slim lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'stdslim'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'stdslim'
+    lab_abi_ip: "{{ lab_node_network_base }}51"
+    lab_api_ips: ["{{ lab_node_network_base }}58"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}59"]
+    lab_mac_base: 'be:be:ca:fe:05:'
+    lab_worker_replicas: 0
+    lab_node_memory: 22000
+    lab_node_disk_data: 60
+    lab_hosts:
+      - {id: '51'}
+      - {id: '52'}
+      - {id: '53'}
+    lab_custom_capability_set: 'None'
+    lab_custom_capabilities:
+      - baremetal
+      - MachineAPI
+      - marketplace
+      - OperatorLifecycleManager
+      - Console
+      - Ingress
+      - Storage
+      - NodeTuning
+      - DeploymentConfig
+    start_install: true
+
+- name: 'Import  setup playbook'
+  ansible.builtin.import_playbook: ../../playbooks/setup/mce.yaml
+  vars:
+    lab_name: 'stdslim'
+    lab_mac_base: 'be:be:ca:fe:05:'
+
+    ocp_assisted_service_images:
+      - ocp_version: '4.16.3'
+        arch: 'x86_64'
+        version: '416.94.202406251923-0'
+      - ocp_version: '4.17.0'
+        arch: 'x86_64'
+        version: '417.94.202408270355-0'
+
+    ocp_baremetal_infras:
+      - name: 'infra1'
+        ns: 'hardware-inventory'
+        pullsecret: "{{ lab_pull_secret }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        ntp: ["{{ lab_node_network_base }}1"]
+        redfish: "{{ lab_node_network_base }}1"
+        inventory:
+          - {'name': "{{ lab_name }}-bmh-1", 'id': '54'}
+
+    ocp_metallb_pool_ips: "{{ lab_node_network_base }}57-{{ lab_node_network_base }}57"
+    ocp_metallb_pool_name: "{{ lab_network_name }}"
+  tags:
+    - 'postinst'
