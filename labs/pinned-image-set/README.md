@@ -50,7 +50,12 @@ for tag in "${tags[@]}"; do
     oc patch imagestreamtags "${tag}" -n openshift --type json -p '[{"op": "add", "path": "/tag/reference", "value": true}]'
 done
 ```
+<details>
+
+<summary>
 If we need to re-enable them:
+</summary>
+
 ```shell
 declare -a imgstreams
 imgstreams+=( "cli" )
@@ -66,6 +71,9 @@ for img in "${imgstreams[@]}"; do
     oc patch imagestream "${img}" -n openshift --type json -p '[{"op": "add", "path": "/spec/tags/0/reference", "value": false}]'
 done
 ```
+
+</details>
+
 8. Set the registries configuration to use the internal registry:
 ```shell
 # oc apply -f icsp-generic-0.yaml
