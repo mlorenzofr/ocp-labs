@@ -1,0 +1,111 @@
+---
+# Run it with:
+#   ap labs/dan/deploy.yaml
+
+- name: 'Clean dan lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'dan'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'dan'
+    lab_node_network_base: '192.168.128.'
+    lab_network_name: 'dan-network'
+    lab_abi_ip: "{{ lab_node_network_base }}21"
+    lab_api_ips: ["{{ lab_node_network_base }}10"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}11"]
+    lab_mac_base: 'da:00:00:00:00:'
+    lab_worker_replicas: 0
+    lab_node_memory: 25000
+    lab_node_disk_data: 60
+    lab_hosts:
+      - {id: '21'}
+      - {id: '22'}
+      - {id: '23'}
+    start_install: true
+
+- name: 'Create MCE manifests'
+  ansible.builtin.import_playbook: ../../playbooks/setup/mce.yaml
+  vars:
+    lab_name: 'dan'
+    lab_node_network_base: '192.168.128.'
+    lab_network_name: 'dan-network'
+    lab_mac_base: 'da:00:00:00:00:'
+    lab_install: false
+
+    ocp_assisted_service_images:
+      - ocp_version: '4.16.3'
+        arch: 'x86_64'
+        version: '416.94.202406251923-0'
+      - ocp_version: '4.17.0'
+        arch: 'x86_64'
+        version: '417.94.202408270355-0'
+
+    ocp_baremetal_infras:
+      - name: 'hosted'
+        ns: 'hardware-inventory'
+        hypershift: true
+        pullsecret: "{{ lab_pull_secret }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        ntp: ["{{ lab_node_network_base }}1"]
+        redfish: "{{ lab_node_network_base }}1"
+        inventory:
+          - {'id': '25'}
+  tags:
+    - 'postinst'
+    - 'baremetal'
+
+- name: 'Create HCP manifests'
+  ansible.builtin.import_playbook: ../../playbooks/setup/hcp.yaml
+  vars:
+    lab_name: 'dan'
+    lab_node_network_base: '192.168.128.'
+    lab_network_name: 'dan-network'
+    lab_mac_base: 'da:00:00:00:00:'
+    lab_install: false
+
+    ocp_assisted_service_images:
+      - ocp_version: '4.16.3'
+        arch: 'x86_64'
+        version: '416.94.202406251923-0'
+      - ocp_version: '4.17.0'
+        arch: 'x86_64'
+        version: '417.94.202408270355-0'
+
+    ocp_baremetal_infras:
+      - name: 'hosted'
+        ns: 'hardware-inventory'
+        hypershift: true
+        pullsecret: "{{ lab_pull_secret }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        ntp: ["{{ lab_node_network_base }}1"]
+        redfish: "{{ lab_node_network_base }}1"
+        inventory:
+          - {'id': '25'}
+
+    ocp_hcp_clusters:
+      - name: 'hcp1'
+        ns: 'hcp1'
+        infra: 'hosted'
+        agent_ns: 'hardware-inventory'
+        pullsecret: "{{ lab_pull_secret_b64 }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        version: '4.17.0'
+        service_network: '172.32.0.0/16'
+        domain: 'local.lab'
+        lb: "{{ lab_node_network_base }}50"
+        replicas: 1
+
+
+    ocp_metallb_pool_ips: "{{ lab_node_network_base }}40-{{ lab_node_network_base }}45"
+    ocp_metallb_pool_name: "{{ lab_network_name }}"
+  tags:
+    - 'postinst'
+    - 'hcp'

@@ -1,0 +1,19 @@
+<network>
+  <name>dan-network</name>
+  <metadata>
+    <kvirt:info xmlns:kvirt="kvirt">
+      <kvirt:plan>kvirt</kvirt:plan>
+    </kvirt:info>
+  </metadata>
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  <bridge name='dan-network' stp='on' delay='0'/>
+  <mac address='52:54:00:e2:26:a2'/>
+  <domain name='manor.lab' localOnly='no'/>
+  <dns enable='no'/>
+  <ip family='ipv4' address='192.168.128.1' prefix='24'>
+  </ip>
+</network>

@@ -1,0 +1,8 @@
+- op: add
+  path: /spec/clusterNetwork/-
+  value:
+    cidr: fd01::/48
+    hostPrefix: 64
+- op: add
+  path: /spec/serviceNetwork/-
+  value: fd02::/112

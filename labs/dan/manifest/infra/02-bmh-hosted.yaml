@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dan-worker-1-bmc-secret
+  namespace: hardware-inventory
+data:
+  password: <redacted>
+  username: <redacted>
+type: Opaque
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: dan-worker-1
+  namespace: hardware-inventory
+  labels:
+    infraenvs.agent-install.openshift.io: hosted
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: dan-worker-1
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: da:00:00:00:00:04
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.128.1:9000/redfish/v1/Systems/local/dan-worker-1
+    credentialsName: dan-worker-1-bmc-secret
