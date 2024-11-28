@@ -1,0 +1,38 @@
+---
+- name: 'Create calico directory'
+  ansible.builtin.file:
+    path: "{{ lab_path }}/{{ lab_name }}/config/calico"
+    state: 'directory'
+
+- name: 'Download Calico'
+  ansible.builtin.unarchive:
+    src: "https://github.com/projectcalico/calico/releases/download/{{ calico_version }}/ocp.tgz"
+    dest: "{{ lab_path }}/{{ lab_name }}/config/calico"
+    remote_src: true
+    extra_opts:
+      - '--strip-components=1'
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: 'Change Calico installation registry to quay'
+  ansible.builtin.lineinfile:
+    path: "{{ lab_path }}/{{ lab_name }}/config/calico/01-cr-installation.yaml"
+    insertafter: '  variant: Calico'
+    line: '  registry: quay.io'
+
+- name: 'Replace install-resources-script image'
+  ansible.builtin.lineinfile:
+    path: "{{ lab_path }}/{{ lab_name }}/config/calico/02-tigera-operator.yaml"
+    regexp: '^(\s+)image: docker.io/calico/ctl:(.*)$'
+    line: '\1image: quay.io/calico/ctl:\2'
+    backrefs: true
+
+- name: 'Create openshift manifests directory'
+  ansible.builtin.file:
+    path: "{{ lab_path }}/{{ lab_name }}/deploy/openshift"
+    state: 'directory'
+
+- name: 'Copy calico manifests for the installation'
+  ansible.posix.synchronize:
+    src: "{{ lab_path }}/{{ lab_name }}/config/calico/"
+    dest: "{{ lab_path }}/{{ lab_name }}/deploy/openshift"
+  delegate_to: "{{ inventory_hostname }}"

@@ -1,0 +1,43 @@
+---
+# Run it with:
+#   ap labs/calico/deploy.yaml
+
+- name: 'Clean calico lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'calico'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'calico'
+    lab_network_type: 'Calico'
+    calico_version: 'v3.29.1'
+    lab_abi_ip: "{{ lab_node_network_base }}61"
+    lab_api_ips: ["{{ lab_node_network_base }}200"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}201"]
+    lab_mac_base: 'ca:11:c0:00:00:'
+    lab_worker_replicas: 0
+    lab_node_memory: 22000
+    lab_node_disk_data: 60
+    lab_hosts:
+      - {id: '61'}
+      - {id: '62'}
+      - {id: '63'}
+    lab_custom_capability_set: 'None'
+    lab_custom_capabilities:
+      - baremetal
+      - MachineAPI
+      - marketplace
+      - OperatorLifecycleManager
+      - Console
+      - Ingress
+      - Storage
+      - NodeTuning
+      - DeploymentConfig
+    start_install: true

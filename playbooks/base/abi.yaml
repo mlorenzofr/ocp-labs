@@ -57,6 +57,11 @@
           --dir {{ lab_path }}/{{ lab_name }}/deploy
         creates: "{{ lab_path }}/{{ lab_name }}/deploy/.openshift_install_state.json"
 
+    - name: 'Include calico tasks'
+      ansible.builtin.include_tasks:
+        file: '../setup/calico.yaml'
+      when: calico_version is defined
+
     - name: 'Generate bootstrap ISO image'
       ansible.builtin.command:
         cmd: >
