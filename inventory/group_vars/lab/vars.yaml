@@ -1,15 +1,8 @@
 ---
 lab_host_haproxy_labs:
   # - {'name': 'standard', 'backends': ['192.168.125.11']}
-  # - {'name': 'okd', 'backends': ['192.168.125.11']}
-  # - {'name': 'spoke', 'backends': ['192.168.125.50']}
   - {'name': 'dan', 'domain': 'manor.lab', 'backends': ['192.168.128.11']}
   - {'name': 'fips', 'backends': ['192.168.125.11']}
-  - {'name': 'mcgh', 'backends': ['192.168.125.71'], api: True, api_ips: ['192.168.125.70']}
-  - {'name': 'acm1', 'backends': ['192.168.125.75'], api: True, api_ips: ['192.168.125.75']}
-  - {'name': 'acm2', 'backends': ['192.168.125.76'], api: True, api_ips: ['192.168.125.76']}
-  - {'name': 'spoke1', 'backends': ['192.168.125.77']}
-  - {'name': 'spoke2', 'backends': ['192.168.125.78']}
   # - name: 'cnv'
   #   backends: ['[fd00:0:0:1::11]']
   #   api: True
@@ -48,8 +41,10 @@ lab_host_networks:
 # lab_host_haproxy_snippets:
 #  - 'haproxy/assisted-service.j2'
 lab_host_ocp_versions:
+  - {version: '4.17.7', state: 'present'}
+  - {version: '4.16.25', state: 'present'}
   - {version: '4.16.9', state: 'present'}
   - {version: '4.16.3', state: 'absent'}
-  - {version: '4.15.20', state: 'present'}
-  - {version: '4.14.33', state: 'present'}
+  - {version: '4.15.20', state: 'absent'}
+  - {version: '4.14.33', state: 'absent'}
 ...
