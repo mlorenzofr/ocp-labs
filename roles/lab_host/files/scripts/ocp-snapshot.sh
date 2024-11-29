@@ -3,7 +3,7 @@
 set -euo pipefail
 
 function vmlist() {
-  virsh list | grep "$1-" | awk '{ print $2 }'
+  virsh list | grep "$1-" | grep -v registry | awk '{ print $2 }'
 }
 
 function create() {
