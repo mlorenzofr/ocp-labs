@@ -1,0 +1,98 @@
+---
+# Run this with:
+#   ap labs/hcp-calico/deploy.yaml
+
+- name: 'Clean hcp-calico lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'hcp-calico'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  vars:
+    lab_name: 'hcp-calico'
+    lab_network_type: 'Calico'
+    calico_version: 'v3.29.1'
+    lab_abi_ip: "{{ lab_node_network_base }}61"
+    lab_api_ips: ["{{ lab_node_network_base }}200"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}201"]
+    lab_mac_base: 'ca:11:c0:00:00:'
+    lab_worker_replicas: 0
+    lab_node_memory: 32000
+    lab_node_disk_data: 60
+    lab_hosts:
+      - {id: '61'}
+      - {id: '62'}
+      - {id: '63'}
+    start_install: true
+  tags:
+    - 'ocp'
+
+- name: 'Import hcp-compact setup playbook'
+  ansible.builtin.import_playbook: ../../playbooks/setup/hcp.yaml
+  vars:
+    lab_name: 'hcp-calico'
+    lab_mac_base: 'ca:11:c0:00:00:'
+    lab_node_network_base: '192.168.125'
+
+    ocp_metallb_pool_ips: "{{ lab_node_network_base }}.204-{{ lab_node_network_base }}.205"
+
+    ocp_assisted_service_op: 'acm'
+    ocp_assisted_service_images:
+      - ocp_version: '4.14.34'
+        arch: 'x86_64'
+        version: '414.92.202407091253-0'
+      - ocp_version: '4.17.0'
+        arch: 'x86_64'
+        version: '417.94.202408270355-0'
+
+    ocp_baremetal_infras:
+      - name: 'hcp1'
+        ns: 'hardware-inventory'
+        hypershift: true
+        pullsecret: "{{ lab_pull_secret }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        ntp: ["{{ lab_node_network_base }}.1"]
+        redfish: "{{ lab_node_network_base }}.1"
+        inventory:
+          - {'name': 'hcp1-worker-1', 'id': '64'}
+    ocp_hcp_clusters:
+      - name: 'hcp1'
+        ns: 'hcp1'
+        infra: 'hcp1'
+        agent_ns: 'hardware-inventory'
+        pullsecret: "{{ lab_pull_secret_b64 }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        version: '4.17.0'
+        network_type: 'Calico'
+        service_network: '172.32.0.0/16'
+        domain: 'local.lab'
+        lb: "{{ lab_node_network_base }}.206"
+        replicas: 1
+  tags:
+    - 'postinst'
+
+- name: 'Prepare cluster "hcp1" configuration'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hcp/create-config.yml
+  vars:
+    lab_name: 'hcp-calico'
+    lab_path: '/root/labs'
+    spoke_name: 'hcp1'
+  tags:
+    - 'postinst'
+    - 'hcp1'
+
+- name: 'Install MetalLB on spoke cluster hcp1'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hcp/create-ingress.yml
+  vars:
+    lab_name: 'hcp-calico'
+    lab_path: '/root/labs'
+    lab_node_network_base: '192.168.125'
+    spoke_name: 'hcp1'
+    spoke_lb_ips: "{{ lab_node_network_base }}.206-{{ lab_node_network_base }}.206"
+  tags:
+    - 'postinst'
+    - 'hcp1'
