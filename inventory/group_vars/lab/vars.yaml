@@ -3,6 +3,7 @@ lab_host_haproxy_labs:
   # - {'name': 'standard', 'backends': ['192.168.125.11']}
   - {'name': 'dan', 'domain': 'manor.lab', 'backends': ['192.168.128.11']}
   - {'name': 'fips', 'backends': ['192.168.125.11']}
+  - {'name': 'hcp-calico', 'backends': ['192.168.125.201']}
   # - name: 'cnv'
   #   backends: ['[fd00:0:0:1::11]']
   #   api: True
