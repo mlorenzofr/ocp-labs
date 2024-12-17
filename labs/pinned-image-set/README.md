@@ -222,3 +222,4 @@ quay.io/openshift-release-dev/ocp-v4.0-art-dev   <none>              sha256:001c
 * [Openshift dev releases](https://quay.io/repository/openshift-release-dev/ocp-release?tab=tags)
 * [Openshift 4.16 clients](https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.16.0-rc.3)
 * [Mirroring images using oc-mirror](https://docs.openshift.com/container-platform/4.15/installing/disconnected_install/installing-mirroring-disconnected.html)
+* [Red Hat OpenShift Container Platform Update Path](https://access.redhat.com/labs/ocpupgradegraph/update_path)
