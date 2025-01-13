@@ -1,9 +1,9 @@
 FROM alpine:3.19
 
 ARG UID
-ENV ANSIBLE_VERSION 7.5.0
-ENV ANSIBLE_LINT_VERSION 6.16.0
-ENV ANSIBLE_COMM_GENERAL_VERSION 6.6.0
+ENV ANSIBLE_VERSION 11.1.0
+ENV ANSIBLE_LINT_VERSION 24.12.0
+ENV ANSIBLE_COMM_GENERAL_VERSION 10.1.0
 
 RUN apk --update --no-cache add \
         bash \
@@ -36,13 +36,15 @@ RUN pip install --break-system-packages \
         yamllint \
         molecule \
         netaddr \
+        kubernetes \
         ansible==${ANSIBLE_VERSION} \
         ansible-lint==${ANSIBLE_LINT_VERSION}
 
 RUN ansible-galaxy collection install \
         community.general:==${ANSIBLE_COMM_GENERAL_VERSION} \
         ansible.posix \
-        karmab.kcli
+        karmab.kcli \
+        kubernetes.core
 
 # script used to init ansible environment
 COPY container/ansible-init /usr/bin/
