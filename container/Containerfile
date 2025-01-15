@@ -4,6 +4,7 @@ ARG UID
 ENV ANSIBLE_VERSION 11.1.0
 ENV ANSIBLE_LINT_VERSION 24.12.0
 ENV ANSIBLE_COMM_GENERAL_VERSION 10.1.0
+ENV KUBECTL_VERSION 1.32.0
 
 RUN apk --update --no-cache add \
         bash \
@@ -45,6 +46,9 @@ RUN ansible-galaxy collection install \
         ansible.posix \
         karmab.kcli \
         kubernetes.core
+
+RUN curl -LO "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl" --output-dir /usr/bin/ \
+  && chmod 755 /usr/bin/kubectl
 
 # script used to init ansible environment
 COPY container/ansible-init /usr/bin/
