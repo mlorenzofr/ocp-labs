@@ -1,0 +1,19 @@
+{{ ansible_managed | comment }}
+
+bind-dynamic
+except-interface=podman*,vnet*
+no-resolv
+no-hosts
+strict-order
+no-negcache
+cache-size=250
+max-cache-ttl=300
+
+server=10.0.0.2
+server=1.1.1.1
+
+host-record=api-int.{{ capi_cluster_name }}.{{ capi_cluster_domain }},{{ nutanix_cluster_api_vip }}
+host-record=api.{{ capi_cluster_name }}.{{ capi_cluster_domain }},{{ nutanix_cluster_api_vip }}
+address=/.apps.{{ capi_cluster_name }}.{{ capi_cluster_domain }}/{{ nutanix_cluster_ingress_vip }}
+host-record=assisted-service.assisted-installer.com,{{ ansible_default_ipv4.address }}
+host-record=assisted-image.assisted-installer.com,{{ ansible_default_ipv4.address }}

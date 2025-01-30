@@ -1,0 +1,21 @@
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: {{ nutanix_csi_sc_name }}
+  annotations:
+    storageclass.kubernetes.io/is-default-class: 'true'
+provisioner: csi.nutanix.com
+parameters:
+  csi.storage.k8s.io/fstype: ext4
+  csi.storage.k8s.io/provisioner-secret-namespace: {{ nutanix_csi_namespace }}
+  csi.storage.k8s.io/provisioner-secret-name: {{ nutanix_csi_secret_name | default('ntnx-secret') }}
+  csi.storage.k8s.io/controller-expand-secret-name: {{ nutanix_csi_secret_name | default('ntnx-secret') }}
+  csi.storage.k8s.io/node-publish-secret-namespace: {{ nutanix_csi_namespace }}
+  csi.storage.k8s.io/node-publish-secret-name: {{ nutanix_csi_secret_name | default('ntnx-secret') }}
+  csi.storage.k8s.io/controller-expand-secret-namespace: {{ nutanix_csi_namespace }}
+  storageContainer: {{ nutanix_csi_storage_container }}
+  storageType: NutanixVolumes
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+volumeBindingMode: Immediate

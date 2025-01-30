@@ -1,0 +1,87 @@
+---
+- name: 'Create Nutanix CSI operator namespace'
+  kubernetes.core.k8s:
+    name: "{{ nutanix_csi_namespace }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+
+- name: 'Create OperatorGroup'
+  kubernetes.core.k8s:
+    name: "{{ nutanix_csi_namespace }}"
+    namespace: "{{ nutanix_csi_namespace }}"
+    state: present
+    definition:
+      apiVersion: 'operators.coreos.com/v1'
+      kind: 'OperatorGroup'
+      spec:
+        targetNamespaces:
+          - "{{ nutanix_csi_namespace }}"
+        upgradeStrategy: Default
+
+- name: 'Nutanix CSI operator installation'
+  block:
+    - name: 'Create subscription manifest'
+      ansible.builtin.template:
+        src: 'templates/csi/nutanix-csi-subscription.yaml.j2'
+        dest: '/tmp/nutanix-csi-subscription.yaml'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+    - name: 'Apply subscription'
+      kubernetes.core.k8s:
+        state: 'present'
+        src: '/tmp/nutanix-csi-subscription.yaml'
+    - name: 'Waiting for nutanix-csi-operator-controller-manager deployment'
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: nutanix-csi-operator-controller-manager
+            namespace: openshift-cluster-csi-drivers
+        wait: yes
+        wait_condition:
+          type: Available
+          status: "True"
+        wait_timeout: 600
+      retries: 5
+      delay: 30
+
+- name: 'Create NutanixCsiStorage resource'
+  kubernetes.core.k8s:
+    name: 'nutanixcsistorage'
+    namespace: "{{ nutanix_csi_namespace }}"
+    state: present
+    definition:
+      apiVersion: 'crd.nutanix.com/v1alpha1'
+      kind: 'NutanixCsiStorage'
+      spec: {}
+
+- name: 'Create nutanix-volume StorageClass'
+  block:
+    - name: 'Create StorageClass manifest'
+      ansible.builtin.template:
+        src: 'templates/csi/storageclass.yaml.j2'
+        dest: '/tmp/nutanix-csi-storageclass.yaml'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+    - name: 'Create StorageClass'
+      kubernetes.core.k8s:
+        state: 'present'
+        src: '/tmp/nutanix-csi-storageclass.yaml'
+
+- name: 'Create PVC test'
+  block:
+    - name: 'Create PVC manifest'
+      ansible.builtin.template:
+        src: 'templates/csi/pvc.yaml.j2'
+        dest: '/tmp/nutanix-csi-pvc.yaml'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+    - name: 'Create PVC'
+      kubernetes.core.k8s:
+        state: 'present'
+        src: '/tmp/nutanix-csi-pvc.yaml'

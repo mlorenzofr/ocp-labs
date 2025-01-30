@@ -1,0 +1,14 @@
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: nutanix-csi-operator-beta
+  namespace: openshift-marketplace
+spec:
+  displayName: Nutanix Beta
+  publisher: Nutanix-dev
+  sourceType: grpc
+  image: quay.io/ntnx-csi/nutanix-csi-operator-catalog:latest
+  updateStrategy:
+    registryPoll:
+      interval: 5m

@@ -1,0 +1,479 @@
+---
+apiVersion: v1
+binaryData:
+  ca.crt: ""
+kind: ConfigMap
+metadata:
+  name: {{ capi_cluster_name }}-pc-trusted-ca-bundle
+  namespace: {{ capi_cluster_namespace | default('default') }}
+---
+apiVersion: v1
+data:
+  .dockerconfigjson: '{{ lab_pull_secret_b64 }}'
+kind: Secret
+metadata:
+  name: pull-secret
+  namespace: {{ capi_cluster_namespace | default('default') }}
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: v1
+data:
+  nutanix-ccm.yaml: |
+    ---
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: nutanix-ccm-pc-trusted-ca-bundle
+      namespace: kube-system
+    binaryData:
+      ca.crt: ""
+    ---
+    # Source: nutanix-cloud-provider/templates/rbac.yaml
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: cloud-controller-manager
+      namespace: kube-system
+    ---
+    # Source: nutanix-cloud-provider/templates/cm.yaml
+    kind: ConfigMap
+    apiVersion: v1
+    metadata:
+      name: nutanix-config
+      namespace: kube-system
+    data:
+      nutanix_config.json: |-
+        {
+          "prismCentral": {
+            "address": "{{ nutanix_prism_central }}",
+            "port": 9440,
+            "insecure": true,
+            "credentialRef": {
+              "kind": "secret",
+              "name": "nutanix-creds",
+              "namespace": "kube-system"
+            },
+            "additionalTrustBundle": {
+              "kind": "ConfigMap",
+              "name": "nutanix-ccm-pc-trusted-ca-bundle",
+              "namespace": "kube-system"
+            }
+          },
+          "enableCustomLabeling": false,
+          "topologyDiscovery": {
+            "type": "Prism"
+          },
+          "ignoredNodeIPs": [
+            "{{ nutanix_api_vip }}"
+          ]
+        }
+    ---
+    # Source: nutanix-cloud-provider/templates/rbac.yaml
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      annotations:
+        rbac.authorization.kubernetes.io/autoupdate: "true"
+      name: system:cloud-controller-manager
+    rules:
+      - apiGroups:
+          - ""
+        resources:
+          - secrets
+        verbs:
+          - get
+          - list
+          - watch
+      - apiGroups:
+          - ""
+        resources:
+          - configmaps
+        verbs:
+          - get
+          - list
+          - watch
+      - apiGroups:
+          - ""
+        resources:
+          - events
+        verbs:
+          - create
+          - patch
+          - update
+      - apiGroups:
+          - ""
+        resources:
+          - nodes
+        verbs:
+          - "*"
+      - apiGroups:
+          - ""
+        resources:
+          - nodes/status
+        verbs:
+          - patch
+      - apiGroups:
+          - ""
+        resources:
+          - serviceaccounts
+        verbs:
+          - create
+      - apiGroups:
+          - ""
+        resources:
+          - endpoints
+        verbs:
+          - create
+          - get
+          - list
+          - watch
+          - update
+      - apiGroups:
+          - coordination.k8s.io
+        resources:
+          - leases
+        verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - patch
+          - delete
+    ---
+    # Source: nutanix-cloud-provider/templates/rbac.yaml
+    kind: ClusterRoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: system:cloud-controller-manager
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: system:cloud-controller-manager
+    subjects:
+      - kind: ServiceAccount
+        name: cloud-controller-manager
+        namespace: kube-system
+    ---
+    # Source: nutanix-cloud-provider/templates/cloud-provider-nutanix-deployment.yaml
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      labels:
+        k8s-app: nutanix-cloud-controller-manager
+      name: nutanix-cloud-controller-manager
+      namespace: kube-system
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          k8s-app: nutanix-cloud-controller-manager
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          labels:
+            k8s-app: nutanix-cloud-controller-manager
+        spec:
+          hostNetwork: true
+          priorityClassName: system-cluster-critical
+          nodeSelector:
+            node-role.kubernetes.io/control-plane: ""
+          serviceAccountName: cloud-controller-manager
+          affinity:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchLabels:
+                    k8s-app: nutanix-cloud-controller-manager
+                topologyKey: kubernetes.io/hostname
+          dnsPolicy: Default
+          tolerations:
+            - effect: NoSchedule
+              key: node-role.kubernetes.io/master
+              operator: Exists
+            - effect: NoSchedule
+              key: node-role.kubernetes.io/control-plane
+              operator: Exists
+            - effect: NoExecute
+              key: node.kubernetes.io/unreachable
+              operator: Exists
+              tolerationSeconds: 120
+            - effect: NoExecute
+              key: node.kubernetes.io/not-ready
+              operator: Exists
+              tolerationSeconds: 120
+            - effect: NoSchedule
+              key: node.cloudprovider.kubernetes.io/uninitialized
+              operator: Exists
+            - effect: NoSchedule
+              key: node.kubernetes.io/not-ready
+              operator: Exists
+          containers:
+            - image: "ghcr.io/nutanix-cloud-native/cloud-provider-nutanix/controller:v0.4.1"
+              imagePullPolicy: IfNotPresent
+              name: nutanix-cloud-controller-manager
+              env:
+                - name: POD_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.namespace
+              args:
+                - "--leader-elect=true"
+                - "--cloud-config=/etc/cloud/nutanix_config.json"
+                - "--tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 50Mi
+              volumeMounts:
+                - mountPath: /etc/cloud
+                  name: nutanix-config-volume
+                  readOnly: true
+          volumes:
+            - name: nutanix-config-volume
+              configMap:
+                name: nutanix-config
+kind: ConfigMap
+metadata:
+  name: nutanix-ccm
+  namespace: {{ capi_cluster_namespace | default('default') }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ capi_cluster_name }}
+  namespace: {{ capi_cluster_namespace | default('default') }}
+stringData:
+  credentials: |
+    [
+      {
+        "type": "basic_auth",
+        "data": {
+          "prismCentral":{
+            "username": "{{ nutanix_user }}",
+            "password": "{{ nutanix_password }}"
+          }
+        }
+      }
+    ]
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: nutanix-ccm-secret
+  namespace: {{ capi_cluster_namespace | default('default') }}
+stringData:
+  nutanix-ccm-secret.yaml: |
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: nutanix-creds
+      namespace: kube-system
+    stringData:
+      credentials: |
+        [
+          {
+            "type": "basic_auth",
+            "data": {
+              "prismCentral":{
+                "username": "{{ nutanix_user }}",
+                "password": "{{ nutanix_password }}"
+              },
+              "prismElements": null
+            }
+          }
+        ]
+type: addons.cluster.x-k8s.io/resource-set
+---
+apiVersion: addons.cluster.x-k8s.io/v1beta1
+kind: ClusterResourceSet
+metadata:
+  name: nutanix-ccm-crs
+  namespace: {{ capi_cluster_namespace | default('default') }}
+spec:
+  clusterSelector:
+    matchLabels:
+      ccm: nutanix
+  resources:
+    - kind: ConfigMap
+      name: nutanix-ccm
+    - kind: Secret
+      name: nutanix-ccm-secret
+    - kind: ConfigMap
+      name: nutanix-ccm-pc-trusted-ca-bundle
+  strategy: ApplyOnce
+---
+apiVersion: bootstrap.cluster.x-k8s.io/v1alpha1
+kind: OpenshiftAssistedConfigTemplate
+metadata:
+  name: {{ capi_cluster_name }}-worker
+  namespace: {{ capi_cluster_namespace | default('default') }}
+  labels:
+    cluster.x-k8s.io/cluster-name: {{ capi_cluster_name }}
+spec:
+  template:
+    spec:
+      pullSecretRef:
+        name: "pull-secret"
+      sshAuthorizedKey: "{{ lab_ssh_pubkey }}"
+---
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  labels:
+    ccm: nutanix
+    cluster.x-k8s.io/cluster-name: {{ capi_cluster_name }}
+  name: {{ capi_cluster_name }}
+  namespace: {{ capi_cluster_namespace | default('default') }}
+spec:
+  clusterNetwork:
+    pods:
+      cidrBlocks:
+        - 172.20.0.0/16
+    serviceDomain: {{ capi_cluster_domain }}
+    services:
+      cidrBlocks:
+        - 172.19.0.0/16
+  controlPlaneRef:
+    apiVersion: controlplane.cluster.x-k8s.io/v1alpha1
+    kind: OpenshiftAssistedControlPlane
+    name: {{ capi_cluster_name }}
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+    kind: NutanixCluster
+    name: {{ capi_cluster_name }}
+---
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: MachineDeployment
+metadata:
+  labels:
+    cluster.x-k8s.io/cluster-name: {{ capi_cluster_name }}
+  name: {{ capi_cluster_name }}-wmd
+  namespace: {{ capi_cluster_namespace | default('default') }}
+spec:
+  clusterName: {{ capi_cluster_name }}
+  replicas: {{ capi_cluster_workers }}
+  selector:
+    matchLabels: {}
+  template:
+    metadata:
+      labels:
+        cluster.x-k8s.io/cluster-name: {{ capi_cluster_name }}
+    spec:
+      bootstrap:
+        configRef:
+          apiVersion: controlplane.cluster.x-k8s.io/v1alpha1
+          kind: OpenshiftAssistedControlPlane
+          name: {{ capi_cluster_name }}
+      clusterName: {{ capi_cluster_name }}
+      infrastructureRef:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+        kind: NutanixMachineTemplate
+        name: {{ capi_cluster_name }}-mt-0
+      version: {{ openshift_version }}
+---
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: MachineHealthCheck
+metadata:
+  name: {{ capi_cluster_name }}-mhc
+  namespace: {{ capi_cluster_namespace | default('default') }}
+spec:
+  clusterName: {{ capi_cluster_name }}
+  maxUnhealthy: 40%
+  nodeStartupTimeout: 10m0s
+  selector:
+    matchLabels:
+      cluster.x-k8s.io/cluster-name: {{ capi_cluster_name }}
+  unhealthyConditions:
+    - status: "False"
+      timeout: 5m0s
+      type: Ready
+    - status: Unknown
+      timeout: 5m0s
+      type: Ready
+    - status: "True"
+      timeout: 5m0s
+      type: MemoryPressure
+    - status: "True"
+      timeout: 5m0s
+      type: DiskPressure
+    - status: "True"
+      timeout: 5m0s
+      type: PIDPressure
+    - status: "True"
+      timeout: 5m0s
+      type: NetworkUnavailable
+---
+apiVersion: controlplane.cluster.x-k8s.io/v1alpha1
+kind: OpenshiftAssistedControlPlane
+metadata:
+  name: {{ capi_cluster_name }}
+  namespace: {{ capi_cluster_namespace | default('default') }}
+spec:
+  openshiftAssistedConfigSpec:
+    pullSecretRef:
+      name: "pull-secret"
+    sshAuthorizedKey: "{{ lab_ssh_pubkey }}"
+    nodeRegistration: {}
+  config:
+    apiVIPs:
+      - {{ nutanix_cluster_api_vip }}
+    ingressVIPs:
+      - {{ nutanix_cluster_ingress_vip }}
+    releaseImage: quay.io/openshift-release-dev/ocp-release:{{ openshift_version }}-x86_64
+    baseDomain: {{ capi_cluster_domain }}
+    pullSecretRef:
+      name: "pull-secret"
+    sshAuthorizedKey: "{{ lab_ssh_pubkey }}"
+  machineTemplate:
+    infrastructureRef:
+      apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+      kind: NutanixMachineTemplate
+      name: {{ capi_cluster_name }}-mt-0
+  replicas: {{ capi_cluster_masters }}
+  version: {{ openshift_version }}
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: NutanixCluster
+metadata:
+  name: {{ capi_cluster_name }}
+  namespace: {{ capi_cluster_namespace | default('default') }}
+spec:
+  controlPlaneEndpoint:
+    host: {{ nutanix_api_vip }}
+    port: 6443
+  prismCentral:
+    additionalTrustBundle:
+      kind: ConfigMap
+      name: {{ capi_cluster_name }}-pc-trusted-ca-bundle
+    address: {{ nutanix_prism_central }}
+    credentialRef:
+      kind: Secret
+      name: {{ capi_cluster_name }}
+    insecure: true
+    port: {{ nutanix_prism_port | default(9440) }}
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: NutanixMachineTemplate
+metadata:
+  name: {{ capi_cluster_name }}-mt-0
+  namespace: {{ capi_cluster_namespace | default('default') }}
+spec:
+  template:
+    spec:
+      bootType: legacy
+      cluster:
+        name: {{ nutanix_cluster }}
+        type: name
+      image:
+        name: {{ nutanix_template_name }}
+        type: name
+      memorySize: {{ capi_cluster_memory }}
+      providerID: nutanix://{{ capi_cluster_name }}-m1
+      subnet:
+        - name: {{ nutanix_network }}
+          type: name
+      systemDiskSize: {{ capi_cluster_disk_size }}
+      vcpuSockets: 8
+      vcpusPerSocket: 2

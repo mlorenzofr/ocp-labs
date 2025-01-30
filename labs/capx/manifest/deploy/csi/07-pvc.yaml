@@ -1,0 +1,19 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-test
+  namespace: openshift-cluster-csi-drivers
+  annotations:
+    volume.beta.kubernetes.io/storage-provisioner: csi.nutanix.com
+    volume.kubernetes.io/storage-provisioner: csi.nutanix.com
+  finalizers:
+    - kubernetes.io/pvc-protection
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: nutanix-volume
+  volumeMode: Filesystem
