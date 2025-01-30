@@ -54,7 +54,26 @@ $ podman exec -it capi-nutanix-provider-control-plane /bin/bash
 ```
 
 ### CAPI
-1. Check if `infraenv` objects were created:
+1. Verify if CAPI components are running on the manager cluster:
+```shell
+$ kubectl get deployment -A
+NAMESPACE                        NAME                                        READY   UP-TO-DATE   AVAILABLE   AGE
+assisted-installer               agentinstalladmission                       2/2     2            2           3h52m
+assisted-installer               assisted-service                            1/1     1            1           3h52m
+assisted-installer               infrastructure-operator                     1/1     1            1           3h52m
+capi-agent-bootstrap-system      capi-agent-bootstrapcontroller-manager      1/1     1            1           3h50m
+capi-agent-controlplane-system   capi-agent-controlplanecontroller-manager   1/1     1            1           3h50m
+capi-system                      capi-controller-manager                     1/1     1            1           3h50m
+capx-system                      capx-controller-manager                     1/1     1            1           3h50m
+cert-manager                     cert-manager                                1/1     1            1           3h54m
+cert-manager                     cert-manager-cainjector                     1/1     1            1           3h54m
+cert-manager                     cert-manager-webhook                        1/1     1            1           3h54m
+kube-system                      coredns                                     2/2     2            2           3h54m
+local-path-storage               local-path-provisioner                      1/1     1            1           3h54m
+metallb-system                   controller                                  1/1     1            1           3h53m
+nginx-ingress                    ingress-nginx-controller                    1/1     1            1           3h52m
+```
+2. Check if `infraenv` objects were created:
 ```shell
 $ kubectl get infraenv -A
 
@@ -63,7 +82,7 @@ default     capi-ntx-1-cd9z6   2025-01-28T17:04:02Z
 default     capi-ntx-1-d7q7h   2025-01-28T17:04:02Z
 default     capi-ntx-1-v9ch2   2025-01-28T17:04:02Z
 ```
-2. Review the `agent` resources and whether they are _approved_
+3. Review the `agent` resources and whether they are _approved_
 ```shell
 $ kubectl get agent -A
 
@@ -72,7 +91,7 @@ default     3e493fef-da78-4a65-a1fe-9173b0f689ab   capi-ntx-1   true       maste
 default     c91d62b9-114f-4108-8551-c393be9b1cb9   capi-ntx-1   true       master
 default     caee384e-9b68-454a-ae9b-6fceaf396538   capi-ntx-1   true       master
 ```
-3. If we want to follow the installation of the agents we can do so by checking its status:
+4. If we want to follow the installation of the agents we can do so by checking its status:
 ```shell
 $ watch -n5 "kubectl get agent -A -o json | jq -jr '.items[].status.debugInfo | .state,\" \",.stateInfo,\"\n\"'"
 ```
