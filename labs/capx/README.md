@@ -32,6 +32,18 @@ In a few minutes we should be able to see the VMs created on Nutanix.
 ```shell
 ap labs/capx/deploy.yaml --tags csi
 ```  
+### Scaling up the cluster
+To scale up the worker nodes in the workload cluster, you can do so by increasing the number of replicas in the `MachineDeployment` resource.
+
+However, due an issue with the `ControlPlaneIsStable` preflight check, it must be disabled in the `MachineSet` first.
+```shell
+$ ms=$(kubectl get machineset -l "cluster.x-k8s.io/deployment-name=capi-ntx-1-wmd" -o jsonpath='{.items[*].metadata.name}')
+$ kubectl annotate machineset/"${ms}" "machineset.cluster.x-k8s.io/skip-preflight-checks=ControlPlaneIsStable"
+```
+Once the annotation is ready and the check is disabled, we can scale up the cluster by changing the replicas:
+```shell
+$ kubectl scale machinedeployment capi-ntx-1-wmd --replicas=1
+```
 
 ## Validation
 
@@ -169,6 +181,28 @@ $ kubectl get pvc -A
 
 NAMESPACE                       NAME       STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS     VOLUMEATTRIBUTESCLASS   AGE
 openshift-cluster-csi-drivers   pvc-test   Bound    pvc-bb2b7939-d0e0-4c12-8dc8-bc365ca57e1f   1Gi        RWO            nutanix-volume   <unset>                 2m33s
+```
+
+### Scale up
+1. In the management cluster, check if we can see a _worker_ node:
+```shell
+$ kubectl get agent -A
+
+NAMESPACE   NAME                                   CLUSTER          APPROVED   ROLE     STAGE
+default     18824350-1f45-4351-ad04-489d7816acfa   capi-ntx-1   true       master   Done
+default     65f0f257-fff1-41fe-9e26-65e75bb3b6a9   capi-ntx-1   true       master   Done
+default     85c7a306-072b-413e-bd29-987dba532405   capi-ntx-1   true       master   Done
+default     db56104e-2aca-4d3a-a23f-f4afbd5cfde4   capi-ntx-1   true       worker   Done
+```
+2. In the workload cluster, list the nodes and verify the _worker_ node:
+```shell
+$ kubectl get nodes
+
+NAME                             STATUS   ROLES                         AGE    VERSION
+capi-ntx-1-b982n             Ready    control-plane,master,worker   49m    v1.30.4
+capi-ntx-1-kx7sq             Ready    control-plane,master,worker   50m    v1.30.4
+capi-ntx-1-r26xq             Ready    control-plane,master,worker   38m    v1.30.4
+capi-ntx-1-wmd-mzjrp-kk52t   Ready    worker                        3m2s   v1.30.4
 ```
 
 ## Links
