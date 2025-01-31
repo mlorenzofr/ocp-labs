@@ -21,6 +21,7 @@
     nutanix_cluster_api_vip: "{{ nutanix_net_base }}.173"
     nutanix_cluster_ingress_vip: "{{ nutanix_net_base }}.174"
     nutanix_csi_install: True
+    nutanix_csi_install_src: helm  # or subscription
     nutanix_csi_namespace: 'openshift-cluster-csi-drivers'
     nutanix_csi_sc_name: 'nutanix-volume'
     nutanix_csi_version: 'v2.6.10'
@@ -304,16 +305,32 @@
         - 'csi'
         - 'never'
       block:
-        - ansible.builtin.template:
-            src: 'templates/crs-csi-operator.yaml.j2'
-            dest: '/tmp/crs-ntnx-csi-operator.yaml'
+        - name: 'Set the Nutanix CSI installation source template'
+          ansible.builtin.set_fact:
+            __nutanix_csi_template_src: 'nutanix-csi-crs.yaml.j2'
+          when: nutanix_csi_install_src == "helm"
+        - name: 'Set the Nutanix CSI installation source template'
+          ansible.builtin.set_fact:
+            __nutanix_csi_template_src: 'crs-csi-operator.yaml.j2'
+          when: nutanix_csi_install_src == "subscription"
+        - name: 'Create CSI installation template'
+          ansible.builtin.template:
+            src: 'templates/{{ __nutanix_csi_template_src }}'
+            dest: '/tmp/nutanix-csi-crs.yaml'
             owner: 'root'
             group: 'root'
-            mode: '0644'
+            mode: '0600'
         - name: 'Install cluster manifest'
           kubernetes.core.k8s:
             state: 'present'
-            src: '/tmp/crs-ntnx-csi-operator.yaml'
+            src: '/tmp/nutanix-csi-crs.yaml'
+
+    - name: 'Nutanix CSI Operator day-2 tasks'
+      when: nutanix_csi_install
+      tags:
+        - 'csi-day-2'
+        - 'never'
+      block:
         - name: 'Export workload cluster kubeconfig'
           ansible.builtin.shell:
             cmd: >

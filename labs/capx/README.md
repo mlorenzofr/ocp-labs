@@ -19,19 +19,27 @@ From the Nutanix environment, you will need to gather the following information:
 ## Steps
 1. Run the playbook `deploy.yaml`:
 ```shell
-ap labs/capx/deploy.yaml
+$ ap labs/capx/deploy.yaml
 ```
 2. Change the subnet network settings on Nutanix and add the `capi-manager` IP address to the DNS server list.
 3. Start the workload cluster installation (CAPI):
 ```shell
-ap labs/capx/deploy.yaml --tags capi-cluster
+$ ap labs/capx/deploy.yaml --tags capi-cluster
+
+# If you want to install Nutanix CSI operator on day-0 using ClusterResourceSet:
+$ ap labs/capx/deploy.yaml --tags capi-cluster,csi
 ```
 In a few minutes we should be able to see the VMs created on Nutanix.
 
 4. Once the workload cluster has finished installating, we can install the Nutanix CSI operator with:
 ```shell
-ap labs/capx/deploy.yaml --tags csi
-```  
+$ ap labs/capx/deploy.yaml --tags csi
+```
+5. To create the day-2 resources for the Nutanix CSI operator (for validation):
+```shell
+$ ap labs/capx/deploy.yaml --tags csi-day-2
+```
+
 ### Scaling up the cluster
 To scale up the worker nodes in the workload cluster, you can do so by increasing the number of replicas in the `MachineDeployment` resource.
 

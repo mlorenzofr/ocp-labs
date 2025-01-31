@@ -18,8 +18,10 @@
         targetNamespaces:
           - "{{ nutanix_csi_namespace }}"
         upgradeStrategy: Default
+  when: nutanix_csi_install_src == "subscription"
 
 - name: 'Nutanix CSI operator installation'
+  when: nutanix_csi_install_src == "subscription"
   block:
     - name: 'Create subscription manifest'
       ansible.builtin.template:
@@ -57,6 +59,7 @@
       apiVersion: 'crd.nutanix.com/v1alpha1'
       kind: 'NutanixCsiStorage'
       spec: {}
+  when: nutanix_csi_install_src == "subscription"
 
 - name: 'Create nutanix-volume StorageClass'
   block:
