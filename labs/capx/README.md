@@ -10,11 +10,11 @@ There are some manual configuration steps required before we begin the installat
 4. We should have a DNS server to resolve the DNS names used by the _assisted-installer_ and cluster services.
 
 From the Nutanix environment, you will need to gather the following information:
-* Prism URL
-* username
-* password
-* subnet name
-* image name
+* **Nutanix Cluster Name**: The name of the Nutanix cluster where OpenShift will be deployed. (`nutanix_cluster`)
+* **Prism Central Endpoint**: The management IP or hostname of the Nutanix Prism Central. (`nutanix_prism_central`)
+* **Credentials**: Admin username and password for accessing Prism Central. (`nutanix_user` & `nutanix_password`)
+* **Subnet**: The subnet name to be attached to the nodes. (`nutanix_network`)
+* **OS Images**: Pre-uploaded RHCOS images in the Nutanix Image Service for creating VMs. (`nutanix_template_name`)
 
 ## Steps
 1. Run the playbook `deploy.yaml`:
