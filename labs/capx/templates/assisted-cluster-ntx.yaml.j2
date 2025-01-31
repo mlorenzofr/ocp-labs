@@ -363,9 +363,9 @@ spec:
     spec:
       bootstrap:
         configRef:
-          apiVersion: controlplane.cluster.x-k8s.io/v1alpha1
-          kind: OpenshiftAssistedControlPlane
-          name: {{ capi_cluster_name }}
+          apiVersion: bootstrap.cluster.x-k8s.io/v1alpha1
+          kind: OpenshiftAssistedConfigTemplate
+          name: {{ capi_cluster_name }}-worker
       clusterName: {{ capi_cluster_name }}
       infrastructureRef:
         apiVersion: infrastructure.cluster.x-k8s.io/v1beta1

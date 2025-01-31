@@ -363,9 +363,9 @@ spec:
     spec:
       bootstrap:
         configRef:
-          apiVersion: controlplane.cluster.x-k8s.io/v1alpha1
-          kind: OpenshiftAssistedControlPlane
-          name: capi-ntx-1
+          apiVersion: bootstrap.cluster.x-k8s.io/v1alpha1
+          kind: OpenshiftAssistedConfigTemplate
+          name: capi-ntx-1-worker
       clusterName: capi-ntx-1
       infrastructureRef:
         apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
@@ -376,7 +376,7 @@ spec:
 apiVersion: cluster.x-k8s.io/v1beta1
 kind: MachineHealthCheck
 metadata:
-  name: capi-ntx-1-mhc
+  name: capi-ntx-1-mhc-control-plane
   namespace: default
 spec:
   clusterName: capi-ntx-1
@@ -384,7 +384,7 @@ spec:
   nodeStartupTimeout: 10m0s
   selector:
     matchLabels:
-      cluster.x-k8s.io/cluster-name: capi-ntx-1
+      role: control-plane
   unhealthyConditions:
     - status: "False"
       timeout: 5m0s
@@ -447,7 +447,7 @@ spec:
     additionalTrustBundle:
       kind: ConfigMap
       name: capi-ntx-1-pc-trusted-ca-bundle
-    address: prismcentral.lts-cluster.internal.nutanix-dev.devcluster.openshift.com
+    address: <redacted>
     credentialRef:
       kind: Secret
       name: capi-ntx-1
