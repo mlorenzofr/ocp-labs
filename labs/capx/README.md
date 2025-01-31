@@ -223,3 +223,6 @@ capi-ntx-1-wmd-mzjrp-kk52t   Ready    worker                        3m2s   v1.30
 * [Nutanix CSI Operator](https://opendocs.nutanix.com/openshift/operators/csi/)
 * [Nutanix CSI Volume Driver 2.6](https://portal.nutanix.com/page/documents/details?targetId=CSI-Volume-Driver-v2_6:CSI-Volume-Driver-v2_6)
 * [Nutanix CSI Volume Driver 3.2](https://portal.nutanix.com/page/documents/details?targetId=CSI-Volume-Driver-v3_2:CSI-Volume-Driver-v3_2)
+* [Install the Nutanix CSI Driver with Helm](https://opendocs.nutanix.com/capx/latest/addons/install_csi_driver/)
+* [Nutanix CSI Storage Driver Helm chart](https://github.com/nutanix/helm/tree/master/charts/nutanix-csi-storage)
+
