@@ -2,8 +2,10 @@
 
 set -euo pipefail
 
+test -v ANSIBLE_OS_DIST || ANSIBLE_OS_DIST=""
+
 PROJECT="openshift"
-CONTAINER_NAME="ansible-${PROJECT}"
+CONTAINER_NAME="ansible-${PROJECT}${ANSIBLE_OS_DIST}"
 
 # Here we have our personal settings (ANSIBLE_SSH_ARGS)
 # shellcheck disable=SC1091
@@ -14,7 +16,7 @@ if ! podman images -n | grep -q "${PROJECT}"; then
   podman build \
     --build-arg UID="$(id -u)" \
     -t "${CONTAINER_NAME}" \
-    -f container/Containerfile .
+    -f "container/Containerfile${ANSIBLE_OS_DIST}" .
 fi
 
 echo "Running ${CONTAINER_NAME} ..."

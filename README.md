@@ -6,6 +6,10 @@ This repository contains a series of ansible playbooks for creating and
 A containerized environment has been created with ansible to be able to launch
  the playbooks from a previously configured environment.  
 This can be started using the script `run-ansible.sh`.
+For older OS versions, such as RHEL8, an older version of Ansible is required. For those versions, use:
+```shell
+ANSIBLE_OS_DIST="-rhel8" ./run-ansible.sh
+```
 
 The environment uses several volumes which I use to host private information
  (GPG/SSH keys, passwords,...) this must be customized for each user's
