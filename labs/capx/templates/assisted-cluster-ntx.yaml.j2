@@ -4,8 +4,8 @@ binaryData:
   ca.crt: ""
 kind: ConfigMap
 metadata:
-  name: {{ capi_cluster_name }}-pc-trusted-ca-bundle
-  namespace: {{ capi_cluster_namespace | default('default') }}
+  name: {{ item.name }}-pc-trusted-ca-bundle
+  namespace: {{ item.namespace | default('default') }}
 ---
 apiVersion: v1
 data:
@@ -13,7 +13,7 @@ data:
 kind: Secret
 metadata:
   name: pull-secret
-  namespace: {{ capi_cluster_namespace | default('default') }}
+  namespace: {{ item.namespace | default('default') }}
 type: kubernetes.io/dockerconfigjson
 ---
 apiVersion: v1
@@ -237,13 +237,13 @@ data:
 kind: ConfigMap
 metadata:
   name: nutanix-ccm
-  namespace: {{ capi_cluster_namespace | default('default') }}
+  namespace: {{ item.namespace | default('default') }}
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ capi_cluster_name }}
-  namespace: {{ capi_cluster_namespace | default('default') }}
+  name: {{ item.name }}
+  namespace: {{ item.namespace | default('default') }}
 stringData:
   credentials: |
     [
@@ -262,7 +262,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: nutanix-ccm-secret
-  namespace: {{ capi_cluster_namespace | default('default') }}
+  namespace: {{ item.namespace | default('default') }}
 stringData:
   nutanix-ccm-secret.yaml: |
     apiVersion: v1
@@ -290,7 +290,7 @@ apiVersion: addons.cluster.x-k8s.io/v1beta1
 kind: ClusterResourceSet
 metadata:
   name: nutanix-ccm-crs
-  namespace: {{ capi_cluster_namespace | default('default') }}
+  namespace: {{ item.namespace | default('default') }}
 spec:
   clusterSelector:
     matchLabels:
@@ -307,10 +307,10 @@ spec:
 apiVersion: bootstrap.cluster.x-k8s.io/v1alpha1
 kind: OpenshiftAssistedConfigTemplate
 metadata:
-  name: {{ capi_cluster_name }}-worker
-  namespace: {{ capi_cluster_namespace | default('default') }}
+  name: {{ item.name }}-worker
+  namespace: {{ item.namespace | default('default') }}
   labels:
-    cluster.x-k8s.io/cluster-name: {{ capi_cluster_name }}
+    cluster.x-k8s.io/cluster-name: {{ item.name }}
 spec:
   template:
     spec:
@@ -323,68 +323,68 @@ kind: Cluster
 metadata:
   labels:
     ccm: nutanix
-    cluster.x-k8s.io/cluster-name: {{ capi_cluster_name }}
-  name: {{ capi_cluster_name }}
-  namespace: {{ capi_cluster_namespace | default('default') }}
+    cluster.x-k8s.io/cluster-name: {{ item.name }}
+  name: {{ item.name }}
+  namespace: {{ item.namespace | default('default') }}
 spec:
   clusterNetwork:
     pods:
       cidrBlocks:
         - 172.20.0.0/16
-    serviceDomain: {{ capi_cluster_domain }}
+    serviceDomain: {{ item.domain }}
     services:
       cidrBlocks:
         - 172.19.0.0/16
   controlPlaneRef:
     apiVersion: controlplane.cluster.x-k8s.io/v1alpha1
     kind: OpenshiftAssistedControlPlane
-    name: {{ capi_cluster_name }}
+    name: {{ item.name }}
   infrastructureRef:
     apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
     kind: NutanixCluster
-    name: {{ capi_cluster_name }}
+    name: {{ item.name }}
 ---
 apiVersion: cluster.x-k8s.io/v1beta1
 kind: MachineDeployment
 metadata:
   labels:
-    cluster.x-k8s.io/cluster-name: {{ capi_cluster_name }}
-  name: {{ capi_cluster_name }}-wmd
-  namespace: {{ capi_cluster_namespace | default('default') }}
+    cluster.x-k8s.io/cluster-name: {{ item.name }}
+  name: {{ item.name }}-wmd
+  namespace: {{ item.namespace | default('default') }}
 spec:
-  clusterName: {{ capi_cluster_name }}
-  replicas: {{ capi_cluster_workers }}
+  clusterName: {{ item.name }}
+  replicas: {{ item.workers }}
   selector:
     matchLabels: {}
   template:
     metadata:
       labels:
-        cluster.x-k8s.io/cluster-name: {{ capi_cluster_name }}
+        cluster.x-k8s.io/cluster-name: {{ item.name }}
     spec:
       bootstrap:
         configRef:
           apiVersion: bootstrap.cluster.x-k8s.io/v1alpha1
           kind: OpenshiftAssistedConfigTemplate
-          name: {{ capi_cluster_name }}-worker
-      clusterName: {{ capi_cluster_name }}
+          name: {{ item.name }}-worker
+      clusterName: {{ item.name }}
       infrastructureRef:
         apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
         kind: NutanixMachineTemplate
-        name: {{ capi_cluster_name }}-mt-0
+        name: {{ item.name }}-mt-0
       version: {{ openshift_version }}
 ---
 apiVersion: cluster.x-k8s.io/v1beta1
 kind: MachineHealthCheck
 metadata:
-  name: {{ capi_cluster_name }}-mhc
-  namespace: {{ capi_cluster_namespace | default('default') }}
+  name: {{ item.name }}-mhc
+  namespace: {{ item.namespace | default('default') }}
 spec:
-  clusterName: {{ capi_cluster_name }}
+  clusterName: {{ item.name }}
   maxUnhealthy: 40%
   nodeStartupTimeout: 10m0s
   selector:
     matchLabels:
-      cluster.x-k8s.io/cluster-name: {{ capi_cluster_name }}
+      cluster.x-k8s.io/cluster-name: {{ item.name }}
   unhealthyConditions:
     - status: "False"
       timeout: 5m0s
@@ -408,8 +408,8 @@ spec:
 apiVersion: controlplane.cluster.x-k8s.io/v1alpha1
 kind: OpenshiftAssistedControlPlane
 metadata:
-  name: {{ capi_cluster_name }}
-  namespace: {{ capi_cluster_namespace | default('default') }}
+  name: {{ item.name }}
+  namespace: {{ item.namespace | default('default') }}
 spec:
   openshiftAssistedConfigSpec:
     pullSecretRef:
@@ -418,11 +418,11 @@ spec:
     nodeRegistration: {}
   config:
     apiVIPs:
-      - {{ nutanix_cluster_api_vip }}
+      - {{ item.api_vip }}
     ingressVIPs:
-      - {{ nutanix_cluster_ingress_vip }}
+      - {{ item.ingress_vip }}
     releaseImage: quay.io/openshift-release-dev/ocp-release:{{ openshift_version }}-x86_64
-    baseDomain: {{ capi_cluster_domain }}
+    baseDomain: {{ item.domain }}
     pullSecretRef:
       name: "pull-secret"
     sshAuthorizedKey: "{{ lab_ssh_pubkey }}"
@@ -430,15 +430,15 @@ spec:
     infrastructureRef:
       apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
       kind: NutanixMachineTemplate
-      name: {{ capi_cluster_name }}-mt-0
-  replicas: {{ capi_cluster_masters }}
+      name: {{ item.name }}-mt-0
+  replicas: {{ item.masters }}
   version: {{ openshift_version }}
 ---
 apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
 kind: NutanixCluster
 metadata:
-  name: {{ capi_cluster_name }}
-  namespace: {{ capi_cluster_namespace | default('default') }}
+  name: {{ item.name }}
+  namespace: {{ item.namespace | default('default') }}
 spec:
   controlPlaneEndpoint:
     host: {{ nutanix_api_vip }}
@@ -446,19 +446,19 @@ spec:
   prismCentral:
     additionalTrustBundle:
       kind: ConfigMap
-      name: {{ capi_cluster_name }}-pc-trusted-ca-bundle
+      name: {{ item.name }}-pc-trusted-ca-bundle
     address: {{ nutanix_prism_central }}
     credentialRef:
       kind: Secret
-      name: {{ capi_cluster_name }}
+      name: {{ item.name }}
     insecure: true
     port: {{ nutanix_prism_port | default(9440) }}
 ---
 apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
 kind: NutanixMachineTemplate
 metadata:
-  name: {{ capi_cluster_name }}-mt-0
-  namespace: {{ capi_cluster_namespace | default('default') }}
+  name: {{ item.name }}-mt-0
+  namespace: {{ item.namespace | default('default') }}
 spec:
   template:
     spec:
@@ -469,11 +469,11 @@ spec:
       image:
         name: {{ nutanix_template_name }}
         type: name
-      memorySize: {{ capi_cluster_memory }}
-      providerID: nutanix://{{ capi_cluster_name }}-m1
+      memorySize: {{ item.memory }}
+      providerID: nutanix://{{ item.name }}-m1
       subnet:
         - name: {{ nutanix_network }}
           type: name
-      systemDiskSize: {{ capi_cluster_disk_size }}
+      systemDiskSize: {{ item.disk_size }}
       vcpuSockets: 8
       vcpusPerSocket: 2

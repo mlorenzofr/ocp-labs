@@ -1,0 +1,30 @@
+---
+- name: 'Create manifests directory'
+  ansible.builtin.file:
+    path: "{{ capi_manifests_path }}/manifests-{{ item.name }}"
+    owner: 'root'
+    group: 'root'
+    mode: '0750'
+    state: 'directory'
+  tags:
+    - 'capi-cluster'
+    - 'never'
+
+- name: 'Create cluster manifest'
+  ansible.builtin.template:
+    src: 'templates/assisted-cluster-ntx.yaml.j2'
+    dest: "{{ capi_manifests_path }}/manifests-{{ item.name }}/cluster.yaml"
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  tags:
+    - 'capi-cluster'
+    - 'never'
+
+- name: 'Install cluster manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ capi_manifests_path }}/manifests-{{ item.name }}/cluster.yaml"
+  tags:
+    - 'capi-cluster'
+    - 'never'

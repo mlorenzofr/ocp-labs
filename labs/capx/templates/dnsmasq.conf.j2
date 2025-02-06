@@ -12,8 +12,11 @@ max-cache-ttl=300
 server=10.0.0.2
 server=1.1.1.1
 
-host-record=api-int.{{ capi_cluster_name }}.{{ capi_cluster_domain }},{{ nutanix_cluster_api_vip }}
-host-record=api.{{ capi_cluster_name }}.{{ capi_cluster_domain }},{{ nutanix_cluster_api_vip }}
-address=/.apps.{{ capi_cluster_name }}.{{ capi_cluster_domain }}/{{ nutanix_cluster_ingress_vip }}
+{% for cluster in capi_clusters %}
+host-record=api-int.{{ cluster.name }}.{{ cluster.domain }},{{ cluster.api_vip }}
+host-record=api.{{ cluster.name }}.{{ cluster.domain }},{{ cluster.api_vip }}
+address=/.apps.{{ cluster.name }}.{{ cluster.domain }}/{{ cluster.ingress_vip }}
+
+{% endfor %}
 host-record=assisted-service.assisted-installer.com,{{ ansible_default_ipv4.address }}
 host-record=assisted-image.assisted-installer.com,{{ ansible_default_ipv4.address }}

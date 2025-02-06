@@ -6,7 +6,7 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-    - {{ ingress_ip }}-{{ ingress_ip }}
+    - {{ assisted_ingress_ip }}-{{ assisted_ingress_ip }}
 ---
 apiVersion: metallb.io/v1beta1
 kind: L2Advertisement

@@ -3,7 +3,7 @@ apiVersion: addons.cluster.x-k8s.io/v1beta1
 kind: ClusterResourceSet
 metadata:
   name: nutanix-csi-crs
-  namespace: {{ capi_cluster_namespace | default('default') }}
+  namespace: {{ item.namespace | default('default') }}
 spec:
   clusterSelector:
     matchLabels:
@@ -18,7 +18,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: nutanix-csi-secret
-  namespace: {{ capi_cluster_namespace | default('default') }}
+  namespace: {{ item.namespace | default('default') }}
 stringData:
   nutanix-csi-secret.yaml: |
     apiVersion: v1
@@ -42,7 +42,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nutanix-csi-crs
-  namespace: {{ capi_cluster_namespace | default('default') }}
+  namespace: {{ item.namespace | default('default') }}
 data:
   nutanix-csi-namespace.yaml: |
     apiVersion: v1

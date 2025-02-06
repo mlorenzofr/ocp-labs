@@ -1,10 +1,32 @@
 ---
+- name: 'Set kubeconfig path'
+  ansible.builtin.set_fact:
+    __kubeconfig_path: "/tmp/kubeconfig-{{ item.name }}"
+  tags:
+    - 'csi-day-2'
+    - 'never'
+
+- name: 'Export workload cluster kubeconfig'
+  ansible.builtin.shell:
+    cmd: >
+      kubectl get secret/{{ item.name }}-admin-kubeconfig -o json |
+      jq -r '.data.kubeconfig | @base64d'
+      > {{ __kubeconfig_path }}
+  tags:
+    - 'csi-day-2'
+    - 'never'
+
 - name: 'Create Nutanix CSI operator namespace'
   kubernetes.core.k8s:
     name: "{{ nutanix_csi_namespace }}"
     api_version: v1
     kind: Namespace
     state: present
+  environment:
+    KUBECONFIG: "{{ __kubeconfig_path }}"
+  tags:
+    - 'csi-day-2'
+    - 'never'
 
 - name: 'Create OperatorGroup'
   kubernetes.core.k8s:
@@ -18,22 +40,32 @@
         targetNamespaces:
           - "{{ nutanix_csi_namespace }}"
         upgradeStrategy: Default
+  environment:
+    KUBECONFIG: "{{ __kubeconfig_path }}"
+  tags:
+    - 'csi-day-2'
+    - 'never'
   when: nutanix_csi_install_src == "subscription"
 
 - name: 'Nutanix CSI operator installation'
   when: nutanix_csi_install_src == "subscription"
+  environment:
+    KUBECONFIG: "{{ __kubeconfig_path }}"
+  tags:
+    - 'csi-day-2'
+    - 'never'
   block:
     - name: 'Create subscription manifest'
       ansible.builtin.template:
         src: 'templates/csi/nutanix-csi-subscription.yaml.j2'
-        dest: '/tmp/nutanix-csi-subscription.yaml'
+        dest: "{{ capi_manifests_path }}/manifests-{{ item.name }}/nutanix-csi-subscription.yaml"
         owner: 'root'
         group: 'root'
         mode: '0644'
     - name: 'Apply subscription'
       kubernetes.core.k8s:
         state: 'present'
-        src: '/tmp/nutanix-csi-subscription.yaml'
+        src: "{{ capi_manifests_path }}/manifests-{{ item.name }}/nutanix-csi-subscription.yaml"
     - name: 'Waiting for nutanix-csi-operator-controller-manager deployment'
       kubernetes.core.k8s:
         definition:
@@ -59,32 +91,47 @@
       apiVersion: 'crd.nutanix.com/v1alpha1'
       kind: 'NutanixCsiStorage'
       spec: {}
+  environment:
+    KUBECONFIG: "{{ __kubeconfig_path }}"
+  tags:
+    - 'csi-day-2'
+    - 'never'
   when: nutanix_csi_install_src == "subscription"
 
 - name: 'Create nutanix-volume StorageClass'
+  environment:
+    KUBECONFIG: "{{ __kubeconfig_path }}"
+  tags:
+    - 'csi-day-2'
+    - 'never'
   block:
     - name: 'Create StorageClass manifest'
       ansible.builtin.template:
         src: 'templates/csi/storageclass.yaml.j2'
-        dest: '/tmp/nutanix-csi-storageclass.yaml'
+        dest: "{{ capi_manifests_path }}/manifests-{{ item.name }}/nutanix-csi-storageclass.yaml"
         owner: 'root'
         group: 'root'
         mode: '0644'
     - name: 'Create StorageClass'
       kubernetes.core.k8s:
         state: 'present'
-        src: '/tmp/nutanix-csi-storageclass.yaml'
+        src: "{{ capi_manifests_path }}/manifests-{{ item.name }}/nutanix-csi-storageclass.yaml"
 
 - name: 'Create PVC test'
+  environment:
+    KUBECONFIG: "{{ __kubeconfig_path }}"
+  tags:
+    - 'csi-day-2'
+    - 'never'
   block:
     - name: 'Create PVC manifest'
       ansible.builtin.template:
         src: 'templates/csi/pvc.yaml.j2'
-        dest: '/tmp/nutanix-csi-pvc.yaml'
+        dest: "{{ capi_manifests_path }}/manifests-{{ item.name }}/nutanix-csi-pvc.yaml"
         owner: 'root'
         group: 'root'
         mode: '0644'
     - name: 'Create PVC'
       kubernetes.core.k8s:
         state: 'present'
-        src: '/tmp/nutanix-csi-pvc.yaml'
+        src: "{{ capi_manifests_path }}/manifests-{{ item.name }}/nutanix-csi-pvc.yaml"

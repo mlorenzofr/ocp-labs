@@ -3,32 +3,35 @@
   hosts: capx-nutanix
 
   vars:
-    capi_cluster_disk_size: '120Gi'
-    capi_cluster_domain: 'local.lab'
-    capi_cluster_name: "{{ nutanix_user }}-ntx-1"
-    capi_cluster_masters: 3
-    capi_cluster_memory: '24Gi'
-    capi_cluster_workers: 0
+    capi_clusters:
+      - name: "{{ nutanix_user }}-ntx-1"
+        domain: 'local.lab'
+        masters: 3
+        workers: 0
+        api_vip: "{{ nutanix_net_base }}.173"
+        ingress_vip: "{{ nutanix_net_base }}.174"
+        memory: '24Gi'
+        disk_size: '120Gi'
     capi_install: True
+    capi_manifests_path: "/tmp"
     capi_version: v1.7.1
+    capi_repo: 'https://github.com/mlorenzofr/cluster-api-agent'
+    capi_src_dir: '/tmp/cluster-api-agent'
+    # capi_branch: 'cp-new-capabilities'
+    capi_branch: 'nutanix-platform'
     cert_manager_version: 'v1.15.1'
-    ingress_ip: '10.89.0.250'
+    assisted_ingress_ip: '10.89.0.250'
     kind_cluster_name: capi-nutanix-provider
     kind_cluster_reinstall: True
     kind_version: 'v0.25.0'
     nutanix_api_vip: "{{ nutanix_net_base}}.172"
     nutanix_install: True
-    nutanix_cluster_api_vip: "{{ nutanix_net_base }}.173"
-    nutanix_cluster_ingress_vip: "{{ nutanix_net_base }}.174"
     nutanix_csi_install: True
     nutanix_csi_install_src: helm  # or subscription
     nutanix_csi_namespace: 'openshift-cluster-csi-drivers'
     nutanix_csi_sc_name: 'nutanix-volume'
     nutanix_csi_version: 'v2.6.10'
     nutanix_template_name: 'rhcos-4.17.0-x86_64-nutanix.x86_64.qcow2'
-    remote_manifests_path: /tmp/manifests
-    test_namespace: test-capi
-    src_dir: '/tmp/cluster-api-agent'
     openshift_version: '4.17.0'
     # nutanix_cluster: 'your-cluster-name'
     # nutanix_network: 'ntnx-subnet'
@@ -198,12 +201,12 @@
       block:
         - name: 'Download CAPI code'
           ansible.builtin.git:
-            repo: 'https://github.com/mlorenzofr/cluster-api-agent'
-            dest: "{{ src_dir }}"
-            version: 'cp-new-capabilities'
+            repo: "{{ capi_repo }}"
+            dest: "{{ capi_src_dir }}"
+            version: "{{ capi_branch }}"
         - name: 'Build images'
           ansible.builtin.command:
-            chdir: "{{ src_dir }}"
+            chdir: "{{ capi_src_dir }}"
             cmd: 'setsid make docker-build-all'
           environment:
             CONTAINER_TAG: 'local'
@@ -228,7 +231,7 @@
             - 'bootstrap'
 #       - name: 'Create controlplane & bootloader manifests'
 #         ansible.builtin.shell:
-#           chdir: "{{ src_dir }}"
+#           chdir: "{{ capi_src_dir }}"
 #           cmd: 'make generate && make manifests && make build-installer'
 #         environment:
 #           CONTAINER_TAG: 'local'
@@ -273,7 +276,7 @@
         NUTANIX_PASSWORD: "{{ nutanix_password }}"
         NUTANIX_INSECURE: true  # or false
         KUBERNETES_VERSION: "{{ openshift_version }}"
-        WORKER_MACHINE_COUNT: "{{ capi_cluster_workers }}"
+        # WORKER_MACHINE_COUNT: 0
         NUTANIX_SSH_AUTHORIZED_KEY: "{{ lab_ssh_pubkey }}"
         NUTANIX_PRISM_ELEMENT_CLUSTER_NAME: "{{ nutanix_cluster }}"
         NUTANIX_MACHINE_TEMPLATE_IMAGE_NAME: "{{ nutanix_template_name }}"
@@ -282,22 +285,12 @@
       tags:
         - 'capx'
 
-    - name: 'Create CAPI cluster'
+    - name: 'Create CAPI clusters'
+      ansible.builtin.include_tasks: tasks/capi_cluster.yaml
       tags:
         - 'capi-cluster'
         - 'never'
-      block:
-        - name: 'Create cluster manifest'
-          ansible.builtin.template:
-            src: 'templates/assisted-cluster-ntx.yaml.j2'
-            dest: '/root/assisted-cluster-ntx.yaml'
-            owner: 'root'
-            group: 'root'
-            mode: '0644'
-        - name: 'Install cluster manifest'
-          kubernetes.core.k8s:
-            state: 'present'
-            src: '/root/assisted-cluster-ntx.yaml'
+      loop: "{{ capi_clusters }}"
 
     - name: 'Install Nutanix CSI Operator in workload cluster (CAPI)'
       when: nutanix_csi_install
@@ -316,31 +309,22 @@
         - name: 'Create CSI installation template'
           ansible.builtin.template:
             src: 'templates/{{ __nutanix_csi_template_src }}'
-            dest: '/tmp/nutanix-csi-crs.yaml'
+            dest: "{{ capi_manifests_path }}/nutanix-csi-crs.yaml"
             owner: 'root'
             group: 'root'
             mode: '0600'
         - name: 'Install cluster manifest'
           kubernetes.core.k8s:
             state: 'present'
-            src: '/tmp/nutanix-csi-crs.yaml'
+            src: "{{ capi_manifests_path }}/nutanix-csi-crs.yaml"
 
     - name: 'Nutanix CSI Operator day-2 tasks'
+      ansible.builtin.include_tasks: tasks/csi.yaml
+      loop: "{{ capi_clusters }}"
       when: nutanix_csi_install
       tags:
         - 'csi-day-2'
         - 'never'
-      block:
-        - name: 'Export workload cluster kubeconfig'
-          ansible.builtin.shell:
-            cmd: >
-              kubectl get secret/{{ capi_cluster_name }}-admin-kubeconfig -o json |
-              jq -r '.data.kubeconfig | @base64d'
-              > /tmp/kubeconfig-{{ capi_cluster_name }}
-        - name: 'Run day-2 tasks on workload cluster'
-          ansible.builtin.import_tasks: tasks/csi.yaml
-          environment:
-            KUBECONFIG: "/tmp/kubeconfig-{{ capi_cluster_name }}"
 
   handlers:
     - name: 'Apply nftables rules'
