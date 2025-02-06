@@ -5,7 +5,6 @@ lab_host_packages:
   - 'cpio'
   - 'dnsmasq'
   - 'git'
-  - 'haproxy'
   - 'jq'
   - 'kpartx'
   - 'libguestfs'

@@ -29,15 +29,6 @@
     enabled: true
   listen: 'svc restart libvirtd'
 
-- name: 'Reload HAproxy service'
-  ansible.builtin.service:
-    name: 'haproxy'
-    state: 'reloaded'
-    enabled: true
-  listen: 'svc reload haproxy'
-  tags:
-    - 'haproxy'
-
 - name: 'Restart dnsmasq-virt service'
   ansible.builtin.service:
     name: 'dnsmasq-virt'

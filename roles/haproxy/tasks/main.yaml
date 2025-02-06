@@ -1,0 +1,27 @@
+---
+- name: 'Install haproxy'
+  ansible.builtin.package:
+    name: 'haproxy'
+    state: 'present'
+  ignore_errors: "{{ ansible_check_mode }}"
+  tags:
+    - 'dnf'
+    - 'packages'
+    - 'yum'
+
+- name: 'Allow HAproxy to listen on TCP port 6443'
+  community.general.seport:
+    ports: 6443
+    proto: 'tcp'
+    setype: 'http_port_t'
+    state: 'present'
+
+- name: 'Configure HAproxy for kubernetes'
+  ansible.builtin.template:
+    src: 'haproxy-k8s.cfg.j2'
+    dest: '/etc/haproxy/haproxy.cfg'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify:
+    - 'svc reload haproxy'

@@ -30,7 +30,7 @@ listen stats-50000
     stats hide-version
     stats refresh 30s
     stats show-node
-    stats auth {{ lab_host_haproxy_stats_user }}:{{ lab_host_haproxy_stats_password }}
+    stats auth {{ haproxy_stats_user }}:{{ haproxy_stats_password }}
     stats uri  /haproxy?stats
 
 frontend apis-6443
@@ -38,7 +38,7 @@ frontend apis-6443
     mode tcp
     tcp-request inspect-delay 5s
     tcp-request content accept if { req_ssl_hello_type 1 }
-{% for lab in lab_host_haproxy_labs %}
+{% for lab in haproxy_labs %}
 {% if lab.api | default(False) %}
     acl ACL_{{ lab.name }} req_ssl_sni -i api.{{ lab.name }}.{{ lab.domain | default('local.lab') }}
     use_backend {{ lab.name }}_api_6443 if ACL_{{ lab.name }}
@@ -48,10 +48,10 @@ frontend apis-6443
 frontend routers-http-80
     bind :80
     mode http
-{% for lab in lab_host_haproxy_labs %}
+{% for lab in haproxy_labs %}
     acl ACL_{{ lab.name }} hdr(host) -m reg -i ^[^\.]+\.apps\.{{ lab.name }}\.{{ lab.domain | default('local.lab') | replace('.', '\.') }}
 {% endfor %}
-{% for lab in lab_host_haproxy_labs %}
+{% for lab in haproxy_labs %}
     use_backend {{ lab.name }}_ingress_80 if ACL_{{ lab.name }}
 {% endfor %}
 
@@ -60,13 +60,13 @@ frontend routers-https-443
     mode tcp
     tcp-request inspect-delay 5s
     tcp-request content accept if { req_ssl_hello_type 1 }
-{% for lab in lab_host_haproxy_labs %}
+{% for lab in haproxy_labs %}
     acl ACL_{{ lab.name }} req_ssl_sni -m reg -i ^[^\.]+\.apps\.{{ lab.name }}\.{{ lab.domain | default('local.lab') | replace('.', '\.') }}
 {% endfor %}
-{% for lab in lab_host_haproxy_labs %}
+{% for lab in haproxy_labs %}
     use_backend {{ lab.name }}_ingress_443 if ACL_{{ lab.name }}
 {% endfor %}
-{% for lab in lab_host_haproxy_labs %}
+{% for lab in haproxy_labs %}
 
 backend {{ lab.name }}_ingress_80
     mode http
@@ -96,6 +96,6 @@ backend {{ lab.name }}_api_6443
 {% endfor %}
 {% endif %}
 {% endfor %}
-{% for snippet in lab_host_haproxy_snippets %}
+{% for snippet in haproxy_snippets %}
 {% include snippet %}
 {% endfor %}

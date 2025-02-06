@@ -50,13 +50,6 @@
     - 'scripts'
     - 'packages'
 
-- name: 'Allow HAproxy to listen on TCP port 6443'
-  community.general.seport:
-    ports: 6443
-    proto: 'tcp'
-    setype: 'http_port_t'
-    state: 'present'
-
 - name: 'Disable firewalld service'
   ansible.builtin.service:
     name: 'firewalld'

@@ -9,5 +9,7 @@
 
   roles:
     - 'lab_host'
+    - role: 'haproxy'
+      tags: ['haproxy']
     - role: 'kind'
       tags: ['kind']

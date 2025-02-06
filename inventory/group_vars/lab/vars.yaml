@@ -1,5 +1,5 @@
 ---
-lab_host_haproxy_labs:
+haproxy_labs:
   # - {'name': 'standard', 'backends': ['192.168.125.11']}
   - {'name': 'dan', 'domain': 'manor.lab', 'backends': ['192.168.128.11']}
   - {'name': 'stdslim', 'backends': ['192.168.125.59']}
@@ -38,7 +38,7 @@ lab_host_networks:
 #   iface: 'cnv-ipv6'
 #   ipv6: true
 #   ntp: '[::1]'
-# lab_host_haproxy_snippets:
+# haproxy_snippets:
 #  - 'haproxy/assisted-service.j2'
 lab_host_ocp_versions:
   - {version: '4.17.7', state: 'present'}

@@ -30,18 +30,6 @@
     group: 'root'
     mode: '0644'
 
-- name: 'Configure HAproxy'
-  ansible.builtin.template:
-    src: 'haproxy.cfg.j2'
-    dest: '/etc/haproxy/haproxy.cfg'
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
-  notify:
-    - 'svc reload haproxy'
-  tags:
-    - 'haproxy'
-
 - name: 'Configure chronyd'
   ansible.builtin.template:
     src: 'chrony.conf.j2'

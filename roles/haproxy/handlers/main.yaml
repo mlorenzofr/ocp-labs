@@ -1,0 +1,7 @@
+---
+- name: 'Reload haproxy service'
+  ansible.builtin.service:
+    name: 'haproxy'
+    state: 'reloaded'
+    enabled: true
+  listen: 'svc reload haproxy'

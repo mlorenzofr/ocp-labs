@@ -1,0 +1,5 @@
+---
+haproxy_labs: []
+haproxy_snippets: []
+haproxy_stats_password: ''
+haproxy_stats_user: 'admin'
