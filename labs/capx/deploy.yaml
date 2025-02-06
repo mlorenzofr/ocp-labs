@@ -3,6 +3,7 @@
   hosts: capx-nutanix
 
   vars:
+    assisted_ingress_ip: '10.89.0.250'
     capi_clusters:
       - name: "{{ nutanix_user }}-ntx-1"
         domain: 'local.lab'
@@ -20,7 +21,14 @@
     # capi_branch: 'cp-new-capabilities'
     capi_branch: 'nutanix-platform'
     cert_manager_version: 'v1.15.1'
-    assisted_ingress_ip: '10.89.0.250'
+    haproxy_k8s_api: False
+    haproxy_labs:
+      - name: "{{ nutanix_user }}-ntx-1"
+        ocp: False
+        backends: ["{{ assisted_ingress_ip }}"]
+        ingress_hosts:
+          - name: 'assisted'
+            match: 'assisted-(service|image).assisted-installer.com'
     kind_clusters:
       - name: capi-nutanix-provider
         reinstall: True
@@ -40,9 +48,10 @@
     # nutanix_net_base: '10.0.0'
 
   roles:
+    - role: haproxy
+      tags: ['haproxy']
     - role: kind
-      tags:
-        - kind
+      tags: ['kind']
 
   tasks:
     - name: 'Include os configuration tasks'

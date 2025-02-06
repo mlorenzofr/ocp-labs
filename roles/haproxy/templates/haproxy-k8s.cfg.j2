@@ -33,6 +33,7 @@ listen stats-50000
     stats auth {{ haproxy_stats_user }}:{{ haproxy_stats_password }}
     stats uri  /haproxy?stats
 
+{% if haproxy_k8s_api %}
 frontend apis-6443
     bind :6443
     mode tcp
@@ -45,14 +46,20 @@ frontend apis-6443
 {% endif %}
 {% endfor %}
 
+{% endif %}
 frontend routers-http-80
     bind :80
     mode http
 {% for lab in haproxy_labs %}
+{% if lab.ocp | default(True) %}
     acl ACL_{{ lab.name }} hdr(host) -m reg -i ^[^\.]+\.apps\.{{ lab.name }}\.{{ lab.domain | default('local.lab') | replace('.', '\.') }}
+    use_backend {{ lab.name }}_route_80 if ACL_{{ lab.name }}
+{% else %}
+{% for host in lab.ingress_hosts %}
+    acl ACL_{{ host.name }} hdr(host) -m reg -i {{ host.match | replace('.', '\.') }}
+    use_backend {{ lab.name }}_ingress_80 if ACL_{{ host.name }}
 {% endfor %}
-{% for lab in haproxy_labs %}
-    use_backend {{ lab.name }}_ingress_80 if ACL_{{ lab.name }}
+{% endif %}
 {% endfor %}
 
 frontend routers-https-443
@@ -61,14 +68,20 @@ frontend routers-https-443
     tcp-request inspect-delay 5s
     tcp-request content accept if { req_ssl_hello_type 1 }
 {% for lab in haproxy_labs %}
+{% if lab.ocp | default(True) %}
     acl ACL_{{ lab.name }} req_ssl_sni -m reg -i ^[^\.]+\.apps\.{{ lab.name }}\.{{ lab.domain | default('local.lab') | replace('.', '\.') }}
-{% endfor %}
-{% for lab in haproxy_labs %}
     use_backend {{ lab.name }}_ingress_443 if ACL_{{ lab.name }}
+{% else %}
+{% for host in lab.ingress_hosts %}
+    acl ACL_{{ host.name }} req_ssl_sni -m reg -i {{ host.match | replace('.', '\.') }}
+    use_backend {{ lab.name }}_ingress_443 if ACL_{{ host.name }}
+{% endfor %}
+{% endif %}
 {% endfor %}
 {% for lab in haproxy_labs %}
 
-backend {{ lab.name }}_ingress_80
+{% if lab.ocp | default(True) %}
+backend {{ lab.name }}_route_80
     mode http
     balance hdr(Host)
     hash-type consistent
@@ -77,6 +90,14 @@ backend {{ lab.name }}_ingress_80
 {% for server in lab.backends %}
     server server{{ loop.index }} {{ server }}:80 check inter 1s
 {% endfor %}
+{% else %}
+backend {{ lab.name }}_ingress_80
+    mode http
+    balance source
+{% for server in lab.backends %}
+    server server{{ loop.index }} {{ server }}:80 check inter 1s
+{% endfor %}
+{% endif %}
 
 backend {{ lab.name }}_ingress_443
     mode tcp

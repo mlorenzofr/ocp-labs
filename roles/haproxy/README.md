@@ -5,6 +5,7 @@ Install and configure haproxy on a RHEL/Fedora system to provide access to Opens
 None.
 
 ## Role Variables
+* `haproxy_k8s_api`. _Bool_. Set wether haproxy should listen on port 6443 or not.
 * `haproxy_labs`. _List_. List of labs (clusters)
 * `haproxy_snippets`. _List_. List of additional snippets with extra configurations.
 * `haproxy_stats_user`. _String_. Username to access to the stats page.

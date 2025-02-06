@@ -1,4 +1,5 @@
 ---
+haproxy_k8s_api: True
 haproxy_labs: []
 haproxy_snippets: []
 haproxy_stats_password: ''
