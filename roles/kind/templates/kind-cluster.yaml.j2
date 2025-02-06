@@ -1,0 +1,30 @@
+{{ ansible_managed | comment }}
+
+---
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+networking:
+  apiServerAddress: {{ item.address | default('0.0.0.0') }}
+  apiServerPort: {{ item.port | default('6443') }}
+nodes:
+- role: control-plane
+{% if item.nginx %}
+  kubeadmConfigPatches:
+  - |
+    kind: InitConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "ingress-ready=true"
+{% endif %}
+{% if item.ports | default([]) | length > 0 %}
+  extraPortMappings:
+{% for port in item.ports %}
+{% if 'comment' in port.keys() %}
+  # {{ port.comment }}
+{% endif %}
+  - containerPort: {{ port.container }}
+    hostPort: {{ port.host }}
+    listenAddress: "{{ port.address }}"
+    protocol: {{ port.proto | default('TCP') }}
+{% endfor %}
+{% endif %}

@@ -1,0 +1,24 @@
+---
+galaxy_info:
+  role_name: kind
+  namespace: mlorenzofr
+  author: 'Manuel Lorenzo'
+  description: 'Install and configure KIND'
+  company: 'Red Hat'
+  license: 'MIT'
+  min_ansible_version: '2.12'
+  platforms:
+    - name: 'EL'
+      versions:
+        - '8'
+    - name: 'Fedora'
+      versions:
+        - all
+    - name: 'GenericLinux'
+      versions:
+        - all
+  galaxy_tags:
+    - kubernetes
+    - k8s
+    - containers
+dependencies: []

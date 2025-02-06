@@ -7,9 +7,6 @@ dns_servers:
 helm_version: '3.17.0'
 kustomize_version: '5.6.0'
 k8s_tools:
-  - name: 'kind'
-    url: "https://kind.sigs.k8s.io/dl/{{ kind_version }}/kind-linux-amd64"
-    force: "{{ kind_reinstall | default(false) }}"
   - name: 'kubectl'
     url: "https://dl.k8s.io/release/{{ lookup('ansible.builtin.url', 'https://dl.k8s.io/release/stable.txt') }}/bin/linux/amd64/kubectl"
     force: "{{ kubectl_reinstall | default(false) }}"

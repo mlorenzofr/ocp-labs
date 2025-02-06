@@ -21,9 +21,11 @@
     capi_branch: 'nutanix-platform'
     cert_manager_version: 'v1.15.1'
     assisted_ingress_ip: '10.89.0.250'
-    kind_cluster_name: capi-nutanix-provider
-    kind_cluster_reinstall: True
-    kind_version: 'v0.25.0'
+    kind_clusters:
+      - name: capi-nutanix-provider
+        reinstall: True
+        address: "{{ ansible_default_ipv4.address }}"
+        nginx: True
     nutanix_api_vip: "{{ nutanix_net_base}}.172"
     nutanix_install: True
     nutanix_csi_install: True
@@ -37,33 +39,17 @@
     # nutanix_network: 'ntnx-subnet'
     # nutanix_net_base: '10.0.0'
 
+  roles:
+    - role: kind
+      tags:
+        - kind
+
   tasks:
     - name: 'Include os configuration tasks'
       ansible.builtin.import_tasks: tasks/fedora.yaml
       tags:
         - 'os'
         - 'system'
-
-    - name: 'Get kind clusters'
-      ansible.builtin.command:
-        cmd: 'kind get clusters'
-      register: __kind_clusters
-      check_mode: false
-      changed_when: kind_cluster_name in __kind_clusters.stdout_lines and kind_cluster_reinstall
-      failed_when: false
-      notify: 'kind cluster installation'
-
-    - name: "Create cluster definition"
-      ansible.builtin.template:
-        src: 'templates/kind-cluster.yaml.j2'
-        dest: "/tmp/{{ kind_cluster_name }}.yaml"
-        owner: 'root'
-        group: 'root'
-        mode: '0644'
-      notify: 'kind cluster installation'
-
-    - name: Flush handlers
-      meta: flush_handlers
 
     - name: 'Install cert-manager'
       block:

@@ -9,3 +9,5 @@
 
   roles:
     - 'lab_host'
+    - role: 'kind'
+      tags: ['kind']

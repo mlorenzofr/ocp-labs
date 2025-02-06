@@ -73,10 +73,6 @@
   ansible.builtin.import_tasks: 'kcli.yaml'
   tags: ['kcli']
 
-- name: 'Install kind'
-  ansible.builtin.import_tasks: 'kind.yaml'
-  tags: ['kind']
-
 - name: 'Install helm'
   ansible.builtin.import_tasks: 'helm.yaml'
   tags: ['helm']

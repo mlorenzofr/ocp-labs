@@ -1,0 +1,26 @@
+---
+- name: 'Check if cluster exists'
+  ansible.builtin.command:
+    cmd: 'kind get clusters'
+  register: __kind_clusters
+  check_mode: false
+  changed_when: false
+  failed_when: false
+
+- name: 'Remove cluster'
+  ansible.builtin.command:
+    cmd: "kind delete cluster --name {{ item.name }}"
+  when: item.name in __kind_clusters.stdout_lines and item.reinstall
+
+- name: "Create cluster definition"
+  ansible.builtin.template:
+    src: 'templates/kind-cluster.yaml.j2'
+    dest: "{{ kind_cfg_dir }}/{{ item.name }}.yaml"
+    owner: "{{ kind_user }}"
+    group: "{{ kind_group }}"
+    mode: '0644'
+
+- name: 'Create kind cluster'
+  ansible.builtin.command:
+    cmd: "kind create cluster --name {{ item.name }} --config {{ kind_cfg_dir }}/{{ item.name }}.yaml"
+  when: item.name not in __kind_clusters.stdout_lines or item.reinstall

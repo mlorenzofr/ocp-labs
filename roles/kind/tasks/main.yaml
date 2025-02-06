@@ -1,0 +1,19 @@
+---
+- name: 'Download kind'
+  ansible.builtin.get_url:
+    url: "https://kind.sigs.k8s.io/dl/v{{ kind_version }}/kind-linux-amd64"
+    dest: "/usr/local/bin/kind"
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+    force: "{{ kind_reinstall }}"
+
+- name: 'Create kind configuration directory'
+  ansible.builtin.file:
+    path: "{{ kind_cfg_dir }}"
+    state: directory
+
+- name: 'Create kind clusters'
+  ansible.builtin.include_tasks: clusters.yaml
+  loop: "{{ kind_clusters }}"
+...
