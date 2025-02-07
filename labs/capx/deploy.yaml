@@ -220,10 +220,8 @@
             - 'bootstrap'
         - name: 'Load images'
           ansible.builtin.command:
-            cmd: "kind load image-archive --name {{ kind_cluster_name }} /tmp/{{ item }}.tar.gz"
-          loop:
-            - 'controlplane'
-            - 'bootstrap'
+            cmd: "kind load image-archive --name {{ item.0.name }} /tmp/{{ item.1 }}.tar.gz"
+          loop: "{{ kind_clusters | product(['controlplane','bootstrap']) | list }}"
 #       - name: 'Create controlplane & bootloader manifests'
 #         ansible.builtin.shell:
 #           chdir: "{{ capi_src_dir }}"
@@ -328,13 +326,3 @@
         state: 'restarted'
         enabled: true
       listen: 'restart dnsmasq'
-
-    - name: 'Delete kind cluster'
-      ansible.builtin.command:
-        cmd: "kind delete cluster --name {{ kind_cluster_name }}"
-      listen: 'kind cluster installation'
-
-    - name: 'Create kind cluster'
-      ansible.builtin.command:
-        cmd: "kind create cluster --name {{ kind_cluster_name }} --config /tmp/{{ kind_cluster_name }}.yaml"
-      listen: 'kind cluster installation'
