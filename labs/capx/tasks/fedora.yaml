@@ -94,23 +94,3 @@
     regexp: '^#*dns_servers =.*'
     line: "dns_servers = {{ dns_servers }}"
   ignore_errors: "{{ ansible_check_mode }}"
-
-# Configuration to publish assisted-service
-- name: 'Publish assisted-service'
-  block:
-    - name: 'Copy nftables configuration script'
-      ansible.builtin.template:
-        src: 'templates/nft.sh.j2'
-        dest: '/tmp/nft.sh'
-        owner: 'root'
-        group: 'root'
-        mode: '0755'
-      notify: 'nftables'
-    - name: 'Configure IP forwarding'
-      ansible.posix.sysctl:
-        name: 'net.ipv4.ip_forward'
-        value: 1
-        state: present
-        sysctl_file: '/etc/sysctl.d/95-IPv4-forwarding.conf'
-        sysctl_set: True
-        reload: True
