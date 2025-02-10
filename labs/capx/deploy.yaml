@@ -18,8 +18,8 @@
     capi_version: v1.7.1
     capi_repo: 'https://github.com/mlorenzofr/cluster-api-agent'
     capi_src_dir: '/tmp/cluster-api-agent'
-    capi_branch: 'cp-new-capabilities'
-    # capi_branch: 'nutanix-platform'
+    # capi_branch: 'cp-new-capabilities'
+    capi_branch: 'nutanix-platform'
     cert_manager_version: 'v1.15.1'
     haproxy_k8s_api: False
     haproxy_labs:
@@ -30,10 +30,19 @@
           - name: 'assisted'
             match: 'assisted-(service|image).assisted-installer.com'
     kind_clusters:
-      - name: capi-nutanix-provider
+      # - name: capi-nutanix-provider
+      #   reinstall: False
+      #   address: "{{ ansible_default_ipv4.address }}"
+      #   nginx: True
+      #   metallb_ip: '10.89.0.250'
+      - name: capi-nutanix-platform
         reinstall: True
         address: "{{ ansible_default_ipv4.address }}"
+        port: 6444
         nginx: True
+        metallb_ip: '10.89.0.251'
+        assisted_svc_hostname: 'assisted-service-2.assisted-installer.com'
+        image_svc_hostname: 'assisted-image-2.assisted-installer.com'
     nutanix_api_vip: "{{ nutanix_net_base}}.172"
     nutanix_install: True
     nutanix_csi_install: True
@@ -61,6 +70,7 @@
         - 'system'
 
     - name: 'Install cert-manager'
+      tags: cert-manager
       block:
         - name: 'Download cert-manager manifest'
           ansible.builtin.get_url:
@@ -73,8 +83,11 @@
           kubernetes.core.k8s:
             state: 'present'
             src: '/tmp/cert-manager.yaml'
+            context: "kind-{{ item.name }}"
+          loop: "{{ kind_clusters }}"
         - name: 'Waiting for cert-manager deployment'
           kubernetes.core.k8s:
+            context: "kind-{{ item.name }}"
             definition:
               apiVersion: apps/v1
               kind: Deployment
@@ -86,35 +99,44 @@
               type: Available
               status: "True"
             wait_timeout: 600
+          loop: "{{ kind_clusters }}"
 
     - name: 'Install metallb'
+      tags: metallb
       block:
         - name: 'Download metallb manifest'
           ansible.builtin.get_url:
             url: "https://raw.githubusercontent.com/metallb/metallb/v0.13.7/config/manifests/metallb-native.yaml"
-            dest: '/tmp/metallb.yaml'
+            dest: "{{ capi_manifests_path }}/metallb.yaml"
             owner: 'root'
             group: 'root'
             mode: '0644'
         - name: 'Install metallb manifest'
           kubernetes.core.k8s:
             state: 'present'
-            src: '/tmp/metallb.yaml'
+            src: "{{ capi_manifests_path }}/metallb.yaml"
+            context: "kind-{{ item.name }}"
+          ignore_errors: "{{ ansible_check_mode }}"
+          loop: "{{ kind_clusters }}"
         - name: "Create metallb configuration manifest"
           ansible.builtin.template:
             src: 'templates/metallb-config.yaml.j2'
-            dest: '/tmp/metallb-config.yaml'
+            dest: "{{ capi_manifests_path }}/metallb-{{ item.name }}-config.yaml"
             owner: 'root'
             group: 'root'
             mode: '0644'
+          loop: "{{ kind_clusters }}"
         - name: 'Install metallb-config manifest'
           kubernetes.core.k8s:
+            context: "kind-{{ item.name }}"
             state: 'present'
-            src: '/tmp/metallb-config.yaml'
+            src: "{{ capi_manifests_path }}/metallb-{{ item.name }}-config.yaml"
           retries: 5
           delay: 30
+          loop: "{{ kind_clusters }}"
 
     - name: 'Install ingress-nginx'
+      tags: ingress
       block:
         # - name: 'Download ingress-nginx manifest'
         #   ansible.builtin.get_url:
@@ -126,14 +148,17 @@
         - name: 'Copy ingress-nginx manifest'
           ansible.builtin.copy:
             src: 'manifest/nginx.yaml'
-            dest: '/tmp/ingress-nginx.yaml'
+            dest: "{{ capi_manifests_path }}/ingress-nginx.yaml"
             owner: 'root'
             group: 'root'
             mode: '0644'
         - name: 'Install ingress-nginx manifest'
           kubernetes.core.k8s:
             state: 'present'
-            src: '/tmp/ingress-nginx.yaml'
+            src: "{{ capi_manifests_path }}/ingress-nginx.yaml"
+            context: "kind-{{ item.name }}"
+          loop: "{{ kind_clusters }}"
+          ignore_errors: "{{ ansible_check_mode }}"
 
     - name: 'Install infrastructure operator'
       tags:
@@ -142,26 +167,42 @@
         - name: 'Create infrastructure operator manifest'
           ansible.builtin.copy:
             src: 'manifest/infrastructure-operator'
-            dest: '/tmp'
+            dest: "{{ capi_manifests_path }}"
             owner: 'root'
             group: 'root'
             mode: preserve
+        - name: 'Prepare agentconfig'
+          ansible.builtin.template:
+            src: 'agentconfig.yaml.j2'
+            dest: "{{ capi_manifests_path }}/infrastructure-operator/agentconfig-{{ item.name }}.yaml"
+            owner: 'root'
+            group: 'root'
+            mode: '0644'
+          loop: "{{ kind_clusters }}"
         - name: 'Check assisted-installer namespace'
           ansible.builtin.command:
-            cmd: 'kubectl get ns assisted-installer'
+            cmd: "kubectl get --context kind-{{ item.name }} ns assisted-installer"
+          loop: "{{ kind_clusters }}"
           changed_when: false
           failed_when: false
           register: __assisted_ns
         - name: 'Deploy infrastructure operator resources'
           ansible.builtin.command:
-            cmd: 'kubectl apply -k /tmp/infrastructure-operator/'
-          when: __assisted_ns.rc != 0
+            cmd: "kubectl apply --context kind-{{ kind_clusters[ansible_loop.index0].name }} -k {{ capi_manifests_path }}/infrastructure-operator/"
+          loop: "{{ __assisted_ns.results }}"
+          loop_control:
+            extended: true
+          when: item.rc != 0
         - name: 'Create agentconfig resources'
           kubernetes.core.k8s:
             state: 'present'
-            src: '/tmp/infrastructure-operator/agentconfig.yaml'
+            src: "{{ capi_manifests_path }}/infrastructure-operator/agentconfig-{{ item.name }}.yaml"
+            context: "kind-{{ item.name }}"
+          ignore_errors: "{{ ansible_check_mode }}"
+          loop: "{{ kind_clusters }}"
         - name: 'Waiting for assisted-service deployment'
           kubernetes.core.k8s:
+            context: "kind-{{ item.name }}"
             definition:
               apiVersion: apps/v1
               kind: Deployment
@@ -173,10 +214,13 @@
               type: Available
               status: "True"
             wait_timeout: 600
+          loop: "{{ kind_clusters }}"
+          ignore_errors: "{{ ansible_check_mode }}"
           retries: 5
           delay: 30
         - name: 'Waiting for assisted-image pod'
           kubernetes.core.k8s:
+            context: "kind-{{ item.name }}"
             definition:
               apiVersion: v1
               kind: Pod
@@ -188,6 +232,8 @@
               type: Ready
               status: "True"
             wait_timeout: 600
+          ignore_errors: "{{ ansible_check_mode }}"
+          loop: "{{ kind_clusters }}"
 
     - name: 'CAPI installation'
       when: capi_install
@@ -244,7 +290,7 @@
         - name: 'Copy provider manifests'
           ansible.builtin.copy:
             src: 'manifest/{{ item }}_install.yaml'
-            dest: '/tmp/{{ item }}_install.yaml'
+            dest: "{{ capi_manifests_path }}/{{ item }}_install.yaml"
             owner: 'root'
             group: 'root'
             mode: '0644'
@@ -254,15 +300,15 @@
         - name: 'Install CAPI providers'
           kubernetes.core.k8s:
             state: 'present'
-            src: '/tmp/{{ item }}_install.yaml'
-          loop:
-            - 'controlplane'
-            - 'bootstrap'
+            src: "{{ capi_manifests_path }}/{{ item.1 }}_install.yaml"
+            context: "kind-{{ item.0.name }}"
+          ignore_errors: "{{ ansible_check_mode }}"
+          loop: "{{ kind_clusters | product(['controlplane','bootstrap']) | list }}"
 
     - name: 'Install nutanix infrastructure provider'
       when: nutanix_install
       ansible.builtin.command:
-        cmd: "clusterctl init --core cluster-api:v1.9.3 --bootstrap - --control-plane - --infrastructure nutanix"
+        cmd: "clusterctl init --kubeconfig-context kind-{{ item.name }} --core cluster-api:v1.9.3 --bootstrap - --control-plane - --infrastructure nutanix"
       environment:
         NUTANIX_ENDPOINT: "{{ nutanix_prism_central }}"
         NUTANIX_USER: "{{ nutanix_user }}"
@@ -275,6 +321,7 @@
         NUTANIX_MACHINE_TEMPLATE_IMAGE_NAME: "{{ nutanix_template_name }}"
         NUTANIX_SUBNET_NAME: "{{ nutanix_network }}"
         CONTROL_PLANE_ENDPOINT_IP: "{{ nutanix_api_vip }}"
+      loop: "{{ kind_clusters }}"
       tags:
         - 'capx'
 

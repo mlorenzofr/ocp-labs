@@ -16,8 +16,8 @@ metadata:
 spec:
   ingress:
     className: nginx
-    assistedServiceHostname: "assisted-service.assisted-installer.com"
-    imageServiceHostname: "assisted-image.assisted-installer.com"
+    assistedServiceHostname: "{{ item.assisted_svc_hostname | default('assisted-service.assisted-installer.com') }}"
+    imageServiceHostname: "{{ item.image_svc_hostname | default('assisted-image.assisted-installer.com') }}"
   databaseStorage:
     accessModes:
       - ReadWriteOnce

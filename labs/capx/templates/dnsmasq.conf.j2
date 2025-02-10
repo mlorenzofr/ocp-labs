@@ -20,3 +20,11 @@ address=/.apps.{{ cluster.name }}.{{ cluster.domain }}/{{ cluster.ingress_vip }}
 {% endfor %}
 host-record=assisted-service.assisted-installer.com,{{ ansible_default_ipv4.address }}
 host-record=assisted-image.assisted-installer.com,{{ ansible_default_ipv4.address }}
+{% for cluster in kind_clusters %}
+{% if 'assisted_svc_hostname' in cluster.keys() %}
+host-record={{ cluster.assisted_svc_hostname }},{{ ansible_default_ipv4.address }}
+{% endif %}
+{% if 'image_svc_hostname' in cluster.keys() %}
+host-record={{ cluster.image_svc_hostname }},{{ ansible_default_ipv4.address }}
+{% endif %}
+{% endfor %}
