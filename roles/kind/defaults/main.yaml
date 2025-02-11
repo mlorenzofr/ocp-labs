@@ -1,6 +1,7 @@
 ---
 kind_cfg_dir: "{{ ansible_env.HOME }}/.kind"
 kind_clusters: []
+kind_container_engine: 'podman'
 kind_group: 'root'
 kind_reinstall: False
 kind_user: 'root'
