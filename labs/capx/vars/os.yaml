@@ -20,6 +20,5 @@ packages:
   - 'git'
   - 'golang'
   - 'make'
-  - 'podman'
   - 'python3-kubernetes'
   - 'vim-enhanced'

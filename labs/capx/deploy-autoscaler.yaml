@@ -1,6 +1,6 @@
 ---
 - name: Setup Nutanix CAPX environment
-  hosts: capx-nutanix
+  hosts: capx-nutanix-2
 
   vars:
     assisted_ingress_ip: '10.89.0.250'
@@ -30,11 +30,13 @@
           - name: 'assisted'
             match: 'assisted-(service|image).assisted-installer.com'
     kind_clusters:
-      - name: capi-nutanix-provider
-        reinstall: False
+      - name: capi-autoscaler
+        reinstall: True
         address: "{{ ansible_default_ipv4.address }}"
         nginx: True
         metallb_ip: '10.89.0.250'
+        assisted_svc_hostname: 'assisted-service-2.assisted-installer.com'
+        image_svc_hostname: 'assisted-image-2.assisted-installer.com'
     nutanix_api_vip: "{{ nutanix_net_base}}.172"
     nutanix_install: True
     nutanix_csi_install: True
