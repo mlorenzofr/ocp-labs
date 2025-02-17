@@ -5,12 +5,12 @@
   vars:
     assisted_ingress_ip: '10.89.0.250'
     capi_clusters:
-      - name: "{{ nutanix_user }}-ntx-1"
+      - name: "{{ nutanix_user }}-ntx-2"
         domain: 'local.lab'
         masters: 3
         workers: 0
-        api_vip: "{{ nutanix_net_base }}.173"
-        ingress_vip: "{{ nutanix_net_base }}.174"
+        api_vip: "{{ nutanix_net_base }}.183"
+        ingress_vip: "{{ nutanix_net_base }}.184"
         memory: '24Gi'
         disk_size: '120Gi'
     capi_install: True
