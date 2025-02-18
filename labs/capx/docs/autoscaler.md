@@ -72,3 +72,5 @@ capi-ntx-2-wmd-d5c5g-4s4fh       Ready    worker                        5m5s   v
 * [Using the Cluster Autoscaler](https://cluster-api.sigs.k8s.io/tasks/automated-machine-management/autoscaling)
 * [Using Autoscaler in combination with CAPX](https://opendocs.nutanix.com/capx/latest/experimental/autoscaler/)
 * [Cluster Autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler)
+* [Managing machines with the Cluster API](https://docs.redhat.com/en/documentation/openshift_container_platform/4.17/html-single/machine_management/index#managing-machines-with-the-cluster-api)
+* [Openshift cluster-autoscaler-operator](https://github.com/openshift/cluster-autoscaler-operator)
