@@ -9,8 +9,8 @@
         domain: 'local.lab'
         masters: 3
         workers: 0
-        api_vip: "{{ nutanix_net_base }}.183"
-        ingress_vip: "{{ nutanix_net_base }}.184"
+        api_vip: "{{ nutanix_net_base }}.50"
+        ingress_vip: "{{ nutanix_net_base }}.51"
         memory: '24Gi'
         disk_size: '120Gi'
     capi_install: True
