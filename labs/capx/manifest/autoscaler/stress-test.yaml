@@ -1,0 +1,24 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stress-test
+  namespace: default
+spec:
+  replicas: 100
+  selector:
+    matchLabels:
+      app: stress-test
+  template:
+    metadata:
+      labels:
+        app: stress-test
+    spec:
+      containers:
+        - name: stress-test
+          image: registry.access.redhat.com/ubi9/ubi:latest
+          command: ["sh", "-c", "while true; do echo 'Running test...'; sleep 10; done"]
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "128Mi"
