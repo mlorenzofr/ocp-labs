@@ -1,0 +1,59 @@
+---
+- name: 'Install dnsmasq'
+  ansible.builtin.package:
+    name: 'dnsmasq'
+    state: 'present'
+  ignore_errors: "{{ ansible_check_mode }}"
+  tags:
+    - 'dnf'
+    - 'packages'
+    - 'yum'
+
+- name: 'Disable systemd-resolved'
+  ansible.builtin.service:
+    name: 'systemd-resolved'
+    state: 'stopped'
+    enabled: false
+  when: dnsmasq_disable_resolved
+
+- name: 'Enable dnsmasq in firewalld'
+  ansible.posix.firewalld:
+    service: dns
+    state: enabled
+    permanent: true
+    immediate: true
+    offline: true
+  when: >
+    dnsmasq_local_service == '' or
+    dnsmasq_interfaces | length == 0 or
+    dnsmasq_except_interfaces | length == 0 or
+    dnsmasq_listen_address == ''
+
+- name: 'Configure resolv.conf'
+  ansible.builtin.template:
+    src: 'resolv.conf.j2'
+    dest: '/etc/resolv.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  when: dnsmasq_resolvconf
+
+- name: 'Configure dnsmasq'
+  ansible.builtin.template:
+    src: 'dnsmasq.conf.j2'
+    dest: '/etc/dnsmasq.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  ignore_errors: "{{ ansible_check_mode }}"
+  notify:
+    - 'svc restart dnsmasq'
+  tags:
+    - 'conf'
+
+- name: 'Add configuration snippets'
+  ansible.builtin.import_tasks:
+    file: 'extra_conf.yaml'
+  tags:
+    - 'conf'
+    - 'extra_conf'

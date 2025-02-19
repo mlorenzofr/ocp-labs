@@ -1,0 +1,12 @@
+{{ ansible_managed | comment }}
+
+{% if dnsmasq_resolvconf_domains | length > 0 %}
+search {{ dnsmasq_resolvconf_domains | join(' ') }}
+{% endif %}
+nameserver 127.0.0.1
+{% for server in dnsmasq_resolvconf_servers %}
+nameserver {{ server }}
+{% endfor %}
+{% if dnsmasq_resolvconf_options | length > 0 %}
+options {{ dnsmasq_resolvconf_options | join(' ') }}
+{% endif %}

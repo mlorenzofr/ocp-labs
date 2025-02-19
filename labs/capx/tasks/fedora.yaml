@@ -50,44 +50,6 @@
   ansible.builtin.debug:
     msg: "{{ ansible_default_ipv4.address }}"
 
-- name: 'Configure dnsmasq'
-  ignore_errors: "{{ ansible_check_mode }}"
-  tags:
-    - dnsmasq
-  notify:
-    - 'restart dnsmasq'
-  block:
-    - name: 'Disable systemd-resolved'
-      ansible.builtin.service:
-        name: 'systemd-resolved'
-        state: 'stopped'
-        enabled: false
-    - name: 'Disable firewalld'
-      ansible.builtin.service:
-        name: 'firewalld'
-        state: 'stopped'
-        enabled: false
-    - name: 'Configure resolv.conf'
-      ansible.builtin.copy:
-        dest: '/etc/resolv.conf'
-        content: "nameserver 127.0.0.1\nnameserver 1.1.1.1\n"
-        owner: 'root'
-        group: 'root'
-        mode: '0644'
-    - name: 'Create capi configuration'
-      ansible.builtin.template:
-        src: 'templates/dnsmasq.conf.j2'
-        dest: "/etc/dnsmasq.d/capi.conf"
-        owner: 'root'
-        group: 'root'
-        mode: '0644'
-    - name: 'Disable local listen only'
-      ansible.builtin.lineinfile:
-        path: '/etc/dnsmasq.conf'
-        regexp: '^(local-service\s*=.*)'
-        line: '#\1'
-        backrefs: yes
-
 - name: 'Change default dns_servers for containers'
   ansible.builtin.lineinfile:
     path: '/usr/share/containers/containers.conf'

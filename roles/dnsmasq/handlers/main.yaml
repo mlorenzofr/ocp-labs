@@ -1,0 +1,7 @@
+---
+- name: 'Restart dnsmasq service'
+  ansible.builtin.service:
+    name: 'dnsmasq'
+    state: 'restarted'
+    enabled: true
+  listen: 'svc restart dnsmasq'

@@ -3,9 +3,10 @@ This role installs and configures baremetal operator resources (`InfraEnv` and `
 
 ## Requirements
 This role requires (yet included by dependencies):
-* `ocp_assisted_service`
-* `ocp_mce` or `ocp_acm`
-* `ocp_lvms`
+* **ocp_assisted_service**
+* **ocp_mce** or **ocp_acm**
+* **ocp_lvms**
+And also, to create DNS records for `BaremetalHosts`, the **dnsmasq** role.
 
 ## Role Variables
 * `ocp_baremetal_install`. _Bool_. Set wether the role should apply manifests or simply create them.

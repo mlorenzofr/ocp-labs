@@ -13,7 +13,6 @@ lab_bootstrap_mac: ''
 lab_custom_capabilities: []
 lab_custom_capability_set: ''
 lab_custom_manifests: []
-lab_dnsmasq_root: '/opt/dnsmasq'
 lab_dns_servers: []
 lab_gateway: ''
 lab_ingress_ips: ['192.168.125.11']

@@ -1,0 +1,9 @@
+{{ ansible_managed | comment }}
+
+{% for address in dnsmasq_addresses %}
+address=/{{ address.name }}/{{ address.ipaddr }}
+{% endfor %}
+
+{% for record in dnsmasq_host_records %}
+host-record={{ record.hostname }},{{ record.ipaddr }}
+{% endfor %}

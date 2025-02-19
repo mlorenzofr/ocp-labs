@@ -16,7 +16,6 @@ k8s_tools:
 packages:
   - 'bind-utils'
   - 'containernetworking-plugins'
-  - 'dnsmasq'
   - 'git'
   - 'golang'
   - 'make'

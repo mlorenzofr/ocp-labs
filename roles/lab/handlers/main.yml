@@ -1,7 +1,2 @@
 ---
-- name: 'Restart dnsmasq-virt service'
-  ansible.builtin.service:
-    name: 'dnsmasq-virt'
-    state: 'restarted'
-  listen: 'svc restart dnsmasq-virt'
 ...

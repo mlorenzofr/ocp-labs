@@ -7,7 +7,6 @@
   gather_facts: false
 
   vars:
-    lab_dnsmasq_root: '/opt/dnsmasq'
     lab_configs: "/root/labs/{{ lab_name }}/config"
     lab_install: true
     lab_mac_base: 'be:be:ca:fe:02:'

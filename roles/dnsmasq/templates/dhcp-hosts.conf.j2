@@ -1,0 +1,6 @@
+{{ ansible_managed | comment }}
+
+{% for host in dnsmasq_dhcp_hosts %}
+dhcp-host={{ host.hwaddr }},{{ host.hostname }},{{ host.ipaddr }}{% if 'lease' in host.keys() %},{{ host.lease }}{% endif %}{% if 'ignore' in host.keys() and host.ignore %},ignore{% endif %}
+
+{% endfor %}

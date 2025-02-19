@@ -4,19 +4,6 @@
     daemon_reload: true
   listen: 'systemd daemon-reload'
 
-- name: 'Mask dnsmasq service'
-  ansible.builtin.systemd_service:
-    name: 'dnsmasq'
-    state: 'stopped'
-    enabled: false
-    masked: true
-  listen: 'svc mask dnsmasq'
-
-- name: 'Apply SELinux file context for hosts.leases'
-  ansible.builtin.command:
-    cmd: 'restorecon -iR /opt/dnsmasq'
-  listen: 'selinux dnsmasq'
-
 - name: 'Flush iptables rules'
   ansible.builtin.command:
     cmd: 'iptables -F'
@@ -28,13 +15,6 @@
     state: 'restarted'
     enabled: true
   listen: 'svc restart libvirtd'
-
-- name: 'Restart dnsmasq-virt service'
-  ansible.builtin.service:
-    name: 'dnsmasq-virt'
-    state: 'restarted'
-    enabled: true
-  listen: 'svc restart dnsmasq-virt'
 
 - name: 'Restart chronyd service'
   ansible.builtin.service:

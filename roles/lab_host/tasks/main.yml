@@ -74,10 +74,6 @@
   ansible.builtin.import_tasks: 'kustomize.yaml'
   tags: ['kustomize']
 
-- name: 'Configure dnsmasq'
-  ansible.builtin.import_tasks: 'dnsmasq.yaml'
-  tags: ['dnsmasq']
-
 - name: 'Install openshift tools'
   ansible.builtin.include_tasks: 'oc.yaml'
   loop: "{{ lab_host_ocp_versions }}"

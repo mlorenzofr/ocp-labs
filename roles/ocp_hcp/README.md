@@ -2,10 +2,12 @@
 This role installs (optional) and configures **Hosted Clusters** (AKA **Hypershift)**.
 
 ## Requirements
-This role requires the `ocp_baremetal` role for managing infrastructure resources and `ocp_metallb` to enable communication between clusters.
+This role requires the following roles:
+* **ocp_baremetal**, for managing infrastructure resources.
+* **ocp_metallb**, to enable communication between clusters.
+* **dnsmasq**, to create DNS records for the Hosted Clusters.
 
 ## Role Variables
-* `ocp_hcp_dnsmasq_root`. _String_. dnsmasq base directory to store configurations.
 * `ocp_hcp_clusters`. _List_. List of `Hosted Clusters` and their configuration.
 * `ocp_hcp_install`. _Bool_. Set wether the role should apply manifests or simply create them.
 * `ocp_hcp_lab_name`. _String_. Lab name.

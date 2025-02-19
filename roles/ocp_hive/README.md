@@ -4,10 +4,11 @@ Hive is usually installed with **MCE**/**ACM** and the main task in this role is
 If we want, it is also possible to install the operator using this role.  
 
 ## Requirements
-This role uses the `ocp_baremetal` role for infrastructure resources.  
+This role requires the following roles:
+* **ocp_baremetal**, for managing infrastructure resources.
+* **dnsmasq**, to create DNS records for the Hive clusters.
 
 ## Role Variables
-* `ocp_hive_dnsmasq_root`. _String_. dnsmasq base directory.
 * `ocp_hive_channel`. _String_. Operator subscription channel.
 * `ocp_hive_clusters`. _List_. 
 * `ocp_hive_clusterimagesets`. _List_. 

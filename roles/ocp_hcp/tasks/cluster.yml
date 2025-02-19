@@ -1,13 +1,12 @@
 ---
-- name: 'Create DNS resolution for cluster services'
-  ansible.builtin.template:
-    src: 'dnsmasq-hcp.j2'
-    dest: "{{ ocp_hcp_dnsmasq_root }}/include.d/{{ ocp_hcp_lab_name }}-{{ item.name }}-cluster.ipv4"
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
-  notify:
-    - 'svc restart dnsmasq-virt'
+- name: 'Create dnsmasq snippet for the hosted cluster nodes'
+  ansible.builtin.include_role:
+    name: 'dnsmasq'
+    tasks_from: 'extra_conf.yaml'
+  vars:
+    dnsmasq_conf_snippets:
+      - {src: 'dnsmasq-hcp.j2', dest: "{{ ocp_hcp_lab_name }}-{{ item.name }}-cluster.conf"}
+  tags: ['dnsmasq']
 
 - name: 'Prepare hosted cluster environment'
   ansible.builtin.template:

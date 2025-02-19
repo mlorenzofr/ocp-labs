@@ -1,5 +1,4 @@
 ---
-lab_dnsmasq_root: '/opt/dnsmasq'
 lab_mac_base: '52:54:00:ff:ff:'
 lab_name: 'bmh'
 lab_node_disk_pool: 'ocp'

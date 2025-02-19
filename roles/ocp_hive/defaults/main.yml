@@ -1,5 +1,4 @@
 ---
-ocp_hive_dnsmasq_root: "{{ lab_dnsmasq_root }}"
 ocp_hive_channel: 'alpha'
 ocp_hive_clusters: []
 ocp_hive_clusterimagesets: []

@@ -1,0 +1,40 @@
+---
+dnsmasq_addresses: []
+dnsmasq_bind_dynamic: true
+dnsmasq_bogus_priv: true
+dnsmasq_cache_size: 150
+dnsmasq_conf_files: []
+dnsmasq_conf_dirs:
+  - {path: '/etc/dnsmasq.d', exclude: ['.rpmnew', '.rpmsave', '.rpmorig']}
+dnsmasq_conf_snippets: []
+dnsmasq_dhcp_authoritative: false
+dnsmasq_dhcp_hosts: []
+dnsmasq_dhcp_leasefile: '/var/lib/dnsmasq/dnsmasq.leases'
+dnsmasq_dhcp_lease_max: 150
+dnsmasq_disable_resolved: true
+dnsmasq_domain_needed: false
+dnsmasq_enable_ra: false
+dnsmasq_except_interfaces: []
+dnsmasq_group: 'dnsmasq'
+dnsmasq_host_records: []
+dnsmasq_interfaces: []
+dnsmasq_listen_address: ''
+dnsmasq_max_cache_ttl: ''
+dnsmasq_min_cache_ttl: ''
+dnsmasq_local_service: 'host'
+dnsmasq_log_dhcp: false
+dnsmasq_log_queries: false
+dnsmasq_no_hosts: true
+dnsmasq_no_negcache: false
+dnsmasq_no_poll: false
+dnsmasq_no_resolv: false
+dnsmasq_port: 53
+dnsmasq_servers: []
+dnsmasq_strict_order: true
+dnsmasq_resolvconf: true
+dnsmasq_resolvconf_domains: []
+dnsmasq_resolvconf_options: []
+dnsmasq_resolvconf_servers:
+  - '1.1.1.1'
+dnsmasq_resolv_file: ''
+dnsmasq_user: 'dnsmasq'

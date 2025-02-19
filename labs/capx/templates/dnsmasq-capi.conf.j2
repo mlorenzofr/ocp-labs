@@ -1,17 +1,5 @@
 {{ ansible_managed | comment }}
 
-bind-dynamic
-except-interface=podman*,vnet*
-no-resolv
-no-hosts
-strict-order
-no-negcache
-cache-size=250
-max-cache-ttl=300
-
-server=10.0.0.2
-server=1.1.1.1
-
 {% for cluster in capi_clusters %}
 host-record=api-int.{{ cluster.name }}.{{ cluster.domain }},{{ cluster.api_vip }}
 host-record=api.{{ cluster.name }}.{{ cluster.domain }},{{ cluster.api_vip }}

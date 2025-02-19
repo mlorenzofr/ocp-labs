@@ -2,7 +2,7 @@
 This role is used to create labs in my beaker machine.
 
 ## Requirements
-None.
+This role depends on the **dnsmasq** role to create DNS resolution for the lab machines.
 
 ## Role Variables
 * `lab_api_ips`. _List_. List of IP addresses assigned OCP API.
@@ -12,7 +12,6 @@ None.
 * `lab_custom_capability_set`. _String_. Apply a baseline capability set to the cluster.
 * `lab_cluster_network`. _String_. k8s internal network CIDR.
 * `lab_domain`. _String_. Base domain used in the OCP cluster.
-* `lab_dnsmasq_root`. _String_. Path to the directory where the dnsmasq snippets are hosted.
 * `lab_dns_servers`. _List_. List of static DNS servers.
 * `lab_external_bridge`. _String_. External bridge used by the Openshift platform.
 * `lab_fips`. _Bool_. Enable FIPS mode installation.

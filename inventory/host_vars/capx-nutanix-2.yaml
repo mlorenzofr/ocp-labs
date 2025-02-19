@@ -1,0 +1,13 @@
+---
+dnsmasq_cache_size: 250
+dnsmasq_conf_snippets:
+  - {src: 'dnsmasq-capi.conf.j2', dest: 'capi.conf'}
+dnsmasq_except_interfaces:
+  - 'podman*'
+  - 'vnet*'
+dnsmasq_max_cache_ttl: 300
+dnsmasq_no_negcache: true
+dnsmasq_no_resolv: true
+dnsmasq_servers:
+  - {address: '10.0.0.2'}
+  - {address: '1.1.1.1'}

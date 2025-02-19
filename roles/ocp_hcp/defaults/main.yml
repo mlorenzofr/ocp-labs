@@ -1,6 +1,5 @@
 ---
 ocp_hcp_clusters: []
-ocp_hcp_dnsmasq_root: "{{ lab_dnsmasq_root }}"
 ocp_hcp_install: "{{ lab_install | default(false) }}"
 ocp_hcp_lab_name: "{{ lab_name }}"
 ocp_hcp_path: "{{ lab_configs }}"

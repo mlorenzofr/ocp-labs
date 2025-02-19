@@ -1,0 +1,13 @@
+---
+- name: 'Add configuration snippet'
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "/etc/dnsmasq.d/{{ item.dest }}"
+    owner: "{{ dnsmasq_user }}"
+    group: "{{ dnsmasq_group }}"
+    mode: '0644'
+  loop: "{{ dnsmasq_conf_snippets }}"
+  ignore_errors: "{{ ansible_check_mode }}"
+  notify:
+    - 'svc restart dnsmasq'
+...

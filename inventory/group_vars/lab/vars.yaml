@@ -1,4 +1,20 @@
 ---
+dnsmasq_conf_dirs:
+  - {path: '/etc/dnsmasq.d', exclude: ['.rpmnew', '.rpmsave', '.rpmorig']}
+dnsmasq_conf_snippets:
+  - {src: 'dnsmasq-networks.conf.j2', dest: 'networks.conf'}
+  - {src: 'dhcp-hosts.conf.j2', dest: 'dhcp-hosts.conf'}
+dnsmasq_dhcp_authoritative: true
+dnsmasq_dhcp_hosts:
+  - {hwaddr: '52:54:00:9c:93:36', hostname: 'pinnedis-registry', ipaddr: '192.168.129.200'}
+  - {hwaddr: '52:54:00:38:8d:f9', hostname: 'ostree-node-1', ipaddr: '192.168.125.254'}
+dnsmasq_enable_ra: true
+dnsmasq_except_interfaces: ['eno3', 'cni-podman*', 'vnet*']
+dnsmasq_log_dhcp: true
+dnsmasq_no_resolv: true
+dnsmasq_resolvconf_domains: "{{ beaker_domains }}"
+dnsmasq_resolvconf_options: ['edns0', 'trust-ad']
+dnsmasq_servers: "{{ [{'address': '1.1.1.1'}] + beaker_dns_servers }}"
 haproxy_labs:
   # - {'name': 'standard', 'backends': ['192.168.125.11']}
   - {'name': 'dan', 'domain': 'manor.lab', 'backends': ['192.168.128.11']}

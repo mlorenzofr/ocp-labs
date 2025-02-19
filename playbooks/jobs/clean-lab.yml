@@ -6,7 +6,7 @@
   gather_facts: false
 
   vars:
-    lab_dnsmasq_root: '/opt/dnsmasq'
+    dnsmasq_confd: '/etc/dnsmasq.d'
     lab_path: '/root/labs'
     libvirt_image_dir: '/home/libvirt-ocp'
 
@@ -18,13 +18,13 @@
 
     - name: 'Prepare dnsmasq fileglob pattern'
       ansible.builtin.find:
-        path: "{{ lab_dnsmasq_root }}/include.d/"
-        patterns: "^{{ lab_name }}.*\\.ipv4$"
+        path: "{{ dnsmasq_confd }}/"
+        patterns: "^{{ lab_name }}.*\\.conf$"
         use_regex: true
       register: clean_dnsmasq_files
 
     - name: 'Remove dnsmasq snippets'
-      notify: 'Restart dnsmasq-virt service'
+      notify: 'Restart dnsmasq service'
       ansible.builtin.file:
         path: "{{ item }}"
         state: 'absent'
@@ -49,9 +49,9 @@
       notify: 'Remove virtual machines'
 
   handlers:
-    - name: 'Restart dnsmasq-virt service'
+    - name: 'Restart dnsmasq service'
       ansible.builtin.service:
-        name: 'dnsmasq-virt'
+        name: 'dnsmasq'
         state: 'restarted'
 
     # It doesn't work in the ansible module

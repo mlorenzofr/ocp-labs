@@ -1,9 +1,9 @@
 ---
 galaxy_info:
-  role_name: beaker_lab
+  role_name: dnsmasq
   namespace: mlorenzofr
   author: 'Manuel Lorenzo'
-  description: 'Manage new Openshift labs on a beaker machine'
+  description: 'Install and configure dnsmasq'
   company: 'Red Hat'
   license: 'MIT'
   min_ansible_version: '2.12'
@@ -11,5 +11,8 @@ galaxy_info:
     - name: 'EL'
       versions:
         - '8'
+    - name: 'Fedora'
+      versions:
+        - '41'
   galaxy_tags: []
 dependencies: []

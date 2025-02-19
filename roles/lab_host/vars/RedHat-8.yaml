@@ -3,7 +3,6 @@ lab_host_packages:
   - 'bash-completion'
   - 'chrony'
   - 'cpio'
-  - 'dnsmasq'
   - 'git'
   - 'jq'
   - 'kpartx'

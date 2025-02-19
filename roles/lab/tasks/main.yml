@@ -46,14 +46,13 @@
   when: lab_appliance
 
 - name: 'Create dnsmasq snippet'
-  ansible.builtin.template:
-    src: 'dnsmasq-lab.j2'
-    dest: "{{ lab_dnsmasq_root }}/include.d/{{ lab_name }}.ipv4"
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
-  notify:
-    - 'svc restart dnsmasq-virt'
+  ansible.builtin.include_role:
+    name: 'dnsmasq'
+    tasks_from: 'extra_conf.yaml'
+  vars:
+    dnsmasq_conf_snippets:
+      - {src: 'dnsmasq-lab.j2', dest: "{{ lab_name }}.conf"}
+  tags: ['dnsmasq']
 
 - name: 'Create virtual machines'
   karmab.kcli.kcli_vm:

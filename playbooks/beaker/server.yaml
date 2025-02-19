@@ -8,6 +8,8 @@
     - 'lab'
 
   roles:
+    - role: dnsmasq
+      tags: ['dnsmasq']
     - 'lab_host'
     - role: 'haproxy'
       tags: ['haproxy']

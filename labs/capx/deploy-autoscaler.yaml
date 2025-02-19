@@ -55,6 +55,8 @@
       tags: ['haproxy']
     - role: kind
       tags: ['kind']
+    - role: dnsmasq
+      tags: ['dnsmasq']
 
   tasks:
     - name: 'Include os configuration tasks'
@@ -359,11 +361,3 @@
       tags:
         - 'csi-day-2'
         - 'never'
-
-  handlers:
-    - name: 'Restart dnsmasq service'
-      ansible.builtin.service:
-        name: 'dnsmasq'
-        state: 'restarted'
-        enabled: true
-      listen: 'restart dnsmasq'
