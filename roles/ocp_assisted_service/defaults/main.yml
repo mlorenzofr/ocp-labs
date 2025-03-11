@@ -12,9 +12,9 @@ ocp_assisted_service_storage_db_size: 10
 ocp_assisted_service_storage_fs_size: 20
 ocp_assisted_service_storage_image_size: 10
 ocp_assisted_service_images:
-  - ocp_version: '4.17.0'
+  - ocp_version: '4.18.1'
     arch: 'x86_64'
-    version: '417.94.202408270355-0'
+    version: '418.94.202501221327-0'
 ocp_assisted_service_registries: []
 ocp_assisted_service_ui: false
 ocp_assisted_service_ui_image: 'quay.io/edge-infrastructure/assisted-installer-ui:latest'
