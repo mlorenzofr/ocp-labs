@@ -1,0 +1,3 @@
+---
+ocp_olm_kubectl: '/usr/local/bin/oc'
+ocp_olm_path: '/tmp'
