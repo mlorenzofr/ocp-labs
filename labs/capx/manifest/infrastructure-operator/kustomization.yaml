@@ -23,7 +23,7 @@ patches:
     patch: |-
       - op: replace
         path: /spec/template/spec/containers/0/env/0/value
-        value: quay.io/carbonin/assisted-service:sylva-integration #quay.io/edge-infrastructure/assisted-service@sha256:ce7f612a87088e22c79a93601ea70ba089af58792a0164e2bfe955d7a50c1105
+        value: quay.io/mlorenzofr/assisted-service:latest #quay.io/edge-infrastructure/assisted-service@sha256:ce7f612a87088e22c79a93601ea70ba089af58792a0164e2bfe955d7a50c1105
       - op: replace
         path: /spec/template/spec/containers/0/env/1/value
         value: quay.io/edge-infrastructure/assisted-service-el8@sha256:03923acec2cfc39e3b52f407484b1cdf2e6e1f6a9291e628cf21651cc02654bc

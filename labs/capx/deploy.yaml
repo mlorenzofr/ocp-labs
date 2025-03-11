@@ -18,8 +18,8 @@
     capi_version: v1.7.1
     capi_repo: 'https://github.com/mlorenzofr/cluster-api-agent'
     capi_src_dir: '/tmp/cluster-api-agent'
-    capi_branch: 'cp-new-capabilities'
-    # capi_branch: 'nutanix-platform'
+    # capi_branch: 'cp-new-capabilities'
+    capi_branch: 'nutanix-platform'
     cert_manager_version: 'v1.15.1'
     haproxy_k8s_api: False
     haproxy_labs:
@@ -31,7 +31,7 @@
             match: 'assisted-(service|image).assisted-installer.com'
     kind_clusters:
       - name: capi-nutanix-provider
-        reinstall: False
+        reinstall: True
         address: "{{ ansible_default_ipv4.address }}"
         nginx: True
         metallb_ip: '10.89.0.250'
