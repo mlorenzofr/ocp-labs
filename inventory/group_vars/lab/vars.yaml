@@ -58,8 +58,8 @@ lab_host_networks:
 # haproxy_snippets:
 #  - 'haproxy/assisted-service.j2'
 lab_host_ocp_versions:
+  - {version: '4.18.4', state: 'present'}
   - {version: '4.17.7', state: 'present'}
-  - {version: '4.16.25', state: 'present'}
-  - {version: '4.16.9', state: 'absent'}
-  - {version: '4.14.42', state: 'present'}
+  - {version: '4.16.25', state: 'absent'}
+  - {version: '4.14.42', state: 'absent'}
 ...
