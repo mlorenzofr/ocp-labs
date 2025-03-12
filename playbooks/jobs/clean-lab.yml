@@ -46,6 +46,21 @@
         state: 'absent'
       when: lab_appliance
 
+    - name: 'Prepare appliance-disks fileglob pattern'
+      ansible.builtin.find:
+        path: "{{ libvirt_image_dir }}/"
+        patterns: "^{{ lab_name }}-.*\\.raw$"
+        use_regex: true
+      register: clean_appliance_disks
+      when: lab_appliance
+
+    - name: 'Remove appliance disk images'
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: 'absent'
+      loop: "{{ clean_appliance_disks.files | map(attribute='path') }}"
+      when: lab_appliance
+
     - name: 'Search kcli plan'
       ansible.builtin.shell:
         cmd: "kcli list plan -o name | grep -qE \"^\\['{{ lab_name }}',\""
