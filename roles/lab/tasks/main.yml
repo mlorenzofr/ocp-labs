@@ -16,10 +16,8 @@
     - "{{ lab_name }}/config"
     - "{{ lab_name }}/deploy"
 
-- name: 'Set installation type to ABI'
-  ansible.builtin.set_fact:
-    lab_abi: True
-  check_mode: no
+- name: 'Include appliance tasks'
+  ansible.builtin.include_tasks: appliance.yaml
   when: lab_appliance
 
 - name: 'Create install-config.yaml file'
@@ -37,14 +35,6 @@
   ignore_errors: "{{ ansible_check_mode }}"
   when: lab_abi
 
-- name: 'Create appliance-config.yaml file'
-  ansible.builtin.template:
-    src: 'appliance-config.yaml.j2'
-    dest: "{{ lab_path }}/{{ lab_name }}/config/appliance-config.yaml"
-    mode: '0644'
-  ignore_errors: "{{ ansible_check_mode }}"
-  when: lab_appliance
-
 - name: 'Create dnsmasq snippet'
   ansible.builtin.include_role:
     name: 'dnsmasq'
@@ -60,11 +50,6 @@
       - {"size": "{{ lab_node_disk_sys }}", "pool": "{{ lab_node_disk_pool }}"}
       - {"size": "{{ item.disk_data | default(lab_node_disk_data) }}", "pool": "{{ lab_node_disk_pool }}"}
   when: not lab_appliance
-
-- name: 'Prepare VMs disks (appliance)'
-  ansible.builtin.set_fact:
-    __lab_vm_disks: []
-  when: lab_appliance
 
 - name: 'Create virtual machines'
   karmab.kcli.kcli_vm:
