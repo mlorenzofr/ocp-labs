@@ -1,0 +1,38 @@
+---
+# Run this with:
+#   ap labs/appliance/deploy.yaml
+
+- name: 'Clean appliance lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_appliance: true
+    lab_name: 'appliance'
+    lab_path: '/home/ocp-labs'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import appliance playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/appliance.yaml
+  vars:
+    lab_name: 'appliance'
+    lab_domain: 'lab'
+    lab_appliance_version: '4.18.0'
+    lab_node_memory: 32000
+    lab_master_replicas: 3
+    lab_worker_replicas: 2
+    lab_network_name: 'appliance'
+    lab_node_network_base: '192.168.127.'
+    lab_mac_base: 'fe:ed:00:00:00:'
+    lab_abi_ip: "{{ lab_node_network_base }}11"
+    lab_api_ips: ["{{ lab_node_network_base }}5"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}6"]
+    start_install: true
+    lab_hosts:
+      - {'id': '11'}
+      - {'id': '12'}
+      - {'id': '13'}
+      - {'id': '14'}
+      - {'id': '15'}
+  tags:
+    - 'ocp'

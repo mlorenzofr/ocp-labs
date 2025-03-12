@@ -54,6 +54,18 @@
       - {src: 'dnsmasq-lab.j2', dest: "{{ lab_name }}.conf"}
   tags: ['dnsmasq']
 
+- name: 'Prepare VMs disks'
+  ansible.builtin.set_fact:
+    __lab_vm_disks:
+      - {"size": "{{ lab_node_disk_sys }}", "pool": "{{ lab_node_disk_pool }}"}
+      - {"size": "{{ item.disk_data | default(lab_node_disk_data) }}", "pool": "{{ lab_node_disk_pool }}"}
+  when: not lab_appliance
+
+- name: 'Prepare VMs disks (appliance)'
+  ansible.builtin.set_fact:
+    __lab_vm_disks: []
+  when: lab_appliance
+
 - name: 'Create virtual machines'
   karmab.kcli.kcli_vm:
     name: "{{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}"
@@ -64,9 +76,7 @@
       plan: "{{ lab_name }}"
       memory: "{{ item.memory | default(lab_node_memory) }}"
       numcpus: "{{ item.cpus | default(lab_node_cpus) }}"
-      disks:
-        - {"size": "{{ lab_node_disk_sys }}", "pool": "{{ lab_node_disk_pool }}"}
-        - {"size": "{{ item.disk_data | default(lab_node_disk_data) }}", "pool": "{{ lab_node_disk_pool }}"}
+      disks: "{{ __lab_vm_disks }}"
       nets:
         - {"name": "{{ lab_network_name }}", "mac": "{{ item.mac | default('{}{}'.format(lab_mac_base, item.id)) }}"}
   loop: "{{ lab_hosts }}"

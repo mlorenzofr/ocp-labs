@@ -32,6 +32,16 @@
     - name: 'Execute base handlers'
       ansible.builtin.meta: flush_handlers
 
+    - name: 'Remove CD-ROM on VMs'
+      ansible.builtin.command:
+        cmd: >
+          virsh detach-disk
+          {{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}
+          hdc --config
+      loop: "{{ lab_hosts }}"
+      loop_control:
+        extended: true
+
     - name: 'Copy configuration files to deploy directory'
       ansible.builtin.copy:
         src: "{{ lab_path }}/{{ lab_name }}/config/appliance-config.yaml"
@@ -139,9 +149,41 @@
       listen:
         - 'agent build'
 
-# TODO
-# Remove CDROM in VMs
-# Attach the appliance raw disk as sda
-# Attach the agent-config ISO (Read-Only) as sdb
-# Configure boot
-# Start VMs
+    - name: 'Attach appliance disk'
+      ansible.builtin.command:
+        cmd: >
+          virsh attach-disk
+          {{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}
+          {{ libvirt_image_dir }}/{{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}.raw
+          sda --persistent
+      loop: "{{ lab_hosts }}"
+      loop_control:
+        extended: true
+      listen:
+        - 'bundle build'
+
+    - name: 'Attach agent-config disk'
+      ansible.builtin.command:
+        cmd: >
+          virsh attach-disk
+          {{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}
+          {{ libvirt_image_dir }}/{{ lab_name }}-agentconfig.iso
+          sdb --persistent --mode readonly --targetbus usb
+      loop: "{{ lab_hosts }}"
+      loop_control:
+        extended: true
+      listen:
+        - 'agent build'
+
+    - name: 'Start VMs'
+      ansible.builtin.command:
+        cmd: >
+          virsh start
+          {{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}
+      loop: "{{ lab_hosts }}"
+      loop_control:
+        extended: true
+      listen:
+        - 'bundle build'
+        - 'agent build'
+      when: start_install | default(False)

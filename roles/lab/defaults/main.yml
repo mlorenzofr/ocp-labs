@@ -7,7 +7,7 @@ lab_appliance_channel: 'stable'
 lab_appliance_disk_size: 150
 lab_appliance_image: 'quay.io/edge-infrastructure/openshift-appliance'
 lab_appliance_local_registry: false
-lab_appliance_version: '4.15.0'
+lab_appliance_version: '4.18.4'
 lab_bootstrap_ip: ''
 lab_bootstrap_mac: ''
 lab_custom_capabilities: []

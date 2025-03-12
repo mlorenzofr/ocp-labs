@@ -40,6 +40,12 @@
         path: "{{ libvirt_image_dir }}/{{ lab_name }}-agent-installer.iso"
         state: 'absent'
 
+    - name: 'Remove agent ISO image (appliance)'
+      ansible.builtin.file:
+        path: "{{ libvirt_image_dir }}/{{ lab_name }}-agentconfig.iso"
+        state: 'absent'
+      when: lab_appliance
+
     - name: 'Search kcli plan'
       ansible.builtin.shell:
         cmd: "kcli list plan -o name | grep -qE \"^\\['{{ lab_name }}',\""
