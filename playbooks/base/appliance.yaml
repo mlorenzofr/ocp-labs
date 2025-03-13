@@ -32,13 +32,27 @@
     - name: 'Execute base handlers'
       ansible.builtin.meta: flush_handlers
 
+    - name: 'Check CD-ROM devices'
+      ansible.builtin.shell:
+        cmd: >
+          virsh domblklist
+          {{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}
+          | grep -s hdc
+      register: __appliance_vm_cd
+      changed_when: false
+      failed_when: false
+      loop: "{{ lab_hosts }}"
+      loop_control:
+        extended: true
+
     - name: 'Remove CD-ROM on VMs'
       ansible.builtin.command:
         cmd: >
           virsh detach-disk
           {{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}
           hdc --config
-      loop: "{{ lab_hosts }}"
+      when: item.rc == 0
+      loop: "{{ __appliance_vm_cd.results }}"
       loop_control:
         extended: true
 
@@ -149,6 +163,21 @@
       listen:
         - 'agent build'
 
+    - name: 'Check appliance disk devices'
+      ansible.builtin.shell:
+        cmd: >
+          virsh domblklist
+          {{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}
+          | grep -s sda
+      register: __appliance_vm_sda
+      changed_when: false
+      failed_when: false
+      loop: "{{ lab_hosts }}"
+      loop_control:
+        extended: true
+      listen:
+        - 'bundle build'
+
     - name: 'Attach appliance disk'
       ansible.builtin.command:
         cmd: >
@@ -156,11 +185,27 @@
           {{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}
           {{ libvirt_image_dir }}/{{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}.raw
           sda --persistent
-      loop: "{{ lab_hosts }}"
+      when: item.rc == 1
+      loop: "{{ __appliance_vm_sda.results }}"
       loop_control:
         extended: true
       listen:
         - 'bundle build'
+
+    - name: 'Check agent-config disk devices'
+      ansible.builtin.shell:
+        cmd: >
+          virsh domblklist
+          {{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}
+          | grep -s sdb
+      register: __appliance_vm_sdb
+      changed_when: false
+      failed_when: false
+      loop: "{{ lab_hosts }}"
+      loop_control:
+        extended: true
+      listen:
+        - 'agent build'
 
     - name: 'Attach agent-config disk'
       ansible.builtin.command:
@@ -169,7 +214,8 @@
           {{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}
           {{ libvirt_image_dir }}/{{ lab_name }}-agentconfig.iso
           sdb --persistent --mode readonly --targetbus usb
-      loop: "{{ lab_hosts }}"
+      when: item.rc == 1
+      loop: "{{ __appliance_vm_sdb.results }}"
       loop_control:
         extended: true
       listen:
