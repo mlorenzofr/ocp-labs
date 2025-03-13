@@ -9,3 +9,15 @@ sshKey: '{{ lab_ssh_pubkey }}'
 userCorePass: {{ lab_appliance_password }}
 diskSizeGB: {{ lab_appliance_disk_size }}
 stopLocalRegistry: {{ not lab_appliance_local_registry }}
+{% if lab_appliance_operators | length > 0 %}
+operators:
+{% for catalog in lab_appliance_operators %}
+  - catalog: {{ catalog.address }}
+    packages:
+{% for pkg in catalog.packages %}
+      - name: {{ pkg.name }}
+        channels:
+          - name: {{ pkg.channel }}
+{% endfor %}
+{% endfor %}
+{% endif %}
