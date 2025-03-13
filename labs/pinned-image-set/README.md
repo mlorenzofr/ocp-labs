@@ -214,7 +214,7 @@ quay.io/openshift-release-dev/ocp-v4.0-art-dev   <none>              sha256:001c
 ```
 6. Check if all images present in the release are in the CRI-O cache:
 ```shell
-[root@pinnedis-node-1 ~]# /var/home/core/pinned-images.sh pinnedis-registry.pinnedis.local.lab 4.17.0-ec.0-x86_64 | wc -l
+[root@pinnedis-node-1 ~]# /var/home/core/pinned-images.sh 4.17.0-ec.0-x86_64 pinnedis-registry.pinnedis.local.lab/openshift/release-images | wc -l
 0
 ```
 
