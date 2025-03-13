@@ -1,0 +1,17 @@
+apiVersion: v1beta1
+kind: ApplianceConfig
+ocpRelease:
+  version: 4.18.0
+  channel: stable
+  cpuArchitecture: x86_64
+pullSecret: '{"auths":{<redacted>}}'
+sshKey: <redacted>
+userCorePass: <redacted>
+diskSizeGB: 150
+stopLocalRegistry: False
+operators:
+  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.18
+    packages:
+      - name: lvms-operator
+        channels:
+          - name: stable-4.18

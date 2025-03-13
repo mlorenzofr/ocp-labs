@@ -1,0 +1,87 @@
+---
+# Run this with:
+#   ap labs/appliance/deploy.yaml
+
+- name: 'Clean appliance lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_appliance: true
+    lab_name: 'appliance'
+    lab_path: '/home/ocp-labs'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import appliance playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/appliance.yaml
+  vars:
+    lab_name: 'appliance'
+    lab_domain: 'lab'
+    lab_appliance_version: '4.18.0'
+    lab_appliance_local_registry: true
+    lab_node_memory: 32000
+    lab_master_replicas: 3
+    lab_worker_replicas: 2
+    lab_network_name: 'appliance'
+    lab_node_network_base: '192.168.127.'
+    lab_mac_base: 'fe:ed:00:00:00:'
+    lab_abi_ip: "{{ lab_node_network_base }}11"
+    lab_api_ips: ["{{ lab_node_network_base }}5"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}6"]
+    lab_appliance_operators:
+      - address: 'registry.redhat.io/redhat/redhat-operator-index:v4.18'
+        packages:
+          - {name: 'lvms-operator', channel: 'stable-4.18'}
+    # start_install: true
+    lab_hosts:
+      - {'id': '11'}
+      - {'id': '12'}
+      - {'id': '13'}
+      - {'id': '14'}
+      - {'id': '15'}
+  tags:
+    - 'ocp'
+
+- name: 'post-install tasks'
+  hosts: ['lab']
+
+  vars:
+    lab_name: 'appliance'
+    lab_path: '/home/ocp-labs'
+    lab_local_path: '/ansible/labs/appliance-pinned'
+    lab_configs: "{{ lab_path }}/{{ lab_name }}/config"
+    # ocp_odf_ns: 'openshift-storage'
+    # ocp_odf_noobaa: True
+    # ocp_odf_noobaa_storageclass: 'lvms-vg1'
+    ocp_lvms_install: true
+    ocp_lvms_source: 'cs-redhat-operator-index'
+    ocp_lvms_clusters:
+      - name: 'lv-data'
+        ns: 'openshift-storage'
+        classes:
+          - name: 'vg1'
+            default: True
+            devices: ['/dev/vda']
+            node_role: 'worker'
+    extra_manifests:
+      - {src: "{{ lab_local_path }}/manifest/enable-techpreview.yaml", dest: 'enable-techpreview.yaml'}
+      - {src: "{{ lab_local_path }}/manifest/pinned-image-set-4.18.3.yaml", dest: 'pinned-image-set.yaml'}
+      - {src: "{{ lab_local_path }}/manifest/registry-pvc.yaml", dest: 'registry-pvc.yaml'}
+
+  environment:
+    KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  roles:
+    # - role: 'ocp_odf'
+    #   tags: ['odf']
+    - role: 'ocp_lvms'
+      tags: ['lvms']
+
+  tasks:
+    - name: 'Copy day-2 manifests'
+      ansible.builtin.copy:
+        src: "{{ item.src }}"
+        dest: "{{ lab_configs }}/{{ item.dest }}"
+        mode: '0640'
+      loop: "{{ extra_manifests }}"
+      tags: ['manifests']
