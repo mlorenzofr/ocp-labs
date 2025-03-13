@@ -1,4 +1,4 @@
-# appliance SNO lab
+# appliance lab
 In this lab we create an environment using the appliance tool.
 
 ## Requirements
