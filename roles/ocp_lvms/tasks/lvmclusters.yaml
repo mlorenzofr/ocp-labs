@@ -1,0 +1,17 @@
+---
+- name: 'Create lvmcluster manifest'
+  ansible.builtin.template:
+    src: 'lvmcluster.yaml.j2'
+    dest: "{{ ocp_lvms_path }}/lvmcluster-{{ item.name }}.yaml"
+    mode: '0644'
+
+- name: 'Apply lvmcluster manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_lvms_path }}/lvmcluster-{{ item.name }}.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  register: __lvms_clusters
+  until: __lvms_clusters is not failed
+  retries: 10
+  delay: 30
+  when: ocp_lvms_apply

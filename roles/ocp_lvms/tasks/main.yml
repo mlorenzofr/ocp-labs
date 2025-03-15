@@ -1,15 +1,35 @@
 ---
 - name: 'Create LVM installation manifest'
-  ansible.builtin.template:
-    src: 'init.yaml.j2'
-    dest: "{{ ocp_lvms_path }}/lvms-subscription.yaml"
-    mode: '0644'
-  notify: 'lvms install'
+  ansible.builtin.include_role:
+    name: 'ocp_olm'
+    tasks_from: 'subscription.yaml'
+  loop:
+    - operator_name: 'lvms-operator'
+      subscription_name: 'lvms'
+      ns: "{{ ocp_lvms_ns }}"
+      monitoring: True
+      privileged: True
+      operator_group: 'openshift-storage-operatorgroup'
+      source: "{{ ocp_lvms_source }}"
+  tags: ['olm']
 
-- name: 'Create LVM cluster manifests'
-  ansible.builtin.template:
-    src: 'lvmcluster.yaml.j2'
-    dest: "{{ ocp_lvms_path }}/lvmcluster-{{ item.name }}.yaml"
-    mode: '0644'
+- name: 'Waiting for lvms-operator pods'
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        namespace: "{{ ocp_lvms_ns }}"
+    label_selectors:
+      - 'app.kubernetes.io/name=lvms-operator'
+    wait: yes
+    wait_condition:
+      type: Ready
+      status: "True"
+    wait_timeout: 300
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: 'Create lvmclusters'
+  ansible.builtin.include_tasks:
+    file: 'lvmclusters.yaml'
   loop: "{{ ocp_lvms_clusters }}"
-  notify: 'lvms install'

@@ -53,7 +53,6 @@
     # ocp_odf_ns: 'openshift-storage'
     # ocp_odf_noobaa: True
     # ocp_odf_noobaa_storageclass: 'lvms-vg1'
-    ocp_lvms_install: true
     ocp_lvms_source: 'cs-redhat-operator-index'
     ocp_lvms_clusters:
       - name: 'lv-data'

@@ -1,38 +1,43 @@
-Role Name
-=========
+# ocp_lvms
+This role installs and configures LVMS operator on an Openshift cluster.
 
-A brief description of the role goes here.
+## Requirements
+This role requires the **ocp_olm** role.
 
-Requirements
-------------
+## Role Variables
+* `ocp_lvms_apply`. _Bool_. Set wether the role should apply the manifests or simply create them.
+* `ocp_lvms_ns`. _String_. Namespace for the Operator.
+* `ocp_lvms_path`. _String_. Path where the manifest files are stored.
+* `ocp_lvms_source`. _String_. Name of the catalog source name for installing the lvms-operator.
+* `ocp_lvms_cluster_default_device`. _String_. If the default lvms cluster definition is used, the device where the `lvmcluster` will create LVM resources.
+* `ocp_lvms_cluster_default_role`. _String_. If the default lvms cluster definition is used, the node role where the `lvmcluster` will start.
+* `ocp_lvms_subscription_channel`. _String_. Operator subscription channel.
+* `ocp_lvms_clusters`. _List_. Definition of `lvmcluster` resources.
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+### Variables for `ocp_lvms_clusters` elements
+* `name`. _String_. Cluster name.
+* `ns`. _String_. Cluster namespace.
+* `classes`. _List_. List of device classes
 
-Role Variables
---------------
+### Variables for device class elements
+* `name`. _String_. Name of the device class.
+* `default`. _Bool_. Set wether the device class should be the default `StorageClass`.
+* `devices`. _List_. List of the devices where the LVM resources will be created.
+* `node_role`. _String_. Role of the node where the `lvmcluster` will be started.
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+## Example Playbook
+```yaml
+- hosts: servers
 
-Dependencies
-------------
+  vars:
+    ocp_lvms_cluster_default_device: 'vda'
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+  roles:
+    - ocp_lvms
+```
 
-Example Playbook
-----------------
+## License
+MIT / BSD
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+## Author Information
+ - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2024-)
