@@ -16,7 +16,7 @@ metadata:
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
-  name: {{ item.operator_group | default('{}-operatorgroup'.format(item.name)) }}
+  name: {{ item.operator_group | default('{}-operatorgroup'.format(item.subscription_name)) }}
   namespace: {{ item.ns }}
 spec:
   targetNamespaces:
@@ -25,13 +25,13 @@ spec:
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
-  name: {{ item.name }}
+  name: {{ item.subscription_name | default(item.operator_name) }}
   namespace: {{ item.ns }}
 spec:
 {% if item.channel | default('') != '' %}
   channel: "{{ item.channel }}"
 {% endif %}
-  name: {{ item.name }}
+  name: {{ item.operator_name }}
   installPlanApproval: Automatic
   source: {{ item.source }}
   sourceNamespace: {{ item.source_ns | default('openshift-marketplace') }}

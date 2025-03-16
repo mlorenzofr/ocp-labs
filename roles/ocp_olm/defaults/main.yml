@@ -1,3 +1,3 @@
 ---
-ocp_olm_kubectl: '/usr/local/bin/oc'
-ocp_olm_path: '/tmp'
+ocp_olm_apply: "{{ ocp_apply | default(true) }}"
+ocp_olm_path: "{{ lab_configs | default('/tmp') }}"
