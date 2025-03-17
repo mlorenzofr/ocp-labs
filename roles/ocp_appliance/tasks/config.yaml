@@ -1,0 +1,16 @@
+---
+- name: 'Create config directory'
+  ansible.builtin.file:
+    path: "{{ ocp_appliance_cfg_dir }}"
+    state: 'directory'
+    mode: '0750'
+  ignore_errors: "{{ ansible_check_mode }}"
+  tags: "{{ include_tag }}"
+
+- name: 'Create appliance-config.yaml file'
+  ansible.builtin.template:
+    src: 'appliance-config.yaml.j2'
+    dest: "{{ ocp_appliance_cfg_dir }}/appliance-config.yaml"
+    mode: '0644'
+  ignore_errors: "{{ ansible_check_mode }}"
+  tags: "{{ include_tag }}"

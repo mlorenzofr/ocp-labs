@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  role_name: ocp_appliance
+  namespace: mlorenzofr
+  author: 'Manuel Lorenzo'
+  description: 'Manages the openshift-appliance tool to create and manage self-container Openshift cluster installations'
+  company: 'Red Hat'
+  license: 'MIT'
+  min_ansible_version: '2.12'
+  platforms:
+    - name: 'EL'
+      versions:
+        - '8'
+  galaxy_tags: []
+dependencies: []

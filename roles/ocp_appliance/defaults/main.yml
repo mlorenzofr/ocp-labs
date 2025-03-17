@@ -1,0 +1,17 @@
+---
+include_tag: []
+
+ocp_appliance_arch: 'x86_64'
+ocp_appliance_base_cmd: "podman run --rm {{ ocp_appliance_pull_policy }} --privileged --net=host -v {{ ocp_appliance_cwd }}/:/assets:Z {{ ocp_appliance_image }}"
+ocp_appliance_cfg_dir: '/tmp'
+ocp_appliance_cfg_upgrade: false
+ocp_appliance_channel: 'stable'
+ocp_appliance_cwd: "{{ ocp_appliance_cfg_dir }}"
+ocp_appliance_disk_size: 150
+ocp_appliance_image: 'quay.io/edge-infrastructure/openshift-appliance'
+ocp_appliance_local_registry: false
+ocp_appliance_manifests: []
+ocp_appliance_operators: []
+ocp_appliance_password: 'changeme'
+ocp_appliance_pull_policy: '--pull newer'
+ocp_appliance_version: '4.18.4'

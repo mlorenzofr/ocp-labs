@@ -1,0 +1,19 @@
+---
+- name: 'Create openshift manifests directory'
+  ansible.builtin.file:
+    path: "{{ ocp_appliance_cwd }}/openshift"
+    state: 'directory'
+    mode: '0755'
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: 'Copy custom manifests'
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ ocp_appliance_cwd }}/openshift/{{ item.dest }}"
+    mode: '0644'
+  ignore_errors: "{{ ansible_check_mode }}"
+  loop: "{{ ocp_appliance_manifests }}"
+
+- name: 'Create appliance-config'
+  ansible.builtin.include_tasks:
+    file: 'config.yaml'

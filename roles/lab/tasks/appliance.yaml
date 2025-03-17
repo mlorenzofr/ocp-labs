@@ -4,27 +4,9 @@
     lab_abi: True
   check_mode: no
 
-- name: 'Create openshift manifests directory'
-  ansible.builtin.file:
-    path: "{{ lab_path }}/{{ lab_name }}/deploy/openshift"
-    state: 'directory'
-    mode: '0755'
-  ignore_errors: "{{ ansible_check_mode }}"
-
-- name: 'Copy custom manifests'
-  ansible.builtin.copy:
-    src: "{{ item.src }}"
-    dest: "{{ lab_path }}/{{ lab_name }}/deploy/openshift/{{ item.dest }}"
-    mode: '0644'
-  ignore_errors: "{{ ansible_check_mode }}"
-  loop: "{{ lab_appliance_manifests }}"
-
-- name: 'Create appliance-config.yaml file'
-  ansible.builtin.template:
-    src: 'appliance-config.yaml.j2'
-    dest: "{{ lab_path }}/{{ lab_name }}/config/appliance-config.yaml"
-    mode: '0644'
-  ignore_errors: "{{ ansible_check_mode }}"
+- name: 'Include ocp_appliance role'
+  ansible.builtin.include_role:
+    name: 'ocp_appliance'
 
 - name: 'Prepare VMs disks (appliance)'
   ansible.builtin.set_fact:

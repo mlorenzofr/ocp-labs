@@ -1,0 +1,26 @@
+---
+apiVersion: v1beta1
+kind: ApplianceConfig
+ocpRelease:
+  version: {{ ocp_appliance_version }}
+  channel: {{ ocp_appliance_channel }}
+  cpuArchitecture: {{ ocp_appliance_arch }}
+pullSecret: '{{ ocp_pull_secret_appliance | default(lab_pull_secret) }}'
+{% if not ocp_appliance_cfg_upgrade %}
+sshKey: '{{ lab_ssh_pubkey }}'
+userCorePass: {{ ocp_appliance_password }}
+diskSizeGB: {{ ocp_appliance_disk_size }}
+stopLocalRegistry: {{ not ocp_appliance_local_registry }}
+{% if ocp_appliance_operators | length > 0 %}
+operators:
+{% for catalog in ocp_appliance_operators %}
+  - catalog: {{ catalog.address }}
+    packages:
+{% for pkg in catalog.packages %}
+      - name: {{ pkg.name }}
+        channels:
+          - name: {{ pkg.channel }}
+{% endfor %}
+{% endfor %}
+{% endif %}
+{% endif %}
