@@ -33,6 +33,55 @@ $ for i in 3 5; do \
     virsh attach-disk "appliance-node-${i}" "/home/libvirt-ocp/appliance-node-${i}.qcow2" vda --driver qemu --subdriver qcow2 --persistent --live \
 done
 ```
+2. Install the _lvms-operator_ to provide a storage area for the Openshift registry:
+```shell
+$ ap labs/appliance-pinned/deploy.yaml --tags lvms
+$ oc apply -f /home/ocp-labs/appliance/config/registry-pvc.yaml
+```
+3. Patch the registry to asign the new PVC and re-create the pods:
+```shell
+$ oc patch configs.imageregistry.operator.openshift.io/cluster \
+    -n openshift-image-registry \
+    --type='json' \
+    --patch='[
+        {"op": "replace", "path": "/spec/managementState", "value": "Managed"},
+        {"op": "replace", "path": "/spec/rolloutStrategy", "value": "Recreate"},
+        {"op": "replace", "path": "/spec/replicas", "value": 1},
+        {"op": "replace", "path": "/spec/storage", "value": {"pvc":{"claim": "image-registry-storage" }}}
+    ]'
+```
+4. Publish the registry:
+```shell
+$ oc patch configs.imageregistry.operator.openshift.io/cluster --patch '{"spec":{"defaultRoute":true}}' --type=merge
+
+$ oc get route -n openshift-image-registry
+NAME            HOST/PORT                                                   PATH   SERVICES         PORT    TERMINATION   WILDCARD
+default-route   default-route-openshift-image-registry.apps.appliance.lab          image-registry   <all>   reencrypt     None
+```
+5. Login to the cluster and registry:
+```shell
+$ oc login -u kubeadmin --insecure-skip-tls-verify=true -p 'xxxxx-xxxxx-xxxxx-xxxxx' https://api.appliance.lab:6443
+$ podman login -u kubeadmin -p $(oc whoami -t) --tls-verify=false default-route-openshift-image-registry.apps.appliance.lab
+```
+6. And now we can push the images used in our test deployment to the registry:
+```shell
+$ oc new-project workload
+
+$ podman images | grep -E 'nginx|stress'
+docker.io/library/nginx                                           latest          b52e0b094bc0  5 weeks ago    196 MB
+docker.io/polinux/stress                                          latest          df58d15b053d  5 years ago    12 MB
+
+$ podman tag b52e0b094bc0 default-route-openshift-image-registry.apps.appliance.lab/workload/nginx
+$ podman push --tls-verify=false default-route-openshift-image-registry.apps.appliance.lab/workload/nginx
+
+$ podman tag df58d15b053d default-route-openshift-image-registry.apps.appliance.lab/workload/stress
+$ podman push --tls-verify=false default-route-openshift-image-registry.apps.appliance.lab/workload/stress
+
+$ oc get imagestream -n workload
+NAME     IMAGE REPOSITORY                                                            TAGS     UPDATED
+nginx    default-route-openshift-image-registry.apps.appliance.lab/workload/nginx    latest   19 minutes ago
+stress   default-route-openshift-image-registry.apps.appliance.lab/workload/stress   latest   38 seconds ago
+```
 
 ### Configure `PinnedImageSets`
 1. Enable Technology Preview features:
