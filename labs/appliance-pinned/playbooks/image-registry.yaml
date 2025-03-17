@@ -1,0 +1,80 @@
+---
+- name: 'image-registry tasks'
+  hosts: ['lab']
+
+  environment:
+    KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  tasks:
+    - name: 'Search worker nodes'
+      kubernetes.core.k8s_info:
+        kind: 'Node'
+        label_selectors:
+          - 'node-role.kubernetes.io/worker'
+      register: worker_nodes
+
+    - name: 'Check if vda is present in worker nodes'
+      ansible.builtin.shell:
+        cmd: "virsh domblklist {{ item }} | grep -s vda"
+      register: __registry_storage
+      changed_when: false
+      failed_when: false
+      loop: "{{ worker_nodes.resources | map(attribute='metadata.name') }}"
+
+    - name: 'Create qemu disk'
+      ansible.builtin.command:
+        cmd: "qemu-img create -f qcow2 {{ libvirt_image_dir }}/{{ item.item }}.qcow2 20G"
+      when: item.rc == 1
+      loop: "{{ __registry_storage.results }}"
+
+    - name: 'Attach virtual disk'
+      ansible.builtin.command:
+        cmd: >
+          virsh attach-disk {{ item.item }} {{ libvirt_image_dir }}/{{ item.item }}.qcow2 vda
+          --driver qemu --subdriver qcow2 --persistent --live
+      when: item.rc == 1
+      loop: "{{ __registry_storage.results }}"
+      ignore_errors: "{{ ansible_check_mode }}"
+
+    - name: 'Create image-registry-storage PVC'
+      kubernetes.core.k8s:
+        state: 'present'
+        definition:
+          apiVersion: 'v1'
+          kind: 'PersistentVolumeClaim'
+          metadata:
+            name: 'image-registry-storage'
+            namespace: 'openshift-image-registry'
+          spec:
+            storageClassName: 'lvms-vg1'
+            resources:
+              requests:
+                storage: '15Gi'
+            accessModes:
+              - 'ReadWriteOnce'
+            volumeMode: 'Filesystem'
+
+    - name: 'Configure image-registry operator'
+      kubernetes.core.k8s:
+        state: 'present'
+        definition:
+          apiVersion: 'imageregistry.operator.openshift.io/v1'
+          kind: 'Config'
+          metadata:
+            name: 'cluster'
+            namespace: 'openshift-image-registry'
+          spec:
+            defaultRoute: true
+            managementState: 'Managed'
+            rolloutStrategy: 'Recreate'
+            replicas: 1
+            storage:
+              pvc:
+                claim: 'image-registry-storage'
+
+    - name: 'Create workload namespace'
+      kubernetes.core.k8s:
+        state: 'present'
+        api_version: 'v1'
+        kind: 'Namespace'
+        name: 'workload'

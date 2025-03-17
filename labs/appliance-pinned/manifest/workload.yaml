@@ -37,7 +37,7 @@ spec:
         - name: stress-container
           image: image-registry.openshift-image-registry.svc:5000/workload/stress:latest
           command: ["stress"]
-          args: ["--cpu", "2", "--timeout", "60s"]
+          args: ["--cpu", "2", "--timeout", "3600s"]
           resources:
             requests:
               cpu: "200m"
@@ -112,7 +112,7 @@ spec:
     kind: Deployment
     name: workload-deployment
   minReplicas: 2
-  maxReplicas: 8
+  maxReplicas: 4
   metrics:
     - type: Resource
       resource:

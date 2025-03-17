@@ -1,72 +1,35 @@
 # appliance-pinned lab
 In this lab, we create an environment using the appliance tool.
-Within this new cluster:
-* Enable the Openshift internal registry
-* Add a new deployment using an image stored in the Openshift internal registry.
-* Add a `PinnedImageSet` containing Openshift images.
+
+The environment consists of 5 nodes (3 Control plane nodes, 2 worker nodes).  
+Each node has an appliance disk (`sda`) attached and the _agent-config_ disk as a USB drive (`sdb`).  
+The worker machines have an additional disk (`vda`) used to provide storage for the Openshift image registry using the **lvms** operator.  
+Upon completion of step #1, we will have an environment with the appliance and Openshift Image registry ready.
+
+In this new cluster, we will:
+* Add a new deployment using the images stored in the Openshift image registry.
+* Add a `PinnedImageSet` containing Openshift release images.
 * Upgrade the cluster using the `build upgrade-iso` method.
 
 ## Requirements
-None.
+To simulate a disconnected environment, we should block all outgoing traffic on the libvirt network where the VMs have their NICs attached.
+```shell
+iptables -I LIBVIRT_FWO 1 -s 192.168.127.0/24 ! -d 192.168.127.0/24 -j REJECT
+```
 
 ## Steps
-1. Create a new appliance image with:
+1. Deploy the appliance installation and environment configuration with:
 ```shell
-ap labs/appliance-pinned/deploy.yaml
+ap labs/appliance-pinned/deploy.yaml --tags ocp,day2
 ```
-2. Validate
-
-### Enable Openshift internal registry
-We need a storage subsystem to store the images. In this lab, we will use **lvms**.
-1. Add additional virtio disks to the worker nodes:
-```shell
-$ oc get nodes
-NAME               STATUS   ROLES                  AGE     VERSION
-appliance-node-1   Ready    control-plane,master   4h53m   v1.31.6
-appliance-node-2   Ready    control-plane,master   5h11m   v1.31.6
-appliance-node-3   Ready    worker                 4h54m   v1.31.6
-appliance-node-4   Ready    control-plane,master   5h11m   v1.31.6
-appliance-node-5   Ready    worker                 4h54m   v1.31.6
-
-$ for i in 3 5; do \
-    qemu-img create -f qcow2 "/home/libvirt-ocp/appliance-node-${i}.qcow2" 20G \
-    virsh attach-disk "appliance-node-${i}" "/home/libvirt-ocp/appliance-node-${i}.qcow2" vda --driver qemu --subdriver qcow2 --persistent --live \
-done
-```
-2. Install the _lvms-operator_ to provide a storage area for the Openshift registry:
-```shell
-$ ap labs/appliance-pinned/deploy.yaml --tags lvms
-$ oc apply -f /home/ocp-labs/appliance/config/registry-pvc.yaml
-```
-3. Patch the registry to asign the new PVC and re-create the pods:
-```shell
-$ oc patch configs.imageregistry.operator.openshift.io/cluster \
-    -n openshift-image-registry \
-    --type='json' \
-    --patch='[
-        {"op": "replace", "path": "/spec/managementState", "value": "Managed"},
-        {"op": "replace", "path": "/spec/rolloutStrategy", "value": "Recreate"},
-        {"op": "replace", "path": "/spec/replicas", "value": 1},
-        {"op": "replace", "path": "/spec/storage", "value": {"pvc":{"claim": "image-registry-storage" }}}
-    ]'
-```
-4. Publish the registry:
-```shell
-$ oc patch configs.imageregistry.operator.openshift.io/cluster --patch '{"spec":{"defaultRoute":true}}' --type=merge
-
-$ oc get route -n openshift-image-registry
-NAME            HOST/PORT                                                   PATH   SERVICES         PORT    TERMINATION   WILDCARD
-default-route   default-route-openshift-image-registry.apps.appliance.lab          image-registry   <all>   reencrypt     None
-```
-5. Login to the cluster and registry:
+2. Validate the installation
+3. Log in to the cluster and registry:
 ```shell
 $ oc login -u kubeadmin --insecure-skip-tls-verify=true -p 'xxxxx-xxxxx-xxxxx-xxxxx' https://api.appliance.lab:6443
 $ podman login -u kubeadmin -p $(oc whoami -t) --tls-verify=false default-route-openshift-image-registry.apps.appliance.lab
 ```
-6. And now we can push the images used in our test deployment to the registry:
+4. Now, we can push the images used in our test deployment to the registry:
 ```shell
-$ oc new-project workload
-
 $ podman images | grep -E 'nginx|stress'
 docker.io/library/nginx                                           latest          b52e0b094bc0  5 weeks ago    196 MB
 docker.io/polinux/stress                                          latest          df58d15b053d  5 years ago    12 MB
@@ -76,11 +39,10 @@ $ podman push --tls-verify=false default-route-openshift-image-registry.apps.app
 
 $ podman tag df58d15b053d default-route-openshift-image-registry.apps.appliance.lab/workload/stress
 $ podman push --tls-verify=false default-route-openshift-image-registry.apps.appliance.lab/workload/stress
-
-$ oc get imagestream -n workload
-NAME     IMAGE REPOSITORY                                                            TAGS     UPDATED
-nginx    default-route-openshift-image-registry.apps.appliance.lab/workload/nginx    latest   19 minutes ago
-stress   default-route-openshift-image-registry.apps.appliance.lab/workload/stress   latest   38 seconds ago
+```
+5. Deploy the dummy _workload_:
+```shell
+ap labs/appliance-pinned/deploy.yaml --tags workload
 ```
 
 ### Configure `PinnedImageSets`
@@ -90,24 +52,14 @@ stress   default-route-openshift-image-registry.apps.appliance.lab/workload/stre
 oc apply -f enable-techpreview.yaml
 oc adm wait-for-stable-cluster --minimum-stable-period=300s
 ```
-2. Add the images to the `pinned-image-set.yaml` file. They can be obtained with:
-```shell
-oc adm release info quay.io/openshift-release-dev/ocp-release:4.18.3-x86_64 --output=json \
-  | jq "[.references.spec.tags[] | .from.name]" \
-  | grep quay | tr -d '",' \
-  | awk '{ print "    - name: "$1 }'
-```
-Besides that we should add the release image to the list:
-```shell
-oc adm release info quay.io/openshift-release-dev/ocp-release:4.18.3-x86_64 \
-  | awk '/Pull From/ { print "    - name: "$3 }'
-```
-3. Apply the `PinnedImageSet` and wait for the images to download.
+2. Apply the `PinnedImageSet` and wait for the images to download.
 ```shell
 oc apply -f pinned-image-set.yaml
 ```
 
 ## Validation
+
+### Installation
 1. Check if the cluster is running:
 ```shell
 $ export KUBECONFIG=/home/ocp-labs/appliance/deploy/auth/kubeconfig
@@ -124,7 +76,45 @@ $ oc get clusterversion
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.18.2    True        False         17m     Cluster version is 4.18.2
 ```
-2. Check if the pinned images are present on the nodes:
+2. Check if the PVC required for the `openshift-image-registry` is bound:
+```shell
+$ oc get pvc -n openshift-image-registry
+NAME                     STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+image-registry-storage   Bound    pvc-d211049b-d6c2-4fa8-93ed-628d195d8312   15Gi       RWO            lvms-vg1       <unset>                 15m
+```
+3. Check if in the namespace `openshift-image-registry` the pod **image-registry** is _Running_:
+```shell
+$ oc get pods -n openshift-image-registry
+NAME                                               READY   STATUS    RESTARTS      AGE
+cluster-image-registry-operator-7648b6bb9b-brqwz   1/1     Running   1 (16m ago)   27m
+image-registry-5897b5b49d-clbhq                    1/1     Running   0             89s
+node-ca-5lclf                                      1/1     Running   0             12m
+node-ca-dgq27                                      1/1     Running   0             12m
+node-ca-fs9zs                                      1/1     Running   0             12m
+node-ca-stb2x                                      1/1     Running   0             12m
+node-ca-wzgtb                                      1/1     Running   0             12m
+```
+
+### workload
+1. Review if the `ImageStreams` used by the deployment exist:
+```shell
+$ oc get imagestream -n workload
+NAME     IMAGE REPOSITORY                                                            TAGS     UPDATED
+nginx    default-route-openshift-image-registry.apps.appliance.lab/workload/nginx    latest   19 minutes ago
+stress   default-route-openshift-image-registry.apps.appliance.lab/workload/stress   latest   38 seconds ago
+```
+2. Check if the _workload_ pods are **running**:
+```shell
+$ oc get pods -n workload
+NAME                                   READY   STATUS    RESTARTS   AGE
+workload-deployment-68fcdd56df-4tcbc   2/2     Running   0          5m46s
+workload-deployment-68fcdd56df-wngvm   2/2     Running   0          7m31s
+workload-deployment-68fcdd56df-wntbr   2/2     Running   0          6m31s
+workload-deployment-68fcdd56df-xlnfp   2/2     Running   0          7m31s
+```
+
+### PinnedImageSet
+1. Check if the pinned images are present on the nodes:
 ```shell
 $ for i in {1..5}; do scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no /home/ocp-labs/appliance/pinned-images.sh core@appliance-node-${i}:/tmp/; done
 
@@ -139,6 +129,15 @@ Warning: Permanently added 'appliance-node-4,192.168.127.14' (ECDSA) to the list
 0
 Warning: Permanently added 'appliance-node-5,192.168.127.15' (ECDSA) to the list of known hosts.
 0
+```
+2. Power off all cluster nodes. Switch them on, wait a few minutes and check the pods in the **workload** namespace. They should have restarts, but be in _running_ state:
+```shell
+$ oc get pods -n workload
+NAME                                   READY   STATUS    RESTARTS   AGE
+workload-deployment-5449f7588f-6nnb8   2/2     Running   2          19m
+workload-deployment-5449f7588f-8zb4l   2/2     Running   2          21m
+workload-deployment-5449f7588f-k6mgw   2/2     Running   2          21m
+workload-deployment-5449f7588f-szxxb   2/2     Running   2          19m
 ```
 
 ## Links

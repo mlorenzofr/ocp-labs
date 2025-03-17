@@ -1,0 +1,31 @@
+---
+- name: 'Copy upgrade-iso to libvirt storage directory'
+  ansible.builtin.command:
+    cmd: >
+      cp -f {{ __upgrade_iso_file.files[0].path }}
+      {{ libvirt_image_dir }}/{{ lab_name }}-{{ __upgrade_iso_file.files[0].path | basename }}
+
+- name: 'Check CD-ROM devices on nodes'
+  ansible.builtin.shell:
+    cmd: >
+      virsh domblklist
+      {{ lab_name }}-{{ item.role | default('node') }}-{{ ansible_loop.index }}
+      | grep -s sdc
+  register: __appliance_vm_sdc
+  changed_when: false
+  failed_when: false
+  loop: "{{ lab_hosts }}"
+  loop_control:
+    extended: true
+
+- name: 'Attach upgrade-iso image'
+  ansible.builtin.command:
+    cmd: >
+      virsh attach-disk
+      {{ lab_name }}-{{ item.role | default('node') }}-{{ ansible_loop.index }}
+      {{ libvirt_image_dir }}/{{ lab_name }}-{{ __upgrade_iso_file.files[0].path | basename }}
+      sdc --persistent --mode readonly --targetbus usb --live
+  when: item.rc == 1
+  loop: "{{ __appliance_vm_sdc.results }}"
+  loop_control:
+    extended: true

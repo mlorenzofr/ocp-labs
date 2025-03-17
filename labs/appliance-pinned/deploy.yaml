@@ -17,8 +17,6 @@
   vars:
     lab_name: 'appliance'
     lab_domain: 'lab'
-    lab_appliance_version: '4.18.0'
-    lab_appliance_local_registry: true
     lab_node_memory: 32000
     lab_master_replicas: 3
     lab_worker_replicas: 2
@@ -28,11 +26,13 @@
     lab_abi_ip: "{{ lab_node_network_base }}11"
     lab_api_ips: ["{{ lab_node_network_base }}5"]
     lab_ingress_ips: ["{{ lab_node_network_base }}6"]
-    lab_appliance_operators:
+    ocp_appliance_version: '4.17'
+    ocp_appliance_local_registry: true
+    ocp_appliance_operators:
       - address: 'registry.redhat.io/redhat/redhat-operator-index:v4.18'
         packages:
           - {name: 'lvms-operator', channel: 'stable-4.18'}
-    # start_install: true
+    start_install: true
     lab_hosts:
       - {'id': '11'}
       - {'id': '12'}
@@ -50,24 +50,30 @@
     lab_path: '/home/ocp-labs'
     lab_local_path: '/ansible/labs/appliance-pinned'
     lab_configs: "{{ lab_path }}/{{ lab_name }}/config"
-    # ocp_odf_ns: 'openshift-storage'
-    # ocp_odf_noobaa: True
-    # ocp_odf_noobaa_storageclass: 'lvms-vg1'
-    ocp_lvms_source: 'cs-redhat-operator-index'
+    lab_hosts:
+      - {'id': '11'}
+      - {'id': '12'}
+      - {'id': '13'}
+      - {'id': '14'}
+      - {'id': '15'}
+    libvirt_image_dir: '/home/libvirt-ocp'
+    ocp_lvms_source: 'cs-redhat-operator-index-v4-18'
     ocp_lvms_cluster_default_device: 'vda'
     extra_manifests:
       - {src: "{{ lab_local_path }}/manifest/enable-techpreview.yaml", dest: 'enable-techpreview.yaml'}
       - {src: "{{ lab_local_path }}/manifest/pinned-image-set-4.18.3.yaml", dest: 'pinned-image-set.yaml'}
       - {src: "{{ lab_local_path }}/manifest/registry-pvc.yaml", dest: 'registry-pvc.yaml'}
+      - {src: "{{ lab_local_path }}/manifest/workload.yaml", dest: 'workload.yaml'}
 
   environment:
     KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
 
   roles:
-    # - role: 'ocp_odf'
-    #   tags: ['odf']
     - role: 'ocp_lvms'
-      tags: ['lvms']
+      tags:
+        - 'lvms'
+        - 'postinst'
+        - 'day2'
 
   tasks:
     - name: 'Copy day-2 manifests'
@@ -76,4 +82,63 @@
         dest: "{{ lab_configs }}/{{ item.dest }}"
         mode: '0640'
       loop: "{{ extra_manifests }}"
-      tags: ['manifests']
+      tags:
+        - 'manifests'
+        - 'postinst'
+        - 'day2'
+
+#    - name: 'Apply manifests'
+#      kubernetes.core.k8s:
+#        state: 'present'
+#        src: "{{ item }}"
+#      ignore_errors: "{{ ansible_check_mode }}"
+#      tags: ['manifests']
+#      loop:
+#        - "{{ lab_configs }}/workload.yaml"
+
+- name: 'Import image-registry playbook'
+  ansible.builtin.import_playbook: playbooks/image-registry.yaml
+  vars:
+    lab_name: 'appliance'
+    lab_path: '/home/ocp-labs'
+    libvirt_image_dir: '/home/libvirt-ocp'
+  tags:
+    - 'registry'
+    - 'postinst'
+    - 'day2'
+
+- name: 'workload tasks'
+  hosts: ['lab']
+
+  vars:
+    lab_name: 'appliance'
+    lab_path: '/home/ocp-labs'
+    lab_configs: "{{ lab_path }}/{{ lab_name }}/config"
+
+  environment:
+    KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  tasks:
+    - name: 'Create PoC workload'
+      kubernetes.core.k8s:
+        state: 'present'
+        src: "{{ lab_configs }}/workload.yaml"
+      ignore_errors: "{{ ansible_check_mode }}"
+      tags: ['workload']
+
+- name: 'Import upgrade-iso playbook'
+  ansible.builtin.import_playbook: playbooks/upgrade-iso/main.yaml
+  vars:
+    lab_name: 'appliance'
+    lab_path: '/home/ocp-labs'
+    lab_hosts:
+      - {'id': '11'}
+      - {'id': '12'}
+      - {'id': '13'}
+      - {'id': '14'}
+      - {'id': '15'}
+    libvirt_image_dir: '/home/libvirt-ocp'
+    appliance_upgrade_dir: "{{ lab_path }}/{{ lab_name }}/upgrade"
+  tags:
+    - 'upgrade-iso'
+    - 'never'
