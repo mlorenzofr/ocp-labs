@@ -113,4 +113,51 @@
     path: "/usr/local/bin/openshift-install-{{ item.version }}"
     state: 'absent'
   when: item.state == 'absent'
+
+- name: 'Test if oc-mirror is present'
+  ansible.builtin.stat:
+    path: "/usr/local/bin/oc-mirror-{{ item.version }}"
+  register: __oc_mirror
+
+- name: 'Download oc-mirror'
+  ansible.builtin.unarchive:
+    src: "{{ lab_host_ocp_mirror }}/x86_64/clients/ocp/{{ item.version }}/oc-mirror.tar.gz"
+    include: ['oc-mirror']
+    remote_src: true
+    dest: '/tmp/'
+  when: not __oc_mirror.stat.exists and item.state != 'absent'
+
+- name: 'Test oc-mirror downloaded file'
+  ansible.builtin.stat:
+    path: '/tmp/oc-mirror'
+  register: __tmp_oc_mirror
+
+- name: 'Move oc-mirror to /usr/local/bin'
+  ansible.builtin.copy:
+    src: '/tmp/oc-mirror'
+    dest: "/usr/local/bin/oc-mirror-{{ item.version }}"
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+    remote_src: true
+  when: __tmp_oc_mirror.stat.exists
+
+- name: 'Remove oc-mirror temporal file'
+  ansible.builtin.file:
+    path: '/tmp/oc-mirror'
+    state: 'absent'
+
+- name: 'Add oc-mirror alternative'
+  community.general.alternatives:
+    name: 'oc-mirror'
+    link: '/usr/local/bin/oc-mirror'
+    path: "/usr/local/bin/oc-mirror-{{ item.version }}"
+    state: "{{ item.state }}"
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: 'Remove oc-mirror'
+  ansible.builtin.file:
+    path: "/usr/local/bin/oc-mirror-{{ item.version }}"
+    state: 'absent'
+  when: item.state == 'absent'
 ...
