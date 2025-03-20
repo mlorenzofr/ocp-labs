@@ -8,7 +8,7 @@
 - name: 'Create lab directory tree'
   ansible.builtin.file:
     path: "{{ lab_path }}/{{ item }}"
-    mode: '0755'
+    mode: '0750'
     state: 'directory'
   ignore_errors: "{{ ansible_check_mode }}"
   loop:
