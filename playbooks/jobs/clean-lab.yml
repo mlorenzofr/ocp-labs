@@ -49,7 +49,7 @@
     - name: 'Prepare appliance-disks fileglob pattern'
       ansible.builtin.find:
         path: "{{ libvirt_image_dir }}/"
-        patterns: "^{{ lab_name }}-.*\\.raw$"
+        patterns: "^{{ lab_name }}-.*\\.(raw|qcow2)$"
         use_regex: true
       register: clean_appliance_disks
       when: lab_appliance
