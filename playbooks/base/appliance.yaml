@@ -86,8 +86,8 @@
         name: 'ocp_appliance'
         tasks_from: 'commands.yaml'
       vars:
-        ocp_appliance_cmd_clean: __appliance_cfg.changed
-        ocp_appliance_cmd_build: __appliance_cfg.changed
+        ocp_appliance_cmd_clean: "{{ __appliance_cfg.changed }}"
+        ocp_appliance_cmd_build: "{{ __appliance_cfg.changed }}"
 
   handlers:
     # This task is too slow, it must be reviewed
@@ -215,6 +215,32 @@
       loop: "{{ lab_hosts }}"
       loop_control:
         extended: true
+      listen:
+        - 'bundle build'
+        - 'agent build'
+      when: start_install | default(False)
+
+    - name: 'Wait for kubeconfig file'
+      ansible.builtin.wait_for:
+        path: "{{ ocp_appliance_cwd }}/auth/kubeconfig"
+        state: 'present'
+      listen:
+        - 'bundle build'
+        - 'agent build'
+      when: start_install | default(False)
+
+    - name: 'Waiting until the installation finishes'
+      ansible.builtin.command:
+        cmd: >
+          oc get clusterversion -o jsonpath='{.items[*].status.conditions[?(@.type=="Available")].status}'
+      register: install_status
+      environment:
+        KUBECONFIG: "{{ ocp_appliance_cwd }}/auth/kubeconfig"
+        PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
+      retries: 150
+      delay: 30
+      until: install_status.stdout == 'True'
+      changed_when: False
       listen:
         - 'bundle build'
         - 'agent build'
