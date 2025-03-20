@@ -1,5 +1,6 @@
 ---
 include_tag: []
+include_notify: []
 
 ocp_appliance_arch: 'x86_64'
 ocp_appliance_base_cmd: "podman run --rm {{ ocp_appliance_pull_policy }} --privileged --net=host -v {{ ocp_appliance_cwd }}/:/assets:Z {{ ocp_appliance_image }}"
@@ -14,4 +15,4 @@ ocp_appliance_manifests: []
 ocp_appliance_operators: []
 ocp_appliance_password: 'changeme'
 ocp_appliance_pull_policy: '--pull newer'
-ocp_appliance_version: '4.18.4'
+ocp_appliance_version: '4.18'

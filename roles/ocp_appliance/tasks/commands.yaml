@@ -2,23 +2,23 @@
 - name: 'Clean appliance builds (preserve cache)'
   ansible.builtin.command:
     cmd: "{{ ocp_appliance_base_cmd }} clean"
-  when: ocp_appliance_cmd_clean | default(False)
-  tags: "{{ include_tag }}"
+  when: ocp_appliance_cmd_clean | default(False) | bool
+  tags: "{{ include_tag | default([]) }}"
 
 - name: 'Clean appliance builds'
   ansible.builtin.command:
     cmd: "{{ ocp_appliance_base_cmd }} clean --cache"
-  when: ocp_appliance_cmd_clean_cache | default(False)
-  tags: "{{ include_tag }}"
+  when: ocp_appliance_cmd_clean_cache | default(False) | bool
+  tags: "{{ include_tag | default([]) }}"
 
 - name: 'Build appliance bundle'
   ansible.builtin.command:
     cmd: "{{ ocp_appliance_base_cmd }} build"
-  when: ocp_appliance_cmd_build | default(False)
-  tags: "{{ include_tag }}"
+  when: ocp_appliance_cmd_build | default(False) | bool
+  tags: "{{ include_tag | default([]) }}"
 
 - name: 'Build appliance upgrade-iso'
   ansible.builtin.command:
     cmd: "{{ ocp_appliance_base_cmd }} build upgrade-iso"
-  when: ocp_appliance_cmd_upgrade_iso | default(False)
-  tags: "{{ include_tag }}"
+  when: ocp_appliance_cmd_upgrade_iso | default(False) | bool
+  tags: "{{ include_tag | default([]) }}"

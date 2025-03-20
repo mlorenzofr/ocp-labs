@@ -1,2 +1,6 @@
 ---
-# handlers file for ocp_appliance
+- name: 'Execute openshift-appliance commands'
+  ansible.builtin.include_tasks:
+    file: 'commands.yaml'
+  listen:
+    - 'openshift-appliance run'
