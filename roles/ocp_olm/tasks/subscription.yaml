@@ -2,13 +2,13 @@
 - name: 'Create subscription manifest'
   ansible.builtin.template:
     src: 'v0.yaml.j2'
-    dest: "{{ ocp_olm_path }}/{{ item.subscription_name }}-subscription.yaml"
+    dest: "{{ ocp_olm_path }}/{{ item.subscription_name | default(item.operator_name) }}-subscription.yaml"
     mode: '0644'
 
 - name: 'Install subscription manifest'
   kubernetes.core.k8s:
     state: 'present'
-    src: "{{ ocp_olm_path }}/{{ item.subscription_name }}-subscription.yaml"
+    src: "{{ ocp_olm_path }}/{{ item.subscription_name | default(item.operator_name) }}-subscription.yaml"
   ignore_errors: "{{ ansible_check_mode }}"
   when: ocp_olm_apply
 
@@ -16,7 +16,7 @@
   kubernetes.core.k8s_info:
     api_version: 'operators.coreos.com/v1alpha1'
     kind: 'Subscription'
-    name: "{{ item.subscription_name }}"
+    name: "{{ item.subscription_name | default(item.operator_name) }}"
     namespace: "{{ item.ns }}"
   register: __olm_subscription_status
   until:

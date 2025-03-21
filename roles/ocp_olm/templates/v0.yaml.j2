@@ -16,7 +16,7 @@ metadata:
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
-  name: {{ item.operator_group | default('{}-operatorgroup'.format(item.subscription_name)) }}
+  name: {{ item.operator_group | default('{}-operatorgroup'.format(item.operator_name)) }}
   namespace: {{ item.ns }}
 spec:
   targetNamespaces:
