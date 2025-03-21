@@ -9,6 +9,7 @@
     dnsmasq_confd: '/etc/dnsmasq.d'
     lab_path: '/root/labs'
     libvirt_image_dir: '/home/libvirt-ocp'
+    lab_appliance: false
 
   tasks:
     - name: 'Test lab_name'
