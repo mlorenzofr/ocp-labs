@@ -1,0 +1,21 @@
+---
+# Run it with:
+#   ap labs/std-sno/deploy.yaml
+
+- name: 'Clean std-sno lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'std-sno'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/sno.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'std-sno'
+    lab_mac_base: 'be:be:ca:fe:05:'
+    sno_ip: 31
+    start_install: true

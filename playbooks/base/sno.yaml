@@ -1,10 +1,8 @@
 ---
-# Run it with: ansible-playbook sno.yaml -e "start_install=true"
-#
 # This playbook prepares an Single Node Openshift (SNO) installation
 # Right now the only way to do this is through Agent Based Installation (ABI)
 
-- name: 'Setup Single Node Openshift (SNO) with Agent Based Installation (ABI)'
+- name: 'Setup Single Node Openshift (SNO)'
   hosts:
     - 'lab'
 
@@ -12,9 +10,9 @@
 
   vars:
     lab_abi: True
-    lab_abi_ip: "{{ lab_node_network_base }}31"
-    lab_api_ips: ["{{ lab_node_network_base }}31"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}31"]
+    lab_abi_ip: "{{ lab_node_network_base }}{{ sno_ip }}"
+    lab_api_ips: ["{{ lab_node_network_base }}{{ sno_ip }}"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}{{ sno_ip }}"]
     lab_name: 'sno'
     lab_master_replicas: 1
     lab_mac_base: 'be:be:ca:fe:03:'
@@ -22,8 +20,9 @@
     lab_node_network_base: '192.168.125.'
     lab_node_role: 'node'
     lab_hosts:
-      - {'id': '31', 'iface':'enp1s0'}
+      - {'id': "{{ sno_ip }}", 'iface':'enp1s0'}
     libvirt_image_dir: '/home/libvirt-ocp'
+    sno_ip: 31  # Last IP address octet
 
   environment:
     PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
@@ -93,15 +92,17 @@
       when: start_install | default(False)
 
     - name: 'Waiting until the installation finishes'
-      ansible.builtin.command:
-        cmd: >
-          oc get clusterversion -o jsonpath='{.items[*].status.conditions[?(@.type=="Available")].status}'
-      register: install_status
-      environment:
-        KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
-        PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
+      kubernetes.core.k8s_info:
+        api_version: 'config.openshift.io/v1'
+        kind: 'ClusterVersion'
+        name: 'version'
+        kubeconfig: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+      register: __clusterversion
       retries: 125
       delay: 30
-      until: install_status.stdout == 'True'
-      changed_when: False
+      until:
+        - __clusterversion.resources is defined
+        - __clusterversion.resources | length > 0
+        - __clusterversion.resources[0].status.conditions is defined
+        - __clusterversion.resources[0].status.conditions | selectattr('type', 'equalto', 'Available') | selectattr('status', 'equalto', 'True') | length > 0
       when: start_install | default(False)
