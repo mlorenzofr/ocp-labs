@@ -47,16 +47,26 @@
       loop_control:
         extended: true
 
+    - name: 'Prepare vm_cdrom_status'
+      block:
+        - name: 'Create vm_cdrom_status fact'
+          ansible.builtin.set_fact:
+            vm_cdrom_status: []
+        - name: 'Fill in vm_cdrom_status'
+          ansible.builtin.set_fact:
+            vm_cdrom_status: "{{
+              vm_cdrom_status + [{
+                'name': '{}-{}-{}'.format(lab_name, item.role | default(lab_node_role), ansible_loop.index),
+                'cdrom': __appliance_vm_cd.results[ansible_loop.index0].rc }] }}"
+          loop: "{{ lab_hosts }}"
+          loop_control:
+            extended: true
+
     - name: 'Remove CD-ROM on VMs'
       ansible.builtin.command:
-        cmd: >
-          virsh detach-disk
-          {{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}
-          hdc --config
-      when: item.rc == 0
-      loop: "{{ __appliance_vm_cd.results }}"
-      loop_control:
-        extended: true
+        cmd: "virsh detach-disk {{ item.name }} hdc --config"
+      when: item.cdrom == 0
+      loop: "{{ vm_cdrom_status }}"
 
     - name: 'Copy configuration files to deploy directory'
       ansible.builtin.copy:
