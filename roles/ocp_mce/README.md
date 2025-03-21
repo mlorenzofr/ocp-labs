@@ -1,38 +1,27 @@
-Role Name
-=========
+# ocp_mce
+This role installs and configures MultiCluster Engine (**MCE**) operator on an Openshift cluster.
 
-A brief description of the role goes here.
+## Requirements
+This role requires the **ocp_olm** role.
 
-Requirements
-------------
+## Role Variables
+* `ocp_mce_apply`. _Bool_. Set wether the role should apply the manifests or simply create them.
+* `ocp_mce_channel`. _String_. Operator subscription channel.
+* `ocp_mce_name`. _String_. Name for the MCE resource.
+* `ocp_mce_ns`. _String_. Namespace for the Operator.
+* `ocp_mce_path`. _String_. Path where the manifest files are stored.
+* `ocp_mce_source`. _String_. Name of the catalog source name for installing the lvms-operator.
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+## Example Playbook
+```yaml
+- hosts: servers
 
-Role Variables
---------------
+  roles:
+    - ocp_mce
+```
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+## License
+MIT / BSD
 
-Dependencies
-------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
-
-Example Playbook
-----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+## Author Information
+ - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2024-)

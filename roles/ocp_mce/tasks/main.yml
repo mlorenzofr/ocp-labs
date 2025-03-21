@@ -1,11 +1,61 @@
 ---
-- name: 'Create MultiCluster Engine manifests'
+- name: 'Create MCE subscription'
+  ansible.builtin.include_role:
+    name: 'ocp_olm'
+    tasks_from: 'subscription.yaml'
+  loop:
+    - operator_name: 'multicluster-engine'
+      ns: "{{ ocp_mce_ns }}"
+      monitoring: True
+      channel: "{{ ocp_mce_channel }}"
+      source: "{{ ocp_mce_source }}"
+  tags: ['olm']
+
+- name: 'Waiting for MCE pods'
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        namespace: "{{ ocp_mce_ns }}"
+    label_selectors:
+      - 'control-plane=backplane-operator'
+    wait: yes
+    wait_condition:
+      type: Ready
+      status: "True"
+    wait_timeout: 300
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: 'Create multicluster-engine manifest'
   ansible.builtin.template:
-    src: "{{ item.template }}"
-    dest: "{{ ocp_mce_path }}/{{ item.dest }}"
+    src: 'mce.yaml.j2'
+    dest: "{{ ocp_mce_path }}/mce.yaml"
     mode: '0644'
   ignore_errors: "{{ ansible_check_mode }}"
-  loop:
-    - {template: 'init.yaml.j2', dest: 'mce-subscription.yaml'}
-    - {template: 'mce.yaml.j2', dest: 'mce.yaml'}
-  notify: 'mce install'
+
+- name: 'Apply multicluster-engine manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_mce_path }}/mce.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  register: __mce
+  until: __mce is not failed
+  retries: 10
+  delay: 30
+  when: ocp_mce_apply
+
+- name: 'Waiting until MCE is available'
+  kubernetes.core.k8s_info:
+    api_version: 'multicluster.openshift.io/v1'
+    kind: 'MultiClusterEngine'
+    name: "{{ ocp_mce_name }}"
+    namespace: "{{ ocp_mce_ns }}"
+  register: __mce_status
+  until:
+    - __mce_status.resources | length > 0
+    - __mce_status.resources[0].status.phase is defined
+    - __mce_status.resources[0].status.phase == 'Available'
+  retries: 10
+  delay: 30
+  when: ocp_mce_apply
