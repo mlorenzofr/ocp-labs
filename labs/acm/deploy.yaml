@@ -1,0 +1,44 @@
+---
+# Run it with:
+#   ap labs/acm/deploy.yaml
+
+- name: 'Clean std-slim lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'acm'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import compact playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'acm'
+    lab_abi_ip: "{{ lab_node_network_base }}61"
+    lab_api_ips: ["{{ lab_node_network_base }}67"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}68"]
+    lab_node_memory: 28000
+    lab_node_disk_data: 60
+    lab_hosts:
+      - {id: '61', role: 'master'}
+      - {id: '62', role: 'master'}
+      - {id: '63', role: 'master'}
+    start_install: true
+
+- name: 'Import ACM setup playbook'
+  ansible.builtin.import_playbook: ../../playbooks/setup/hive.yml
+  vars:
+    lab_name: 'acm'
+    ocp_assisted_service_op: 'acm'
+    ocp_baremetal_infras:
+      - name: 'infra1'
+        ns: 'hardware-inventory'
+        pullsecret: "{{ lab_pull_secret }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        ntp: ["{{ lab_node_network }}.1"]
+        redfish: "{{ lab_node_network }}.1"
+        inventory:
+          - {id: '64'}
+          - {id: '65'}
