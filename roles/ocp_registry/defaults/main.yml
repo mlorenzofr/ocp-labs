@@ -1,0 +1,3 @@
+---
+ocp_registry_ns: 'openshift-image-registry'
+ocp_registry_storage_size: '20Gi'

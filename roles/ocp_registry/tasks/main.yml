@@ -1,0 +1,36 @@
+---
+- name: 'Create image-registry-storage PVC'
+  kubernetes.core.k8s:
+    state: 'present'
+    definition:
+      apiVersion: 'v1'
+      kind: 'PersistentVolumeClaim'
+      metadata:
+        name: 'image-registry-storage'
+        namespace: "{{ ocp_registry_ns }}"
+      spec:
+        storageClassName: "{{ ocp_registry_storage_class }}"
+        resources:
+          requests:
+            storage: "{{ ocp_registry_storage_size }}"
+        accessModes:
+          - 'ReadWriteOnce'
+        volumeMode: 'Filesystem'
+
+- name: 'Configure image-registry operator'
+  kubernetes.core.k8s:
+    state: 'present'
+    definition:
+      apiVersion: 'imageregistry.operator.openshift.io/v1'
+      kind: 'Config'
+      metadata:
+        name: 'cluster'
+        namespace: "{{ ocp_registry_ns }}"
+      spec:
+        defaultRoute: true
+        managementState: 'Managed'
+        rolloutStrategy: 'Recreate'
+        replicas: 1
+        storage:
+          pvc:
+            claim: 'image-registry-storage'
