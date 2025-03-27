@@ -25,4 +25,4 @@
     - __olm_subscription_status.resources[0].status.state == 'AtLatestKnown'
   retries: 10
   delay: 30
-  when: ocp_olm_apply
+  when: ocp_olm_apply and not ansible_check_mode
