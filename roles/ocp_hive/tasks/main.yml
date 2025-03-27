@@ -1,12 +1,31 @@
 ---
-- name: 'Install Hive operator'
-  ansible.builtin.template:
-    src: 'subscription.j2'
-    dest: "{{ ocp_hive_path }}/hive-subscription.yaml"
-    mode: '0644'
-  ignore_errors: "{{ ansible_check_mode }}"
+- name: 'Create hive subscription manifest'
+  ansible.builtin.include_role:
+    name: 'ocp_olm'
+    tasks_from: 'subscription.yaml'
+  loop:
+    - operator_name: 'hive-operator'
+      ns: "{{ ocp_hive_ns }}"
+      channel: "{{ ocp_hive_channel }}"
+      source: "{{ ocp_hive_source }}"
   when: ocp_hive_operator
-  notify: 'hive operator install'
+  tags: ['olm']
+
+- name: 'Waiting for hive-operator pods'
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        namespace: "{{ ocp_hive_ns }}"
+    label_selectors:
+      - 'control-plane=hive-operator'
+    wait: yes
+    wait_condition:
+      type: Ready
+      status: "True"
+    wait_timeout: 300
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Create cluster configurations directory'
   ansible.builtin.file:
@@ -21,7 +40,13 @@
     mode: '0644'
   ignore_errors: "{{ ansible_check_mode }}"
   when: ocp_hive_clusterimagesets | length > 0
-  notify: 'hive clusterimagesets'
+
+- name: 'Apply ClusterImageSet manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_hive_path }}/clusterimageset.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_hive_clusterimagesets | length > 0 and ocp_hive_apply
 
 - name: 'Prepare hive clusters'
   ansible.builtin.include_tasks:

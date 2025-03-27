@@ -1,17 +1,14 @@
 ---
-- name: 'Check image visibility'
-  ansible.builtin.command:
-    cmd: >
-      /usr/local/bin/oc get clusterimageset {{ item.image }} -o jsonpath='{.metadata.labels.visible}'
-  register: __hive_image_visibility
-  changed_when: false
-  failed_when: false
-
 - name: 'Make cluster image visible'
-  ansible.builtin.command:
-    cmd: >
-      /usr/local/bin/oc label clusterimageset {{ item.image }} visible=true --overwrite
-  when: __hive_image_visibility.stdout == 'false'
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: 'hive.openshift.io/v1'
+      kind: 'ClusterImageSet'
+      metadata:
+        name: "{{ item.image }}"
+        labels:
+          visible: 'true'
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Create dnsmasq snippet for the cluster nodes'
   ansible.builtin.include_role:
@@ -28,5 +25,11 @@
     dest: "{{ ocp_hive_path }}/hive/{{ item.name }}.yaml"
     mode: '0644'
   ignore_errors: "{{ ansible_check_mode }}"
-  notify: 'hive cluster update'
+
+- name: 'Apply hive cluster manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_hive_path }}/hive/{{ item.name }}.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_hive_apply
 ...

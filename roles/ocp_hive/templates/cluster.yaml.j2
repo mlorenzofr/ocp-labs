@@ -59,6 +59,11 @@ spec:
     name: {{ item.name }}
   imageSetRef:
     name: {{ item.image }}
+{% if 'registry' in item.keys() %}
+  mirrorRegistryRef:
+    name: {{ item.registry }}
+    namespace: {{ item.ns }}
+{% endif %}
   networking:
     networkType: "{{ item.network_type | default('OVNKubernetes') }}"
     clusterNetwork:
