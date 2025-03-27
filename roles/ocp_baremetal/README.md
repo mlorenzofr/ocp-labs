@@ -9,7 +9,7 @@ This role requires (yet included by dependencies):
 And also, to create DNS records for `BaremetalHosts`, the **dnsmasq** role.
 
 ## Role Variables
-* `ocp_baremetal_install`. _Bool_. Set wether the role should apply manifests or simply create them.
+* `ocp_baremetal_apply`. _Bool_. Set wether the role should apply manifests or simply create them.
 * `ocp_assisted_service_ns`. _String_. Namespace for the Operator.
 * `ocp_baremetal_path`. _String_. Path where the manifest files are saved.
 * `ocp_baremetal_node_cpus`. _Number_. Number of vCPU's in each node.
@@ -32,7 +32,6 @@ And also, to create DNS records for `BaremetalHosts`, the **dnsmasq** role.
 - hosts: servers
 
   vars:
-    ocp_baremetal_install: true
     ocp_baremetal_path: '/home/labs/standard'
 
     ocp_baremetal_infras:

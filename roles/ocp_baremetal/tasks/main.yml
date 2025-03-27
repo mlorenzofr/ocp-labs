@@ -1,15 +1,14 @@
 ---
-- name: 'Check watch scope configured in baremetal operator'
-  ansible.builtin.command:
-    cmd: >
-      /usr/local/bin/oc get provisionings/provisioning-configuration
-      -o jsonpath='{.spec.watchAllNamespaces}'
-  register: __ocp_baremetal_watchall
-  check_mode: false
-  changed_when: __ocp_baremetal_watchall.stdout | length == 0
-  failed_when: false
-  when: ocp_baremetal_infras | length > 0
-  notify: 'set watch-all'
+- name: 'Set watchAllNamespaces for provisioning'
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: 'metal3.io/v1alpha1'
+      kind: 'Provisioning'
+      metadata:
+        name: 'provisioning-configuration'
+      spec:
+        watchAllNamespaces: true
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Create infrastructure configurations directory'
   ansible.builtin.file:

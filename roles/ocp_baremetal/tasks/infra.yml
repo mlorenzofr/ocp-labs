@@ -1,17 +1,32 @@
 ---
-- name: 'Create Baremetal environment manifests'
+- name: 'Create InfraEnv manifest'
   ansible.builtin.template:
     src: 'infraenv.yaml.j2'
     dest: "{{ ocp_baremetal_path }}/infra/01-env-{{ item.name }}.yaml"
     mode: '0644'
-  notify: 'update infrastructure'
+
+- name: 'Apply InfraEnv manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_baremetal_path }}/infra/01-env-{{ item.name }}.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_baremetal_apply
 
 - name: 'Create Baremetal hosts manifest'
   ansible.builtin.template:
     src: 'inventory.yaml.j2'
     dest: "{{ ocp_baremetal_path }}/infra/02-bmh-{{ item.name }}.yaml"
     mode: '0644'
-  notify: 'update infrastructure'
+
+- name: 'Apply BMH manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_baremetal_path }}/infra/02-bmh-{{ item.name }}.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_baremetal_apply
+
+# TODO
+# wait action for bmh / agent
 
 - name: 'Create dnsmasq snippet for Baremetal hosts'
   ansible.builtin.include_role:

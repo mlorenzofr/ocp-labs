@@ -40,10 +40,10 @@ spec:
 {% endfor %}
 {% if not item.hypershift | default(false) %}
   clusterRef:
-    name: {{ item.name }}
+    name: {{ item.cluster_name | default(item.name) }}
     namespace: {{ item.ns }}
   agentLabels:
-      cluster-name: "{{ item.name }}"
+      cluster-name: "{{ item.cluster_name | default(item.name) }}"
 {% endif %}
   pullSecretRef:
     name: pull-secret-{{ item.name }}
