@@ -13,4 +13,6 @@ galaxy_info:
         - '8'
         - '9'
   galaxy_tags: []
-dependencies: []
+dependencies:
+  - name: 'ocp_lvms'
+    when: ocp_registry_storage == 'lvms'

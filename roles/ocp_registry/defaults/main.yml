@@ -1,3 +1,5 @@
 ---
 ocp_registry_ns: 'openshift-image-registry'
+ocp_registry_storage: 'lvms'
+ocp_registry_storage_class: 'lvms-vg1'
 ocp_registry_storage_size: '20Gi'
