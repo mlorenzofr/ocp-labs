@@ -14,4 +14,4 @@
   until: __lvms_clusters is not failed
   retries: 10
   delay: 30
-  when: ocp_lvms_apply
+  when: ocp_lvms_apply and not ansible_check_mode
