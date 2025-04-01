@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mirror-registry-config
+  namespace: hive-sno
+data:
+  registries.conf: |
+    [[registry]]
+      prefix = ""
+      location = "quay.io/openshift-release-dev/ocp-release"
+      [[registry.mirror]]
+        location = "{{ __registry_default_route.resources[0].spec.host }}/openshift-release-dev/ocp-release"
+        pull-from-mirror = "digest-only"
+
+    [[registry]]
+      prefix = ""
+      location = "quay.io/edge-infrastructure"
+      [[registry.mirror]]
+        location = "{{ __registry_default_route.resources[0].spec.host }}/edge-infrastructure"
+  ca-bundle.crt: |
+    {{ __default_route_ca.resources[0].data['tls.crt'] | b64decode | regex_replace('\n', '\n    ') }}

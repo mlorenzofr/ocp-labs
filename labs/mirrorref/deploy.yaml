@@ -1,0 +1,141 @@
+---
+# Run it with:
+#   ap labs/mirrorref/deploy.yaml
+
+- name: 'Clean std-slim lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'mirrorref'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import compact playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'mirrorref'
+    lab_abi_ip: "{{ lab_node_network_base }}61"
+    lab_api_ips: ["{{ lab_node_network_base }}67"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}68"]
+    lab_node_memory: 28000
+    lab_node_disk_data: 60
+    lab_hosts:
+      - {id: '61', role: 'master'}
+      - {id: '62', role: 'master'}
+      - {id: '63', role: 'master'}
+    start_install: true
+
+- name: 'post-install tasks'
+  hosts: ['lab']
+
+  vars:
+    lab_local_path: '/ansible/labs/mirrorref'
+    lab_name: 'mirrorref'
+    lab_path: '/root/labs'
+    lab_configs: "{{ lab_path }}/{{ lab_name }}/config"
+    ocp_registry_storage_size: '25Gi'
+    extra_manifests:
+      - {src: "{{ lab_local_path }}/manifest/mirror-registry.yaml.j2", dest: 'mirror-registry.yaml'}
+
+  environment:
+    KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  tags:
+    - 'postinst'
+    - 'day2'
+
+  roles:
+    - role: 'ocp_registry'
+      tags:
+        - 'registry'
+
+  tasks:
+    - name: 'Create hive-sno namespace'
+      kubernetes.core.k8s:
+        name: 'hive-sno'
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: 'Get openshift-image-registry default route'
+      kubernetes.core.k8s_info:
+        api_version: 'route.openshift.io/v1'
+        kind: 'Route'
+        name: 'default-route'
+        namespace: 'openshift-image-registry'
+      register: __registry_default_route
+      ignore_errors: "{{ ansible_check_mode }}"
+      tags:
+        - 'manifests'
+
+    - name: 'Get default route CA'
+      kubernetes.core.k8s_info:
+        kind: 'Secret'
+        name: 'router-ca'
+        namespace: 'openshift-ingress-operator'
+      register: __default_route_ca
+      tags:
+        - 'manifests'
+
+    - name: 'Copy extra manifests'
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ lab_configs }}/{{ item.dest }}"
+        mode: '0640'
+      loop: "{{ extra_manifests }}"
+      tags:
+        - 'manifests'
+
+    - name: 'Apply manifests'
+      kubernetes.core.k8s:
+        state: 'present'
+        src: "{{ lab_configs }}/{{ item.dest }}"
+      ignore_errors: "{{ ansible_check_mode }}"
+      loop: "{{ extra_manifests }}"
+      tags:
+        - 'manifests'
+
+- name: 'Import ACM setup playbook'
+  ansible.builtin.import_playbook: ../../playbooks/setup/hive.yml
+  tags:
+    - 'hive'
+  vars:
+    lab_name: 'mirrorref'
+    ocp_assisted_service_op: 'acm'
+
+    ocp_baremetal_infras:
+      - name: 'infra1'
+        ns: 'hive-sno'
+        cluster_name: 'sno'
+        pullsecret: "{{ lab_pull_secret }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        ntp: ["{{ lab_node_network_base }}1"]
+        redfish: "{{ lab_node_network_base }}1"
+        inventory:
+          - {name: "{{ lab_name }}-bmh-1", id: '64'}
+
+    ocp_hive_clusters:
+      - name: 'sno'
+        ns: 'hive-sno'
+        image: 'img4.18.6-x86-64-appsub'
+        service_network: '172.32.0.0/16'
+        host_network: "{{ lab_node_network_base }}0/24"
+        masters: 1
+        pullsecret: "{{ lab_pull_secret_b64 }}"
+        sshkey: "{{ lab_ssh_pubkey }}"
+        domain: 'local.lab'
+        ip: "{{ lab_node_network_base }}64"
+        registry: 'mirror-registry-config'
+
+- name: 'Extract spoke cluster configuration'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml
+  vars:
+    lab_name: 'mirrorref'
+    lab_path: '/root/labs'
+    hive_cluster_name: 'sno'
+    hive_ns: 'hive-sno'
+  tags:
+    - 'hive'
+    - 'hive-config'
