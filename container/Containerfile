@@ -43,6 +43,7 @@ RUN pip install --break-system-packages \
 
 RUN ansible-galaxy collection install \
         community.general:==${ANSIBLE_COMM_GENERAL_VERSION} \
+        community.libvirt \
         ansible.posix \
         karmab.kcli \
         kubernetes.core
