@@ -6,7 +6,7 @@ If we want, it is also possible to install the operator using this role.
 ## Requirements
 This role requires the following roles:
 * **ocp_olm**, to install the hive operator.
-* **ocp_baremetal**, for managing infrastructure resources.
+* **ocp_assisted_service**, for managing infrastructure resources.
 * **dnsmasq**, to create DNS records for the Hive clusters.
 
 ## Role Variables
@@ -45,8 +45,25 @@ This role requires the following roles:
 - hosts: servers
 
   vars:
-    ocp_hive_apply: true
-    ocp_hive_path: '/home/labs/hive'
+    ocp_assisted_service_infraenvs:
+      - name: 'spoke'
+        ns: 'hive-sno'
+        ntp: ['192.168.0.1']
+        redfish: '192.168.0.1'
+        inventory:
+          - {'name': 'example-bmh-1', 'id': '64'}
+
+    ocp_hive_clusters:
+      - name: 'spoke'
+        ns: 'hive-sno'
+        image: 'img4.18.6-x86-64-appsub'
+        service_network: '172.32.0.0/16'
+        host_network: '192.168.0.0/24'
+        masters: 1
+        pullsecret: '...'
+        sshkey: '...'
+        domain: 'local.lab'
+        ip: "192.168.0.64"
 
   roles:
     - ocp_hive

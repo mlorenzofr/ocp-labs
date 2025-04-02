@@ -1,0 +1,60 @@
+---
+- name: 'Create infraenv namespace'
+  kubernetes.core.k8s:
+    name: "{{ item.ns }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+
+- name: 'Create pull-secret (plain)'
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: 'v1'
+      kind: 'Secret'
+      type: 'kubernetes.io/dockerconfigjson'
+      metadata:
+        name: "pull-secret-{{ item.name }}"
+        namespace: "{{ item.ns }}"
+      stringData:
+        .dockerconfigjson: "'{{ item.pullsecret | default(ocp_assisted_service_pullsecret) }}'"
+  when: item.pullsecret | default(ocp_assisted_service_pullsecret) | regex_search('^\{')
+
+- name: 'Create pull-secret (base64)'
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: 'v1'
+      kind: 'Secret'
+      type: 'kubernetes.io/dockerconfigjson'
+      metadata:
+        name: "pull-secret-{{ item.name }}"
+        namespace: "{{ item.ns }}"
+      data:
+        .dockerconfigjson: "{{ item.pullsecret | default(ocp_assisted_service_pullsecret) }}"
+  when: not (item.pullsecret | default(ocp_assisted_service_pullsecret) | regex_search('^\{'))
+
+- name: 'Create InfraEnv manifest'
+  ansible.builtin.template:
+    src: 'infraenv.yaml.j2'
+    dest: "{{ ocp_assisted_service_path }}/infraenv-{{ item.name }}.yaml"
+    mode: '0640'
+
+- name: 'Apply InfraEnv manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_assisted_service_path }}/infraenv-{{ item.name }}.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_assisted_service_apply
+
+- name: 'Create baremetal infrastructure'
+  ansible.builtin.include_role:
+    name: 'ocp_baremetal'
+  vars:
+    ocp_baremetal_infras:
+      - name: "{{ item.name }}"
+        ns: "{{ item.ns }}"
+        redfish: "{{ item.redfish }}"
+        inventory: "{{ item.inventory }}"
+  when: ocp_assisted_service_infra == 'baremetal'
+...

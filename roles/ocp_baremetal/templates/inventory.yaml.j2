@@ -1,11 +1,11 @@
-{% for bmh in item.inventory %}
+{% for bmh in infra.inventory %}
 {% set hostname = bmh.name | default('{}-worker-{}'.format(lab_name, loop.index)) %}
 ---
 apiVersion: v1
 kind: Secret
 metadata:
   name: {{ hostname }}-bmc-secret
-  namespace: {{ item.ns }}
+  namespace: {{ infra.ns }}
 data:
   password: YWRtaW4=
   username: YWRtaW4=
@@ -15,9 +15,9 @@ apiVersion: metal3.io/v1alpha1
 kind: BareMetalHost
 metadata:
   name: {{ hostname }}
-  namespace: {{ item.ns }}
+  namespace: {{ infra.ns }}
   labels:
-    infraenvs.agent-install.openshift.io: {{ item.name }}
+    infraenvs.agent-install.openshift.io: {{ infra.name }}
   annotations:
     inspect.metal3.io: disabled
     bmac.agent-install.openshift.io/hostname: {{ hostname }}
@@ -32,6 +32,6 @@ spec:
     deviceName: {{ bmh.device | default('/dev/vda') }}
   bmc:
     disableCertificateVerification: True
-    address: redfish-virtualmedia://{{ item.redfish }}:9000/redfish/v1/Systems/local/{{ hostname }}
+    address: redfish-virtualmedia://{{ infra.redfish }}:9000/redfish/v1/Systems/local/{{ hostname }}
     credentialsName: {{ hostname }}-bmc-secret
 {% endfor %}

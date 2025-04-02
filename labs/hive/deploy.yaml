@@ -1,15 +1,34 @@
 ---
-- name: 'Import compact playbook'
-  ansible.builtin.import_playbook: ../../playbooks/base/compact.yml
+# Run this with:
+#   ap labs/hive/deploy.yaml
+
+- name: 'Clean hive lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'hive'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
   tags:
     - 'ocp'
   vars:
     lab_name: 'hive'
+    lab_mac_base: 'be:be:ca:fe:02:'
+    lab_abi_ip: "{{ lab_node_network_base }}61"
+    lab_api_ips: ["{{ lab_node_network_base }}160"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}161"]
     lab_node_memory: 28000
     lab_node_disk_data: 60
+    lab_hosts:
+      - {id: '61', role: 'master'}
+      - {id: '62', role: 'master'}
+      - {id: '63', role: 'master'}
     start_install: true
 
-- name: 'Import HCP setup playbook'
+- name: 'Import hive setup playbook'
   ansible.builtin.import_playbook: ../../playbooks/setup/hive.yml
   tags:
     - 'postinst'
@@ -17,27 +36,25 @@
     lab_name: 'hive'
     lab_mac_base: 'be:be:ca:fe:02:'
 
-    ocp_baremetal_infras:
+    ocp_assisted_service_infraenvs:
       - name: 'spoke'
         ns: 'hive-sno'
-        ntp: ['192.168.125.1']
-        pullsecret: "{{ lab_pull_secret }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
-        redfish: '192.168.125.1'
+        ntp: ["{{ lab_node_network_base }}1"]
+        redfish: "{{ lab_node_network_base }}1"
         inventory:
-          - {'name': "{{ lab_name }}-bmh-1", 'id': '25'}
+          - {'name': "{{ lab_name }}-bmh-1", 'id': '64'}
 
     ocp_hive_clusters:
       - name: 'spoke'
         ns: 'hive-sno'
-        image: 'img4.14.8-x86-64-appsub'
+        image: 'img4.18.6-x86-64-appsub'
         service_network: '172.32.0.0/16'
-        host_network: '192.168.125.0/24'
+        host_network: "{{ lab_node_network_base }}0/24"
         masters: 1
         pullsecret: "{{ lab_pull_secret_b64 }}"
         sshkey: "{{ lab_ssh_pubkey }}"
         domain: 'local.lab'
-        ip: '192.168.125.25'
+        ip: "{{ lab_node_network_base }}64"
 
 - name: 'Extract spoke cluster configuration'
   ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml

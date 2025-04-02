@@ -1,0 +1,32 @@
+---
+- name: 'Create assisted-service-ui manifest'
+  ansible.builtin.template:
+    src: 'assisted-service-ui.yaml.j2'
+    dest: "{{ ocp_assisted_service_path }}/assisted-service-ui.yaml"
+    mode: '0644'
+
+- name: 'Apply assisted-service-ui manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_assisted_service_path }}/assisted-service-ui.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_assisted_service_apply
+
+- name: 'Expose assisted-service-ui'
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: 'route.openshift.io/v1'
+      kind: 'Route'
+      metadata:
+        name: 'assisted-service-ui'
+        namespace: "{{ ocp_assisted_service_ns }}"
+      spec:
+        port:
+          targetPort: 8080
+        tls:
+          termination: edge
+        to:
+          kind: Service
+          name: assisted-service-ui
+  when: ocp_assisted_service_apply
+...

@@ -2,7 +2,7 @@
 
 # {{ lab_name }} baremetal hosts
 
-{% for host in item.inventory %}
+{% for host in infra.inventory %}
 {% set macaddr = host.mac | default('{}{}'.format(lab_mac_base, host.id)) %}
 {% set ipaddr = host.ip | default('{}{}'.format(lab_node_network_base, host.id)) %}
 {% set hostname = host.name | default('{}-worker-{}'.format(lab_name, loop.index)) %}

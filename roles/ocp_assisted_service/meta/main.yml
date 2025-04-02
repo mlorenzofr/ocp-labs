@@ -13,9 +13,9 @@ galaxy_info:
         - '8'
   galaxy_tags: []
 dependencies:
+  - name: 'ocp_lvms'
+    when: ocp_assisted_service_lvms
   - name: 'ocp_mce'
     when: ocp_assisted_service_op == 'mce'
   - name: 'ocp_acm'
     when: ocp_assisted_service_op == 'acm'
-  - name: 'ocp_lvms'
-    when: ocp_assisted_service_lvms

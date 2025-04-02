@@ -12,5 +12,4 @@ galaxy_info:
       versions:
         - '8'
   galaxy_tags: []
-dependencies:
-  - name: 'ocp_assisted_service'
+dependencies: []

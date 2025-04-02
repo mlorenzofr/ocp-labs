@@ -1,8 +1,16 @@
 ---
-# Run it with:
+# Run this with:
 #   ap labs/mgmt-17923/deploy.yaml
 
-- name: 'Import compact playbook'
+- name: 'Clean mgmt-17923 lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'skrenger'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import ABI playbook'
   ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
   vars:
     lab_name: 'skrenger'
@@ -24,12 +32,10 @@
   vars:
     lab_name: 'skrenger'
     lab_install: false
-    ocp_baremetal_infras:
+    ocp_assisted_service_infraenvs:
       - name: 'infra1'
         ns: 'hardware-inventory'
         hypershift: true
-        pullsecret: "{{ lab_pull_secret }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
         ntp: ["{{ lab_node_network }}.1"]
         redfish: "{{ lab_node_network }}.1"
         inventory:

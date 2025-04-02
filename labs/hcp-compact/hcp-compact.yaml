@@ -9,6 +9,14 @@
 # Run it with:
 #   ap labs/hcp-compact/hcp-compact.yaml
 
+- name: 'Clean hcp lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'hcp'
+  tags:
+    - 'clean'
+    - 'never'
+
 - name: 'Import compact playbook'
   ansible.builtin.import_playbook: ../../playbooks/base/compact.yml
   vars:
@@ -53,12 +61,10 @@
     lab_mac_base: 'be:be:ca:fe:02:'
     lab_node_network_base: '192.168.125'
     ocp_metallb_pool_ips: "{{ lab_node_network_base }}.40-{{ lab_node_network_base }}.45"
-    ocp_baremetal_infras:
+    ocp_assisted_service_infraenvs:
       - name: 'hcp1'
         ns: 'hardware-inventory'
         hypershift: true
-        pullsecret: "{{ lab_pull_secret }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
         ntp: ["{{ lab_node_network_base }}.1"]
         redfish: "{{ lab_node_network_base }}.1"
         inventory:
@@ -66,8 +72,6 @@
       - name: 'hcp2'
         ns: 'hardware-inventory'
         hypershift: true
-        pullsecret: "{{ lab_pull_secret }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
         ntp: ["{{ lab_node_network_base }}.1"]
         redfish: "{{ lab_node_network_base }}.1"
         inventory:

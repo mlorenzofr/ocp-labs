@@ -1,4 +1,15 @@
 ---
+# Run this with:
+#   ap labs/hive-okd/deploy.yaml
+
+- name: 'Clean hive-okd lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'okd'
+  tags:
+    - 'clean'
+    - 'never'
+
 - name: 'Import compact playbook'
   ansible.builtin.import_playbook: ../../playbooks/base/compact.yml
   tags:
@@ -28,12 +39,10 @@
         arch: 'x86_64'
         version: '415.92.202402130021-0'
 
-    ocp_baremetal_infras:
+    ocp_assisted_service_infraenvs:
       - name: 'sno'
         ns: 'hive-sno'
         ntp: ['192.168.125.1']
-        pullsecret: "{{ lab_pull_secret }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
         redfish: '192.168.125.1'
         inventory:
           - {'name': "{{ lab_name }}-bmh-1", 'id': '25'}

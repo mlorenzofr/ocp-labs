@@ -2,7 +2,7 @@
 # Run it with:
 #   ap labs/mirrorref/deploy.yaml
 
-- name: 'Clean std-slim lab'
+- name: 'Clean mirrorref lab'
   ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
   vars:
     lab_name: 'mirrorref'
@@ -10,7 +10,7 @@
     - 'clean'
     - 'never'
 
-- name: 'Import compact playbook'
+- name: 'Import ABI playbook'
   ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
   tags:
     - 'ocp'
@@ -105,12 +105,10 @@
     lab_name: 'mirrorref'
     ocp_assisted_service_op: 'acm'
 
-    ocp_baremetal_infras:
+    ocp_assisted_service_infraenvs:
       - name: 'infra1'
         ns: 'hive-sno'
         cluster_name: 'sno'
-        pullsecret: "{{ lab_pull_secret }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
         ntp: ["{{ lab_node_network_base }}1"]
         redfish: "{{ lab_node_network_base }}1"
         inventory:

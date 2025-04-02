@@ -1,12 +1,8 @@
 # ocp_baremetal
-This role installs and configures baremetal operator resources (`InfraEnv` and `BaremetalHost`) on an Openshift cluster.  
+This role installs and configures a baremetal platform on an Openshift cluster.  
 
 ## Requirements
-This role requires (yet included by dependencies):
-* **ocp_assisted_service**
-* **ocp_mce** or **ocp_acm**
-* **ocp_lvms**
-And also, to create DNS records for `BaremetalHosts`, the **dnsmasq** role.
+This role requires the **dnsmasq** role to create DNS records for `BaremetalHosts`.
 
 ## Role Variables
 * `ocp_baremetal_apply`. _Bool_. Set wether the role should apply manifests or simply create them.
@@ -20,10 +16,6 @@ And also, to create DNS records for `BaremetalHosts`, the **dnsmasq** role.
 ### Variables for `ocp_baremetal_infras` elements
 * `name`. _String_. `InfraEnv` name.
 * `ns`. _String_. Namespace.
-* `hypershift`. _Bool_. Enable/Disable HCP configuration fields.
-* `ntp`. _List_. List of NTP servers.
-* `pullsecret`. _String_. Personal pull secret.
-* `sshkey`. _String_. Personal SSH public key.
 * `redfish`. _String_. Redfish IP address.
 * `inventory`. _List_. List of machines and their settings.
 
@@ -32,20 +24,14 @@ And also, to create DNS records for `BaremetalHosts`, the **dnsmasq** role.
 - hosts: servers
 
   vars:
-    ocp_baremetal_path: '/home/labs/standard'
-
     ocp_baremetal_infras:
       - name: 'hosted'
         ns: 'hardware-inventory'
-        hypershift: true
-        ntp: ['192.168.125.1']
-        pullsecret: "{{ lab_pull_secret }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
         redfish: '192.168.125.1'
         inventory:
-          - {'name': "{{ lab_name }}-bmh-1", 'id': '25'}
-          - {'name': "{{ lab_name }}-bmh-2", 'id': '26'}
-          - {'name': "{{ lab_name }}-bmh-3", 'id': '27'}
+          - {'name': "example-bmh-1", 'id': '25'}
+          - {'name': "example-bmh-2", 'id': '26'}
+          - {'name': "example-bmh-3", 'id': '27'}
 
   roles:
     - ocp_baremetal

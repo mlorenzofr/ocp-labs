@@ -3,9 +3,17 @@
 #  cluster inside (HostedCluster)
 #
 # Run it with:
-#   ap labs/okd/okd.yaml
+#   ap labs/hcp-okd/deploy.yaml
 
-- name: 'Import compact playbook'
+- name: 'Clean okd lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'okd'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import multinode playbook'
   ansible.builtin.import_playbook: ../../playbooks/base/multinode.yml
   tags:
     - 'ocp'
@@ -29,13 +37,11 @@
         version: '39.20240322.3.1'
         url: 'https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/39.20240322.3.1/x86_64/fedora-coreos-39.20240322.3.1-live.x86_64.iso'
         rootfs: ''
-    ocp_baremetal_infras:
+    ocp_assisted_service_infraenvs:
       - name: 'hosted'
         ns: 'hardware-inventory'
         hypershift: true
         ntp: ['192.168.125.1']
-        pullsecret: "{{ lab_pull_secret }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
         redfish: '192.168.125.1'
         inventory:
           - {'name': "{{ lab_name }}-bmh-1", 'id': '25'}

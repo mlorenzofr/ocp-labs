@@ -49,12 +49,10 @@
         arch: 'x86_64'
         version: '417.94.202408270355-0'
 
-    ocp_baremetal_infras:
+    ocp_assisted_service_infraenvs:
       - name: 'hcp1'
         ns: 'hardware-inventory'
         hypershift: true
-        pullsecret: "{{ lab_pull_secret }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
         ntp: ["{{ lab_node_network_base }}.1"]
         redfish: "{{ lab_node_network_base }}.1"
         inventory:

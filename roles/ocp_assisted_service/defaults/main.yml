@@ -1,13 +1,17 @@
 ---
-ocp_assisted_service_install: "{{ lab_install | default(false) }}"
+ocp_assisted_service_apply: "{{ ocp_apply | default(true) }}"
 ocp_assisted_service_ca_bundle: ''
 ocp_assisted_service_config:
   ALLOW_CONVERGED_FLOW: '"false"'  # https://github.com/openshift/ironic-agent-image
+ocp_assisted_service_infra: 'baremetal'
+ocp_assisted_service_infraenvs: []
 ocp_assisted_service_lvms: true
 ocp_assisted_service_ns: 'multicluster-engine'
 ocp_assisted_service_op: 'mce'
-ocp_assisted_service_path: "{{ lab_configs }}"
+ocp_assisted_service_path: "{{ lab_configs | default('/tmp') }}"
+ocp_assisted_service_pullsecret: "{{ ocp_pullsecret_b64 }}"
 ocp_assisted_service_sc_name: 'lvms-vg1'
+ocp_assisted_service_ssh_key: "{{ ocp_ssh_key }}"
 ocp_assisted_service_storage_db_size: 10
 ocp_assisted_service_storage_fs_size: 20
 ocp_assisted_service_storage_image_size: 10

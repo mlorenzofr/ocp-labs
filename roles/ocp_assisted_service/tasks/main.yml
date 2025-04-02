@@ -3,24 +3,51 @@
   ansible.builtin.template:
     src: 'config.yaml.j2'
     dest: "{{ ocp_assisted_service_path }}/agent-service-config.yaml"
-    mode: '0644'
+    mode: '0640'
   ignore_errors: "{{ ansible_check_mode }}"
-  notify: 'apply AgentServiceConfig'
 
-- name: 'Check agent resource'
-  ansible.builtin.command:
-    cmd: '/usr/local/bin/oc get agentserviceconfigs agent'
-  register: __agentconfig_status
-  check_mode: false
-  changed_when: __agentconfig_status.rc != 0
-  failed_when: false
-  when: ocp_assisted_service_install
-  notify: 'apply AgentServiceConfig'
+- name: 'Waiting for agentserviceconfigs CRD'
+  kubernetes.core.k8s_info:
+    api_version: 'apiextensions.k8s.io/v1'
+    kind: 'CustomResourceDefinition'
+    name: 'agentserviceconfigs.agent-install.openshift.io'
+  register: __crd_agentserviceconfigs
+  until:
+    - __crd_agentserviceconfigs.resources | length > 0
+  retries: 25
+  delay: 30
+  when: ocp_assisted_service_apply and not ansible_check_mode
 
-- name: 'Create assisted-service-ui manifest'
-  ansible.builtin.template:
-    src: 'assisted-service-ui.yaml.j2'
-    dest: "{{ ocp_assisted_service_path }}/assisted-service-ui.yaml"
-    mode: '0644'
+- name: 'Waiting for assisted-service pods'
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        namespace: "{{ ocp_assisted_service_ns }}"
+    label_selectors:
+      - 'app=assisted-service'
+    wait: yes
+    wait_condition:
+      type: Ready
+      status: "True"
+    wait_timeout: 300
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: not ansible_check_mode
+
+- name: 'Apply agent-service-config manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_assisted_service_path }}/agent-service-config.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_assisted_service_apply
+
+- name: 'Create infraenvs'
+  ansible.builtin.include_tasks:
+    file: 'infra.yaml'
+  loop: "{{ ocp_assisted_service_infraenvs }}"
+
+- name: 'Install assisted-service UI'
+  ansible.builtin.include_tasks:
+    file: 'ui.yaml'
   when: ocp_assisted_service_ui
-  notify: 'install assisted-service-ui'

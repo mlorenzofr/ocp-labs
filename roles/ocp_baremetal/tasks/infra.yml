@@ -1,27 +1,14 @@
 ---
-- name: 'Create InfraEnv manifest'
-  ansible.builtin.template:
-    src: 'infraenv.yaml.j2'
-    dest: "{{ ocp_baremetal_path }}/infra/01-env-{{ item.name }}.yaml"
-    mode: '0644'
-
-- name: 'Apply InfraEnv manifest'
-  kubernetes.core.k8s:
-    state: 'present'
-    src: "{{ ocp_baremetal_path }}/infra/01-env-{{ item.name }}.yaml"
-  ignore_errors: "{{ ansible_check_mode }}"
-  when: ocp_baremetal_apply
-
 - name: 'Create Baremetal hosts manifest'
   ansible.builtin.template:
     src: 'inventory.yaml.j2'
-    dest: "{{ ocp_baremetal_path }}/infra/02-bmh-{{ item.name }}.yaml"
+    dest: "{{ ocp_baremetal_path }}/bmh-{{ infra.name }}.yaml"
     mode: '0644'
 
 - name: 'Apply BMH manifest'
   kubernetes.core.k8s:
     state: 'present'
-    src: "{{ ocp_baremetal_path }}/infra/02-bmh-{{ item.name }}.yaml"
+    src: "{{ ocp_baremetal_path }}/bmh-{{ infra.name }}.yaml"
   ignore_errors: "{{ ansible_check_mode }}"
   when: ocp_baremetal_apply
 
@@ -34,7 +21,7 @@
     tasks_from: 'extra_conf.yaml'
   vars:
     dnsmasq_conf_snippets:
-      - {src: 'dnsmasq-bmh.j2', dest: "{{ lab_name }}-{{ item.name }}-bmh.conf"}
+      - {src: 'dnsmasq-bmh.j2', dest: "{{ lab_name }}-{{ infra.name }}-bmh.conf"}
   tags: ['dnsmasq']
 
 - name: 'Create virtual machines'
@@ -52,7 +39,7 @@
         - {"size": "{{ host.disk_data | default(ocp_baremetal_node_disk_data) }}", "pool": "{{ lab_node_disk_pool }}"}
       nets:
         - {"name": "{{ lab_network_name }}", "mac": "{{ host.mac | default('{}{}'.format(lab_mac_base, host.id)) }}"}
-  loop: "{{ item.inventory }}"
+  loop: "{{ infra.inventory }}"
   loop_control:
     loop_var: host
     extended: true
