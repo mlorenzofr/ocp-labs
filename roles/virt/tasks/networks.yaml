@@ -1,0 +1,8 @@
+---
+- name: 'Create libvirt networks'
+  community.libvirt.virt_net:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default('present') }}"
+    xml: "{{ lookup('template', 'templates/networks/{}.xml.j2'.format(item.template)) }}"
+  loop: "{{ virt_networks }}"
+...

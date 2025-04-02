@@ -1,0 +1,23 @@
+---
+- name: 'Create virtual machines'
+  karmab.kcli.kcli_vm:
+    name: "{{ item.name }}"
+    state: 'present'
+    parameters:
+      start: "{{ item.start | default(false) }}"
+      uefi_legacy: "{{ item.bios | default(true) }}"
+      plan: "{{ virt_plan }}"
+      memory: "{{ item.memory | default(virt_default_memory) }}"
+      numcpus: "{{ item.cpus | default(virt_default_cpus) }}"
+      disks: "{{ virt_disks | default(virt_default_disks) }}"
+      nets: "{{ virt_networks | default(virt_default_networks) }}"
+  loop: "{{ virt_hosts }}"
+
+- name: 'Create dnsmasq snippet'
+  ansible.builtin.include_role:
+    name: 'dnsmasq'
+    tasks_from: 'extra_conf.yaml'
+  vars:
+    dnsmasq_conf_snippets:
+      - {src: 'dnsmasq-lab.j2', dest: "{{ virt_plan }}.conf"}
+  tags: ['dnsmasq']

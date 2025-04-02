@@ -1,0 +1,21 @@
+{{ ansible_managed | comment }}
+
+# Host entries for {{ virt_plan }}
+host-record=api-int.{{ ocp_name }}.{{ ocp_domain }},{{ ocp_api_ip }}
+host-record=api.{{ ocp_name }}.{{ ocp_domain }},{{ ocp_api_ip }}
+address=/apps.{{ ocp_name }}.{{ ocp_domain }}/{{ ocp_ingress_ip }}
+
+{% for host in virt_hosts %}
+{% set macaddr = host.mac | default('{}{}'.format(virt_mac_base, host.id)) %}
+{% set ipauto = namespace(addr='') %}
+{% if ':' in ocp_network_base %}
+{% set ipauto.addr = '[::{}]'.format(host.id) %}
+{% else %}
+{% set ipauto.addr = '{}{}'.format(ocp_network_base, host.id) %}
+{% endif %}
+{% set ipaddr = host.ip | default(ipauto.addr) %}
+dhcp-host={{ macaddr }},{{ host.name }},{{ ipaddr }}
+{% endfor %}
+{% if not ocp_abi | default(true) and ocp_bootstrap_ip != '' %}
+dhcp-host={{ '{}:ff'.format(virt_mac_base) }},{{ ocp_name }}-bootstrap,{{ ocp_bootstrap_ip }}
+{% endif %}
