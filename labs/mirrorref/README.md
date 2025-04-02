@@ -130,4 +130,5 @@ storage                                    4.18.6    True        False         F
 ```
 
 ## Links
+* [Using the Per-Cluster Mirror Registry Feature in Assisted Service](https://github.com/openshift/assisted-service/blob/master/docs/user-guide/mirror_registry_guide.md)
 * [Saas + on premise registry](https://github.com/openshift/assisted-service/blob/master/docs/user-guide/cloud-with-mirror.md)
