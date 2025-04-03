@@ -60,6 +60,6 @@
         tasks_from: 'import.yaml'
       vars:
         cluster_name: "{{ cluster_name }}"
-        import_dir: "{{ lab_path }}/{{ lab_name }}/import"
+        acm_cwd: "{{ lab_path }}/{{ lab_name }}/import"
         kubeconfig: "{{ kubeconfig_data }}"
 ...

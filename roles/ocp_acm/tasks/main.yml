@@ -1,14 +1,58 @@
 ---
-- name: 'Create ACM installation manifest'
-  ansible.builtin.template:
-    src: 'acm-init.yaml.j2'
-    dest: "{{ ocp_acm_path }}/acm-subscription.yaml"
-    mode: '0644'
-  notify: 'acm install'
+- name: 'Create ACM subscription'
+  ansible.builtin.include_role:
+    name: 'ocp_olm'
+    tasks_from: 'subscription.yaml'
+  loop:
+    - operator_name: 'advanced-cluster-management'
+      operator_group: 'acm-operatorgroup'
+      subscription_name: 'acm'
+      ns: "{{ ocp_acm_ns }}"
+      channel: "{{ ocp_acm_channel }}"
+      source: "{{ ocp_acm_source }}"
+  tags: ['olm']
 
-- name: 'Create ACM MultiClusterHub manifests'
+- name: 'Create pull-secret for ACM (base64)'
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: 'v1'
+      kind: 'Secret'
+      type: 'kubernetes.io/dockerconfigjson'
+      metadata:
+        name: 'acm-pull-secret'
+        namespace: "{{ ocp_acm_ns }}"
+      data:
+        .dockerconfigjson: "{{ ocp_acm_pullsecret }}"
+
+- name: 'Create multiclusterhub manifest'
   ansible.builtin.template:
     src: 'multiclusterhub.yaml.j2'
-    dest: "{{ ocp_acm_path }}/acm-multiclusterhub.yaml"
-    mode: '0644'
-  notify: 'acm install'
+    dest: "{{ ocp_acm_path }}/acm.yaml"
+    mode: '0640'
+
+- name: 'Apply multiclusterhub manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_acm_path }}/acm.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  register: __acm
+  until: __acm is not failed
+  retries: 10
+  delay: 30
+  when: ocp_acm_apply
+
+- name: 'Waiting until multiclusterhub is available'
+  kubernetes.core.k8s_info:
+    api_version: 'operator.open-cluster-management.io/v1'
+    kind: 'MultiClusterHub'
+    name: 'multiclusterhub'
+    namespace: "{{ ocp_acm_ns }}"
+  register: __acm_status
+  until:
+    - __acm_status.resources | length > 0
+    - __acm_status.resources[0].status.phase is defined
+    - __acm_status.resources[0].status.phase == 'Running'
+  retries: 20
+  delay: 30
+  when: ocp_acm_apply

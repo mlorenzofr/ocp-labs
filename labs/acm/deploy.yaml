@@ -17,8 +17,8 @@
   vars:
     lab_name: 'acm'
     lab_abi_ip: "{{ lab_node_network_base }}61"
-    lab_api_ips: ["{{ lab_node_network_base }}67"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}68"]
+    lab_api_ips: ["{{ lab_node_network_base }}100"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}101"]
     lab_node_memory: 28000
     lab_node_disk_data: 60
     lab_hosts:
@@ -28,15 +28,17 @@
     start_install: true
 
 - name: 'Import ACM setup playbook'
-  ansible.builtin.import_playbook: ../../playbooks/setup/hive.yml
+  ansible.builtin.import_playbook: ../../playbooks/setup/acm.yaml
+  tags:
+    - 'postinst'
   vars:
     lab_name: 'acm'
+
     ocp_assisted_service_op: 'acm'
     ocp_assisted_service_infraenvs:
-      - name: 'infra1'
-        ns: 'hardware-inventory'
-        ntp: ["{{ lab_node_network }}.1"]
-        redfish: "{{ lab_node_network }}.1"
+      - name: 'spoke'
+        ns: 'hive-sno'
+        ntp: ["{{ lab_node_network_base }}1"]
+        redfish: "{{ lab_node_network_base }}1"
         inventory:
-          - {id: '64'}
-          - {id: '65'}
+          - {name: "{{ lab_name }}-bmh-1", id: '64'}
