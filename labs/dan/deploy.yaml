@@ -86,22 +86,17 @@
         inventory:
           - {'id': '25'}
 
+    ocp_hcp_kubeapi_ips: ["{{ lab_node_network_base }}40-{{ lab_node_network_base }}45"]
     ocp_hcp_clusters:
       - name: 'hcp1'
         ns: 'hcp1'
         infra: 'hosted'
         agent_ns: 'hardware-inventory'
-        pullsecret: "{{ lab_pull_secret_b64 }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
         version: '4.17.0'
         service_network: '172.32.0.0/16'
         domain: 'local.lab'
         lb: "{{ lab_node_network_base }}50"
         replicas: 1
-
-
-    ocp_metallb_pool_ips: "{{ lab_node_network_base }}40-{{ lab_node_network_base }}45"
-    ocp_metallb_pool_name: "{{ lab_network_name }}"
   tags:
     - 'postinst'
     - 'hcp'

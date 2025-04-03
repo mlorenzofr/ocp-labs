@@ -1,5 +1,8 @@
 ---
+ocp_hcp_apply: "{{ ocp_apply | default(true) }}"
 ocp_hcp_clusters: []
-ocp_hcp_install: "{{ lab_install | default(false) }}"
+ocp_hcp_kubeapi_name: 'hypershift'
 ocp_hcp_lab_name: "{{ lab_name }}"
-ocp_hcp_path: "{{ lab_configs }}"
+ocp_hcp_path: "{{ lab_configs | default('/tmp') }}"
+ocp_hcp_pullsecret: "{{ ocp_pullsecret_b64 }}"
+ocp_hcp_ssh_key: "{{ ocp_ssh_key }}"

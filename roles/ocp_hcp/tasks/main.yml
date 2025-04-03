@@ -1,10 +1,4 @@
 ---
-- name: 'Create cluster configurations directory'
-  ansible.builtin.file:
-    path: "{{ ocp_hcp_path }}/hcp"
-    mode: '0750'
-    state: 'directory'
-
 - name: 'Prepare hosted clusters'
   ansible.builtin.include_tasks:
     file: 'cluster.yml'

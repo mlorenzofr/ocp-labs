@@ -13,5 +13,10 @@ galaxy_info:
         - '8'
   galaxy_tags: []
 dependencies:
-  - name: 'ocp_baremetal'
+  - name: 'ocp_assisted_service'
+    tags: ['assisted']
   - name: 'ocp_metallb'
+    tags: ['metallb']
+    vars:
+      ocp_metallb_pool_ips: "{{ ocp_hcp_kubeapi_ips }}"
+      ocp_metallb_pool_name: "{{ ocp_hcp_kubeapi_name }}"

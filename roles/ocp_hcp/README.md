@@ -3,15 +3,19 @@ This role installs (optional) and configures **Hosted Clusters** (AKA **Hypershi
 
 ## Requirements
 This role requires the following roles:
-* **ocp_baremetal**, for managing infrastructure resources.
+* **ocp_assisted_service**, for managing infrastructure resources.
 * **ocp_metallb**, to enable communication between clusters.
 * **dnsmasq**, to create DNS records for the Hosted Clusters.
 
 ## Role Variables
+* `ocp_hcp_apply`. _Bool_. Set wether the role should apply manifests or simply create them.
 * `ocp_hcp_clusters`. _List_. List of `Hosted Clusters` and their configuration.
-* `ocp_hcp_install`. _Bool_. Set wether the role should apply manifests or simply create them.
+* `ocp_hcp_kubeapi_ips`. _List_. List of IP addresses available for the kubeapi `LoadBalancer`.
+* `ocp_hcp_kubeapi_name`. _String_. Name for the `IPAddressPool` (_metallb_) used by the kubeapi `LoadBalancers`.
 * `ocp_hcp_lab_name`. _String_. Lab name.
 * `ocp_hcp_path`. _String_. Path where the manifest files are saved.
+* `ocp_hcp_pullsecret`. _String_. Default value for _pull-secret_ on `hostedclusters`.
+* `ocp_hcp_ssh_key`. _String_. Default value for _sshAuthorizedKey_ on `hostedclusters`.
 
 ### Variables for `ocp_hcp_clusters` elements
 * `name`. _String_. Cluster name.
@@ -26,7 +30,7 @@ This role requires the following roles:
 * `service_network`. _String_. Hosted Cluster service network CIDR.
 * `network_type`. _String_. Network type used (`OVNKubernetes|Calico|Other`).
 * `agent_ns`. _String_. Namespace where the agent is installed.
-* `sshkey`. _String_. Personal SSH public key.
+* `ssh_key`. _String_. Personal SSH public key.
 * `domain`. _String_. Hosted cluster base domain.
 * `replicas`. _Number_. Number of node replicas.
 * `lb`. _String_. Hub cluster IP address. Required for management.
@@ -39,13 +43,11 @@ This role requires the following roles:
     ocp_hcp_install: true
     ocp_hcp_path: '/home/labs/hcp'
 
-    ocp_metallb_pool_ips: "192.168.0.40-192.168.0.45"
-    ocp_baremetal_infras:
+    ocp_hcp_kubeapi_ips: ['192.168.0.40-192.168.0.45']
+    ocp_assisted_service_infraenvs:
       - name: 'inventory'
         ns: 'inventory'
         hypershift: true
-        pullsecret: '<pull-secret>'
-        sshkey: '<ssh-public-key>'
         ntp: ['192.168.0.1']
         redfish: '192.168.0.1'
         inventory:
@@ -57,8 +59,6 @@ This role requires the following roles:
         ctl_availability: 'HighlyAvailable'
         infra: 'inventory'
         agent_ns: 'inventory'
-        pullsecret: '<pull-secret-b64>'
-        sshkey: '<ssh-public-key>'
         version: '4.14.8'
         service_network: '172.32.0.0/16'
         domain: 'local.lab'

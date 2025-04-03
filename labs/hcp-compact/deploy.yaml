@@ -7,9 +7,9 @@
 #   clusters. Each HostedCluster uses about 4 GiB of memory
 #
 # Run it with:
-#   ap labs/hcp-compact/hcp-compact.yaml
+#   ap labs/hcp-compact/deploy.yaml
 
-- name: 'Clean hcp lab'
+- name: 'Clean hcp-compact lab'
   ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
   vars:
     lab_name: 'hcp'
@@ -60,7 +60,7 @@
     lab_name: 'hcp'
     lab_mac_base: 'be:be:ca:fe:02:'
     lab_node_network_base: '192.168.125'
-    ocp_metallb_pool_ips: "{{ lab_node_network_base }}.40-{{ lab_node_network_base }}.45"
+    ocp_hcp_kubeapi_ips: ["{{ lab_node_network_base }}.40-{{ lab_node_network_base }}.45"]
     ocp_assisted_service_infraenvs:
       - name: 'hcp1'
         ns: 'hardware-inventory'
@@ -82,8 +82,6 @@
         ctl_availability: 'HighlyAvailable'  # Cluster controllers (etcd, kube-apiserver, ...)
         infra: 'hcp1'
         agent_ns: 'hardware-inventory'
-        pullsecret: "{{ lab_pull_secret_b64 }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
         version: '4.14.8'
         service_network: '172.32.0.0/16'
         domain: 'local.lab'
@@ -94,8 +92,6 @@
         ctl_availability: 'HighlyAvailable'  # Cluster controllers (etcd, kube-apiserver, ...)
         infra: 'hcp2'
         agent_ns: 'hardware-inventory'
-        pullsecret: "{{ lab_pull_secret_b64 }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
         version: '4.14.13'
         service_network: '172.33.0.0/16'
         domain: 'local.lab'
@@ -131,7 +127,7 @@
     lab_path: '/root/labs'
     lab_node_network_base: '192.168.125'
     spoke_name: 'hcp1'
-    spoke_lb_ips: "{{ lab_node_network_base }}.50-{{ lab_node_network_base }}.50"
+    spoke_lb_ips: ["{{ lab_node_network_base }}.50/32"]
   tags:
     - 'postinst'
     - 'hcp1'
@@ -143,7 +139,7 @@
     lab_path: '/root/labs'
     lab_node_network_base: '192.168.125'
     spoke_name: 'hcp2'
-    spoke_lb_ips: "{{ lab_node_network_base }}.60-{{ lab_node_network_base }}.60"
+    spoke_lb_ips: ["{{ lab_node_network_base }}.60/32"]
   tags:
     - 'postinst'
     - 'hcp2'

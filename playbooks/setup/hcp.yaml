@@ -10,10 +10,9 @@
     lab_configs: "/root/labs/{{ lab_name }}/config"
     lab_network_name: 'lab-network'
     lab_install: true
+    lab_mac_base: 'be:be:ca:fe:02:'
     lab_node_network_base: '192.168.125.'
-
-    ocp_metallb_pool_ips: "{{ lab_node_network_base }}60-{{ lab_node_network_base }}65"
-    ocp_metallb_pool_name: "{{ lab_network_name }}"
+    lab_node_disk_pool: 'ocp'
 
     ocp_assisted_service_infraenvs: []
     ocp_hcp_clusters: []

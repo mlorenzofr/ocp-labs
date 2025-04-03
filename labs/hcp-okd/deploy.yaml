@@ -51,8 +51,6 @@
         ns: 'spoke'
         infra: 'hosted'
         agent_ns: 'hardware-inventory'
-        pullsecret: "{{ lab_pull_secret_b64 }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
         service_network: '172.32.0.0/16'
         domain: 'local.lab'
         lb: '192.168.125.50'
@@ -76,7 +74,7 @@
     lab_name: 'okd'
     lab_path: '/root/labs'
     spoke_name: 'spoke'
-    spoke_lb_ips: '192.168.125.50-192.168.125.50'
+    spoke_lb_ips: ['192.168.125.50/32']
   tags:
     - 'postinst'
     - 'okd'

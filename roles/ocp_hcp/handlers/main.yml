@@ -1,8 +1,1 @@
 ---
-- name: 'Apply hosted clusters changes'
-  ansible.builtin.command:
-    cmd: >
-      /usr/local/bin/oc apply -f {{ ocp_hcp_path }}/hcp
-  when: ocp_hcp_install
-  listen:
-    - 'hcp update'

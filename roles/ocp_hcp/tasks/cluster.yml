@@ -8,16 +8,47 @@
       - {src: 'dnsmasq-hcp.j2', dest: "{{ ocp_hcp_lab_name }}-{{ item.name }}-cluster.conf"}
   tags: ['dnsmasq']
 
-- name: 'Prepare hosted cluster environment'
-  ansible.builtin.template:
-    src: 'clusterenv.yaml.j2'
-    dest: "{{ ocp_hcp_path }}/hcp/01-{{ item.name }}-env.yaml"
-    mode: '0644'
-  notify: 'hcp update'
+- name: 'Create HostedCluster namespace'
+  kubernetes.core.k8s:
+    name: "{{ item.ns }}"
+    api_version: v1
+    kind: Namespace
+    state: present
 
-- name: 'Prepare hosted cluster'
+- name: 'Create HostedCluster pull-secret'
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: 'v1'
+      kind: 'Secret'
+      type: 'kubernetes.io/dockerconfigjson'
+      metadata:
+        name: "pullsecret-cluster-{{ item.name }}"
+        namespace: "{{ item.ns }}"
+      data:
+        .dockerconfigjson: "{{ item.pullsecret | default(ocp_hcp_pullsecret) }}"
+
+- name: 'Create HostedCluster ssh AuthorizedKey'
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: 'v1'
+      kind: 'Secret'
+      metadata:
+        name: "sshkey-cluster-{{ item.name }}"
+        namespace: "{{ item.ns }}"
+      stringData:
+        id_rsa.pub: "'{{ item.ssh_key | default(ocp_hcp_ssh_key) }}'"
+
+- name: 'Prepare HostedCluster manifest'
   ansible.builtin.template:
     src: 'cluster.yaml.j2'
-    dest: "{{ ocp_hcp_path }}/hcp/02-{{ item.name }}.yaml"
+    dest: "{{ ocp_hcp_path }}/hcp-{{ item.name }}.yaml"
     mode: '0644'
-  notify: 'hcp update'
+
+- name: 'Apply HostedCluster manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_hcp_path }}/hcp-{{ item.name }}.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_hcp_apply

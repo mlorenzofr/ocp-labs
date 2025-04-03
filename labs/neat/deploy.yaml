@@ -37,15 +37,14 @@
       - name: 'infra1'
         ns: 'hardware-inventory'
         hypershift: true
-        ntp: ["{{ lab_node_network }}.1"]
-        redfish: "{{ lab_node_network }}.1"
+        ntp: ["{{ lab_node_network_base }}1"]
+        redfish: "{{ lab_node_network_base }}1"
         inventory:
           - {'name': "{{ lab_name }}-bmh-1", 'id': '68'}
           - {'name': "{{ lab_name }}-bmh-2", 'id': '69'}
           - {'name': "{{ lab_name }}-bmh-3", 'id': '70'}
 
-    ocp_metallb_pool_ips: '192.168.125.62-192.168.125.64'
-    ocp_metallb_pool_name: "{{ lab_network_name }}"
+    ocp_hcp_kubeapi_ips: ["{{ lab_node_network_base }}62-{{ lab_node_network_base }}64"]
   tags:
     - 'postinst'
     - 'acm'

@@ -38,8 +38,6 @@
     lab_mac_base: 'ca:11:c0:00:00:'
     lab_node_network_base: '192.168.125'
 
-    ocp_metallb_pool_ips: "{{ lab_node_network_base }}.204-{{ lab_node_network_base }}.205"
-
     ocp_assisted_service_op: 'acm'
     ocp_assisted_service_images:
       - ocp_version: '4.14.34'
@@ -48,7 +46,6 @@
       - ocp_version: '4.17.0'
         arch: 'x86_64'
         version: '417.94.202408270355-0'
-
     ocp_assisted_service_infraenvs:
       - name: 'hcp1'
         ns: 'hardware-inventory'
@@ -57,13 +54,13 @@
         redfish: "{{ lab_node_network_base }}.1"
         inventory:
           - {'name': 'hcp1-worker-1', 'id': '64'}
+
+    ocp_hcp_kubeapi_ips: ["{{ lab_node_network_base }}.204-{{ lab_node_network_base }}.205"]
     ocp_hcp_clusters:
       - name: 'hcp1'
         ns: 'hcp1'
         infra: 'hcp1'
         agent_ns: 'hardware-inventory'
-        pullsecret: "{{ lab_pull_secret_b64 }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
         version: '4.17.0'
         network_type: 'Calico'
         service_network: '172.32.0.0/16'
@@ -90,7 +87,7 @@
     lab_path: '/root/labs'
     lab_node_network_base: '192.168.125'
     spoke_name: 'hcp1'
-    spoke_lb_ips: "{{ lab_node_network_base }}.206-{{ lab_node_network_base }}.206"
+    spoke_lb_ips: ["{{ lab_node_network_base }}.206/32"]
   tags:
     - 'postinst'
     - 'hcp1'
