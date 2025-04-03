@@ -13,7 +13,7 @@
     ocp_metallb_pool_name: "{{ spoke_name }}-lb-pool"
     ocp_metallb_pool_ips: "{{ spoke_lb_ips }}"
     spoke_name: ''
-    spoke_lb_ips: ''
+    spoke_lb_ips: []
 
   environment:
     KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/{{ spoke_name }}/auth/kubeconfig"
@@ -32,54 +32,51 @@
         msg: 'Variable spoke_name is empty'
       when: spoke_name | length == 0
 
+    - name: 'Test spoke_lb_ips type'
+      ansible.builtin.fail:
+        msg: 'Variable spoke_lb_ips is not a list'
+      when: spoke_lb_ips | type_debug != "list"
+
     - name: 'Test spoke_lb_ips'
       ansible.builtin.fail:
         msg: 'Variable spoke_lb_ips is empty'
       when: spoke_lb_ips | length == 0
 
-    - name: 'Wait for OLM'
-      ansible.builtin.command:
-        cmd: >
-          /usr/local/bin/oc get clusteroperator
-          operator-lifecycle-manager-catalog
-          -o jsonpath='{.status.conditions[?(@.type=="Available")].status}'
+    - name: 'Wait for OLM ClusterOperator'
+      kubernetes.core.k8s_info:
+        api_version: 'config.openshift.io/v1'
+        kind: 'ClusterOperator'
+        name: 'operator-lifecycle-manager-catalog'
       register: __hcp_olm
-      until: __hcp_olm.stdout == 'True'
-      changed_when: False
+      until:
+        - __hcp_olm.resources | length > 0
+        - __hcp_olm.resources[0].status.conditions is defined
+        - __hcp_olm.resources[0].status.conditions | selectattr('type', 'equalto', 'Available') | selectattr('status', 'equalto', 'True') | length > 0
       retries: 25
-      delay: 50
+      delay: 60
 
   tasks:
     - name: 'Create metallb ingress'
-      ansible.builtin.copy:
-        dest: "{{ lab_path }}/{{ lab_name }}/{{ spoke_name }}/metallb-ingress.yaml"
-        content: |
-          ---
-          kind: Service
-          apiVersion: v1
+      kubernetes.core.k8s:
+        definition:
+          kind: 'Service'
+          apiVersion: 'v1'
           metadata:
             annotations:
-              metallb.universe.tf/address-pool: {{ ocp_metallb_pool_name }}
-            name: metallb-ingress
-            namespace: openshift-ingress
+              metallb.universe.tf/address-pool: "{{ ocp_metallb_pool_name }}"
+            name: 'metallb-ingress'
+            namespace: 'openshift-ingress'
           spec:
             ports:
-              - name: http
-                protocol: TCP
+              - name: 'http'
+                protocol: 'TCP'
                 port: 80
                 targetPort: 80
-              - name: https
-                protocol: TCP
+              - name: 'https'
+                protocol: 'TCP'
                 port: 443
                 targetPort: 443
             selector:
-              ingresscontroller.operator.openshift.io/deployment-ingresscontroller: default
+              ingresscontroller.operator.openshift.io/deployment-ingresscontroller: 'default'
             type: LoadBalancer
-      notify: 'Create metallb-ingress'
-
-  handlers:
-    - name: 'Create metallb-ingress'
-      ansible.builtin.command:
-        cmd: >
-          /usr/local/bin/oc apply -f {{ lab_path }}/{{ lab_name }}/{{ spoke_name }}/metallb-ingress.yaml
       when: lab_install
