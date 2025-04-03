@@ -1,0 +1,25 @@
+---
+apiVersion: metallb.io/v1beta1
+kind: MetalLB
+metadata:
+  name: metallb
+  namespace: metallb-system
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: hypershift
+  namespace: metallb-system
+spec:
+  autoAssign: true
+  addresses:
+    - 192.168.125.102/32
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: advertise-hypershift
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - hypershift

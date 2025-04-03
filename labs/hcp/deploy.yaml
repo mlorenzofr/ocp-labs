@@ -1,0 +1,77 @@
+---
+# Run it with:
+#   ap labs/hcp/deploy.yaml
+
+- name: 'Clean hcp lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'hcp'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'hcp'
+    lab_abi_ip: "{{ lab_node_network_base }}61"
+    lab_api_ips: ["{{ lab_node_network_base }}100"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}101"]
+    lab_node_memory: 28000
+    lab_node_disk_data: 60
+    lab_hosts:
+      - {id: '61', role: 'master'}
+      - {id: '62', role: 'master'}
+      - {id: '63', role: 'master'}
+    start_install: true
+
+- name: 'Import hcp-compact setup playbook'
+  ansible.builtin.import_playbook: ../../playbooks/setup/hcp.yaml
+  vars:
+    lab_name: 'hcp'
+    lab_mac_base: 'be:be:ca:fe:02:'
+    ocp_hcp_kubeapi_ips: ["{{ lab_node_network_base }}102/32"]
+    ocp_assisted_service_infraenvs:
+      - name: 'hosted'
+        ns: 'hardware-inventory'
+        hypershift: true
+        ntp: ["{{ lab_node_network_base }}1"]
+        redfish: "{{ lab_node_network_base }}1"
+        inventory:
+          - {'name': 'hcp1-worker-1', 'id': '64'}
+    ocp_hcp_clusters:
+      - name: 'spoke'
+        ns: 'spoke'
+        infra: 'hosted'
+        agent_ns: 'hardware-inventory'
+        version: '4.18.4'
+        service_network: '172.32.0.0/16'
+        domain: 'local.lab'
+        lb: "{{ lab_node_network_base }}103"
+        replicas: 1
+  tags:
+    - 'postinst'
+
+- name: 'Prepare spoke cluster configuration'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hcp/create-config.yml
+  vars:
+    lab_name: 'hcp'
+    lab_path: '/root/labs'
+    spoke_name: 'spoke'
+  tags:
+    - 'postinst'
+    - 'spoke'
+
+- name: 'Install MetalLB on spoke cluster'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hcp/create-ingress.yml
+  vars:
+    lab_name: 'hcp'
+    lab_path: '/root/labs'
+    lab_node_network_base: '192.168.125.'
+    spoke_name: 'spoke'
+    spoke_lb_ips: ["{{ lab_node_network_base }}103/32"]
+  tags:
+    - 'postinst'
+    - 'spoke'
