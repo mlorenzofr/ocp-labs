@@ -61,8 +61,5 @@
         redfish: "{{ lab_node_network_base }}1"
         inventory:
           - {'name': "{{ lab_name }}-bmh-1", 'id': '54'}
-
-    ocp_metallb_pool_ips: "{{ lab_node_network_base }}57-{{ lab_node_network_base }}57"
-    ocp_metallb_pool_name: "{{ lab_network_name }}"
   tags:
     - 'postinst'
