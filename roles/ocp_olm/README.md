@@ -12,6 +12,7 @@ None.
 
 ### Variables for `Subscription` (v0) elements
 * `channel`. _String_. Name of the catalog channel used to install the operator.
+* `global`. _Bool_. Set wether the operator should work in global mode (no `targetNamespace`) or not.
 * `monitoring`. _Bool_. Set wether the resources in the `Namespace` should be monitored.
 * `ns`. _String_. Namespace for OLM resources used for the installation.
 * `operator_name`. _String_. Name of the operator in the catalog.
