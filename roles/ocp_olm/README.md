@@ -6,7 +6,9 @@ None.
 
 ## Role Variables
 * `ocp_olm_apply`. _Bool_. Set wether the role should apply the manifests or simply create them.
+* `ocp_olm_check_sources`. _Bool_. Enable validation of `CatalogSource` status before creating a subscription.
 * `ocp_olm_path`. _String_. Path where manifest files are stored.
+* `ocp_olm_disablealldefaultsources`. _Bool_. Set wether the default Openshift `CatalogSources` should be enabled or not.
 
 ### Variables for `Subscription` (v0) elements
 * `channel`. _String_. Name of the catalog channel used to install the operator.

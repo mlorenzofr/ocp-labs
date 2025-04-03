@@ -1,4 +1,21 @@
 ---
+- name: 'Validate CatalogSource'
+  kubernetes.core.k8s_info:
+    api_version: 'operators.coreos.com/v1alpha1'
+    kind: 'CatalogSource'
+  register: __olm_catalog_status
+  until: >
+    __olm_catalog_status.resources |
+    selectattr('metadata.namespace', 'equalto', item.source_ns | default('openshift-marketplace')) |
+    selectattr('metadata.name', 'equalto', item.source) |
+    length > 0
+  retries: 10
+  delay: 30
+  when:
+    - ocp_olm_apply
+    - not ansible_check_mode
+    - ocp_olm_check_sources
+
 - name: 'Create subscription manifest'
   ansible.builtin.template:
     src: 'v0.yaml.j2'
