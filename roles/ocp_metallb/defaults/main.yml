@@ -1,7 +1,7 @@
 ---
-ocp_metallb_install: "{{ lab_install | default(false) }}"
+ocp_metallb_apply: "{{ ocp_apply | default(true) }}"
 ocp_metallb_ns: 'metallb-system'
-ocp_metallb_path: "{{ lab_configs }}"
-ocp_metallb_pool_ips: ''
-ocp_metallb_pool_name: ''
+ocp_metallb_path: "{{ lab_configs | default('/tmp') }}"
+ocp_metallb_pool_ips: []
+ocp_metallb_pool_name: 'default'
 ocp_metallb_source: 'redhat-operators'

@@ -1,24 +1,62 @@
 ---
-- name: 'Prepare metallb install manifest'
-  ansible.builtin.template:
-    src: 'metallb-init.yaml.j2'
-    dest: "{{ ocp_metallb_path }}/metallb-subscription.yaml"
-    mode: '0644'
-  notify: 'metallb install'
+- name: 'Check if the ClusterOperator "network" is available'
+  kubernetes.core.k8s_info:
+    api_version: 'config.openshift.io/v1'
+    kind: 'ClusterOperator'
+    name: 'network'
+  register: __metallb_co_network
+  until:
+    - __metallb_co_network.resources | length > 0
+    - __metallb_co_network.resources[0].status.conditions is defined
+    - __metallb_co_network.resources[0].status.conditions | selectattr('type', 'equalto', 'Available') | selectattr('status', 'equalto', 'True') | length > 0
+  retries: 25
+  delay: 60
+  when: ocp_metallb_apply
+
+- name: 'Create metallb installation manifest'
+  ansible.builtin.include_role:
+    name: 'ocp_olm'
+    tasks_from: 'subscription.yaml'
+  loop:
+    - operator_name: 'metallb-operator'
+      ns: "{{ ocp_metallb_ns }}"
+      monitoring: True
+      global: True
+      channel: 'stable'
+      source: "{{ ocp_metallb_source }}"
+  tags: ['olm']
+
+- name: 'Waiting for speaker pods'
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        namespace: "{{ ocp_metallb_ns }}"
+    label_selectors:
+      - 'app=metallb'
+      - 'component=speaker'
+    wait: yes
+    wait_condition:
+      type: Ready
+      status: "True"
+    wait_timeout: 300
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_metallb_apply
 
 - name: 'Prepare metallb setup manifest'
   ansible.builtin.template:
     src: 'metallb-setup.yaml.j2'
     dest: "{{ ocp_metallb_path }}/metallb-setup.yaml"
-    mode: '0644'
-  notify: 'metallb setup'
+    mode: '0640'
 
-- name: 'Check if CatalogSource is available'
-  ansible.builtin.command:
-    cmd: >
-      /usr/local/bin/oc get catalogsource {{ ocp_metallb_source }} -n openshift-marketplace
-  register: __metallb_catalog
-  changed_when: __metallb_catalog.rc != 0
-  failed_when: false
-  notify:
-    - 'enable default CatalogSources'
+- name: 'Apply metallb setup manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_metallb_path }}/metallb-setup.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  register: __metallb_setup
+  until: __metallb_setup is not failed
+  retries: 10
+  delay: 30
+  when: ocp_metallb_apply and not ansible_check_mode
