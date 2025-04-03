@@ -14,7 +14,7 @@ additionalNTPSources:
 {% if lab_hosts | length > 0 and not lab_appliance %}
 hosts:
 {% for host in lab_hosts %}
-  - hostname: {{ lab_name }}-node-{{ loop.index }}
+  - hostname: {{ lab_name }}-{{ host.role | default(lab_node_role) }}-{{ loop.index }}
     interfaces:
       - name: {{ host.iface | default('eth0') }}
         macAddress: {{ host.mac | default('{}{}'.format(lab_mac_base, host.id)) }}
