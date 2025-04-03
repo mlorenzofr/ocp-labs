@@ -9,8 +9,8 @@
     - __metallb_co_network.resources | length > 0
     - __metallb_co_network.resources[0].status.conditions is defined
     - __metallb_co_network.resources[0].status.conditions | selectattr('type', 'equalto', 'Available') | selectattr('status', 'equalto', 'True') | length > 0
-  retries: 25
-  delay: 60
+  retries: 60
+  delay: 30
   when: ocp_metallb_apply
 
 - name: 'Create metallb installation manifest'
