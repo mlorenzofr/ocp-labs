@@ -1,13 +1,4 @@
 ---
-apiVersion: v1
-kind: Secret
-metadata:
-  name: pull-secret-mcgh
-  namespace: {{ ocp_mcgh_ns }}
-{{ 'stringD' if '{' in lab_pull_secret else 'd' }}ata:
-  .dockerconfigjson: '{{ lab_pull_secret }}'
-type: kubernetes.io/dockerconfigjson
----
 apiVersion: operator.open-cluster-management.io/v1alpha4
 kind: MulticlusterGlobalHub
 metadata:

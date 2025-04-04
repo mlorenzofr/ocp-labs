@@ -1,12 +1,12 @@
 ---
 ocp_mcgh_availability: 'High'
-ocp_mcgh_install: "{{ lab_install | default(false) }}"
+ocp_mcgh_apply: "{{ ocp_apply | default(true) }}"
+ocp_mcgh_channel: ''
 ocp_mcgh_metrics: 'true'
 ocp_mcgh_ns: 'multicluster-global-hub'
-ocp_mcgh_path: "{{ lab_configs }}"
-ocp_mcgh_pullsecret: "{{ lab_pull_secret }}"
+ocp_mcgh_path: "{{ lab_configs | default('/tmp') }}"
+ocp_mcgh_pullsecret: "{{ ocp_pullsecret_b64 }}"
 ocp_mcgh_pull_policy: 'IfNotPresent'
 ocp_mcgh_retention: '18m'
-ocp_mcgh_subscription_channel: 'release-1.2'
-ocp_mcgh_subscription_source: 'redhat-operators'
-ocp_mcgh_subscription_version: ''
+ocp_mcgh_source: 'redhat-operators'
+ocp_mcgh_version: ''  # 'mcgh-operator.vX.YY'

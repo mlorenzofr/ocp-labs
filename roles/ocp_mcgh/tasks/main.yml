@@ -1,14 +1,58 @@
 ---
-- name: 'Create MultiCluster Global Hub installation manifest'
-  ansible.builtin.template:
-    src: 'mcgh-init.yaml.j2'
-    dest: "{{ ocp_mcgh_path }}/mcgh-subscription.yaml"
-    mode: '0644'
-  notify: 'mcgh install'
+- name: 'Create MCGH subscription'
+  ansible.builtin.include_role:
+    name: 'ocp_olm'
+    tasks_from: 'subscription.yaml'
+  loop:
+    - operator_name: 'multicluster-global-hub-operator-rh'
+      operator_group: 'mcgh-operatorgroup'
+      ns: "{{ ocp_mcgh_ns }}"
+      channel: "{{ ocp_mcgh_channel }}"
+      source: "{{ ocp_mcgh_source }}"
+      csv: "{{ ocp_mcgh_version }}"
+  tags: ['olm']
+
+- name: 'Create pull-secret for mcgh (base64)'
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      kind: 'Secret'
+      type: 'kubernetes.io/dockerconfigjson'
+      metadata:
+        name: 'pull-secret-mcgh'
+        namespace: "{{ ocp_mcgh_ns }}"
+      data:
+        .dockerconfigjson: "{{ ocp_mcgh_pullsecret }}"
+  tags: ['secrets']
 
 - name: 'Create multiclusterglobalhub manifest'
   ansible.builtin.template:
     src: 'multiclusterglobalhub.yaml.j2'
     dest: "{{ ocp_mcgh_path }}/mcgh-multiclusterglobalhub.yaml"
-    mode: '0644'
-  notify: 'mcgh install'
+    mode: '0640'
+
+- name: 'Apply multiclusterglobalhub manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_mcgh_path }}/mcgh-multiclusterglobalhub.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  register: __mcgh
+  until: __mcgh is not failed
+  retries: 10
+  delay: 30
+  when: ocp_mcgh_apply
+
+- name: 'Waiting until multiclusterglobalhub is running'
+  kubernetes.core.k8s_info:
+    api_version: 'operator.open-cluster-management.io/v1alpha4'
+    kind: 'MulticlusterGlobalHub'
+    name: 'multiclusterglobalhub'
+    namespace: "{{ ocp_mcgh_ns }}"
+  register: __mcgh_status
+  until:
+    - __mcgh_status.resources | length > 0
+    - __mcgh_status.resources[0].status.phase is defined
+    - __mcgh_status.resources[0].status.phase == 'Running'
+  retries: 20
+  delay: 30
+  when: ocp_mcgh_apply
