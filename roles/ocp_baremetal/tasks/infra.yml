@@ -1,4 +1,22 @@
 ---
+- name: 'Create secrets for BMC credentials'
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: 'v1'
+      kind: 'Secret'
+      type: 'Opaque'
+      metadata:
+        name: "{{ bmc.name | default('{}-worker-{}'.format(lab_name, ansible_loop.index)) }}-bmc-secret"
+        namespace: "{{ infra.ns }}"
+      data:
+        password: "{{ bmc.password | default(ocp_baremetal_bmc_password) }}"
+        username: "{{ bmc.username | default(ocp_baremetal_bmc_username) }}"
+  loop: "{{ infra.inventory }}"
+  loop_control:
+    loop_var: bmc
+    extended: true
+
 - name: 'Create Baremetal hosts manifest'
   ansible.builtin.template:
     src: 'inventory.yaml.j2'

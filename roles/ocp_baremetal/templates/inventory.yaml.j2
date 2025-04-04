@@ -1,16 +1,6 @@
 {% for bmh in infra.inventory %}
 {% set hostname = bmh.name | default('{}-worker-{}'.format(lab_name, loop.index)) %}
 ---
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {{ hostname }}-bmc-secret
-  namespace: {{ infra.ns }}
-data:
-  password: YWRtaW4=
-  username: YWRtaW4=
-type: Opaque
----
 apiVersion: metal3.io/v1alpha1
 kind: BareMetalHost
 metadata:
