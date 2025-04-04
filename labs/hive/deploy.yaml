@@ -51,8 +51,6 @@
         service_network: '172.32.0.0/16'
         host_network: "{{ lab_node_network_base }}0/24"
         masters: 1
-        pullsecret: "{{ lab_pull_secret_b64 }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
         domain: 'local.lab'
         ip: "{{ lab_node_network_base }}64"
 

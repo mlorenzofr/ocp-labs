@@ -65,8 +65,6 @@
         service_network: '172.32.0.0/16'
         host_network: '192.168.125.0/24'
         masters: 1
-        pullsecret: "{{ lab_pull_secret_b64 }}"
-        sshkey: "{{ lab_ssh_pubkey }}"
         domain: 'local.lab'
         ip: '192.168.125.25'
 

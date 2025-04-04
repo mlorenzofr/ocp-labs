@@ -6,6 +6,8 @@ ocp_hive_clusterimagesets: []
 ocp_hive_ns: 'openshift-operators'
 ocp_hive_lab_name: "{{ lab_name }}"
 ocp_hive_operator: False
-ocp_hive_path: "{{ lab_configs }}"
+ocp_hive_path: "{{ lab_configs | default('/tmp') }}"
+ocp_hive_pullsecret: "{{ ocp_pullsecret_b64 }}"
 ocp_hive_source: 'community-operators'
+ocp_hive_ssh_key: "{{ ocp_ssh_key }}"
 ...

@@ -18,21 +18,24 @@ This role requires the following roles:
 * `ocp_hive_ns`. _String_. Namespace for the Operator.
 * `ocp_hive_operator`. _Bool_. Set to `True` to install the Hive operator.
 * `ocp_hive_path`. _String_. Path where the manifest files are saved.
+* `ocp_hive_pullsecret`. _String_. Default value for _pull-secret_ for hive clusters.
 * `ocp_hive_source`. _String_. `CatalogSource` name to get the operator.
+* `ocp_hive_ssh_key`. _String_. Default value for _sshAuthorizedKey_ for hive clusters.
 
 ### Variables for `ocp_hive_clusters` elements
+* `cluster_network`. _String_. CIDR for cluster network.
+* `domain`. _String_. Base domain for the cluster.
+* `host_network`. _String_. CIDR of node host network.
+* `image`. _String_. Image used to deploy the cluster.
+* `masters`. _Number_. Number of master nodes on the cluster.
 * `name`. _String_. Cluster name.
+* `network_type`. _String_. Network type used (`OVNKubernetes|Calico|Other`)
 * `ns`. _String_. Cluster namespace.
 * `pullsecret`. _String_. Personal pull secret to access registries.
-* `image`. _String_. Image used to deploy the cluster.
-* `network_type`. _String_. Network type used (`OVNKubernetes|Calico|Other`)
-* `cluster_network`. _String_. CIDR for cluster network.
+* `registry`. _String_. `ConfigMap` with configuration of the registries that the cluster will use.
 * `service_network`. _String_. CIDR for service network.
-* `host_network`. _String_. CIDR of node host network.
-* `masters`. _Number_. Number of master nodes on the cluster.
+* `ssh_key`. _String_. Personal SSH public key.
 * `workers`. _Number_. Number of worker nodes on the cluster.
-* `sshkey`. _String_. Personal SSH public key.
-* `domain`. _String_. Base domain for the cluster.
 
 ### Variables for `ocp_hive_clusterimagesets` elements
 * `name`. _String_. `ClusterImageSet` name.
@@ -60,8 +63,6 @@ This role requires the following roles:
         service_network: '172.32.0.0/16'
         host_network: '192.168.0.0/24'
         masters: 1
-        pullsecret: '...'
-        sshkey: '...'
         domain: 'local.lab'
         ip: "192.168.0.64"
 

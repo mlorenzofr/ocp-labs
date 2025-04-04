@@ -19,6 +19,26 @@
       - {src: 'dnsmasq-hive.j2', dest: "{{ ocp_hive_lab_name }}-{{ item.name }}-cluster.conf"}
   tags: ['dnsmasq']
 
+- name: 'Create hive cluster namespace'
+  kubernetes.core.k8s:
+    name: "{{ item.ns }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+
+- name: 'Create hive cluster pull-secret'
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: 'v1'
+      kind: 'Secret'
+      type: 'kubernetes.io/dockerconfigjson'
+      metadata:
+        name: "pullsecret-cluster-{{ item.name }}"
+        namespace: "{{ item.ns }}"
+      data:
+        .dockerconfigjson: "{{ item.pullsecret | default(ocp_hive_pullsecret) }}"
+
 - name: 'Prepare hive cluster'
   ansible.builtin.template:
     src: 'cluster.yaml.j2'

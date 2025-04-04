@@ -73,8 +73,7 @@
         service_network: '172.32.0.0/16'
         host_network: '192.168.125.0/24'
         masters: 1
-        pullsecret: "{{ lab_pull_secret_b64 }}"
-        sshkey: "{{ lab_ssh_pubkey_fips }}"
+        ssh_key: "{{ lab_ssh_pubkey_fips }}"
         domain: 'local.lab'
         ip: '192.168.125.25'
       - name: 'spoke2'
@@ -83,8 +82,7 @@
         service_network: '172.34.0.0/16'
         host_network: '192.168.125.0/24'
         masters: 1
-        pullsecret: "{{ lab_pull_secret_b64 }}"
-        sshkey: "{{ lab_ssh_pubkey_fips }}"
+        ssh_key: "{{ lab_ssh_pubkey_fips }}"
         domain: 'local.lab'
         ip: '192.168.125.30'
 
