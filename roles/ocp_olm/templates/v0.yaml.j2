@@ -37,3 +37,6 @@ spec:
   installPlanApproval: Automatic
   source: {{ item.source }}
   sourceNamespace: {{ item.source_ns | default('openshift-marketplace') }}
+{% if item.csv | default('') !='' %}
+  startingCSV: {{ item.csv }}
+{% endif %}
