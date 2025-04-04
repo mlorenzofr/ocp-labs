@@ -31,14 +31,15 @@
         mode: '0750'
         state: 'directory'
 
-    - name: 'Wait for Hive cluster secrets'
-      ansible.builtin.command:
-        cmd: >
-          /usr/local/bin/oc get -n {{ hive_ns }}
-          secret {{ hive_cluster_name }}-admin-kubeconfig
-      register: __hive_secrets
-      until: __hive_secrets.rc == 0
-      changed_when: false
+    - name: 'Wait for kubeconfig'
+      kubernetes.core.k8s_info:
+        kind: 'Secret'
+        name: "{{ hive_cluster_name }}-admin-kubeconfig"
+        namespace: "{{ hive_ns }}"
+      register: __hive_kubeconfig
+      until:
+        - __hive_kubeconfig.resources is defined
+        - __hive_kubeconfig.resources | length > 0
       retries: 25
       delay: 30
 
@@ -50,17 +51,16 @@
           --to={{ lab_path }}/{{ lab_name }}/{{ hive_cluster_name }}/auth
           --confirm
         creates: "{{ lab_path }}/{{ lab_name }}/{{ hive_cluster_name }}/auth/kubeconfig"
-      environment:
-        KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
 
-    - name: 'Wait for console password secret'
-      ansible.builtin.command:
-        cmd: >
-          /usr/local/bin/oc get -n {{ hive_ns }}
-          secret {{ hive_cluster_name }}-admin-password
+    - name: 'Wait for the console password'
+      kubernetes.core.k8s_info:
+        kind: 'Secret'
+        name: "{{ hive_cluster_name }}-admin-password"
+        namespace: "{{ hive_ns }}"
       register: __hive_kubeadmin
-      until: __hive_kubeadmin.rc == 0
-      changed_when: false
+      until:
+        - __hive_kubeadmin.resources is defined
+        - __hive_kubeadmin.resources | length > 0
       retries: 120
       delay: 30
 
