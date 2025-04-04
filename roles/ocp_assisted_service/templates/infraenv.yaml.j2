@@ -6,12 +6,12 @@ metadata:
   name: capi-provider-role
   namespace: {{ item.ns }}
 rules:
-- apiGroups:
-    - agent-install.openshift.io
-  resources:
-    - agents
-  verbs:
-    - '*'
+  - apiGroups:
+      - agent-install.openshift.io
+    resources:
+      - agents
+    verbs:
+      - '*'
 ---
 {% endif %}
 apiVersion: agent-install.openshift.io/v1beta1
@@ -29,7 +29,7 @@ spec:
     name: {{ item.cluster_name | default(item.name) }}
     namespace: {{ item.ns }}
   agentLabels:
-      cluster-name: "{{ item.cluster_name | default(item.name) }}"
+    cluster-name: "{{ item.cluster_name | default(item.name) }}"
 {% endif %}
   pullSecretRef:
     name: pull-secret-{{ item.name }}
