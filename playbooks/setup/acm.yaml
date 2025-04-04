@@ -12,9 +12,11 @@
     lab_install: true
     lab_mac_base: 'be:be:ca:fe:02:'
     lab_node_network: '192.168.125.'
+    ocp_assisted_service_op: 'acm'
+    ocp_assisted_service_infraenvs: []
 
   environment:
     KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
 
   roles:
-    - 'ocp_acm'
+    - 'ocp_assisted_service'

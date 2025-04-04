@@ -34,7 +34,6 @@
   vars:
     lab_name: 'acm'
 
-    ocp_assisted_service_op: 'acm'
     ocp_assisted_service_infraenvs:
       - name: 'spoke'
         ns: 'hive-sno'
