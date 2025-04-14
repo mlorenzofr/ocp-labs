@@ -11,7 +11,8 @@
     lab_network_name: 'lab-network'
     lab_install: true
     lab_mac_base: 'be:be:ca:fe:02:'
-    lab_node_network: '192.168.125.'
+    lab_node_network_base: '192.168.125.'
+    lab_node_disk_pool: 'ocp'
     ocp_assisted_service_op: 'acm'
     ocp_assisted_service_infraenvs: []
 
