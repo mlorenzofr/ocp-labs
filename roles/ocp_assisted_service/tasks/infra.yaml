@@ -55,6 +55,6 @@
       - name: "{{ item.name }}"
         ns: "{{ item.ns }}"
         redfish: "{{ item.redfish }}"
-        inventory: "{{ item.inventory }}"
+        inventory: "{{ item.inventory | default([]) }}"
   when: ocp_assisted_service_infra == 'baremetal'
 ...
