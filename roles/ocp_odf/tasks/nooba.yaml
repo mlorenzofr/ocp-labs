@@ -1,0 +1,64 @@
+---
+- name: 'Waiting until noobaa is available'
+  kubernetes.core.k8s_info:
+    api_version: 'noobaa.io/v1alpha1'
+    kind: 'NooBaa'
+    name: 'noobaa'
+    namespace: "{{ ocp_odf_ns }}"
+  register: __noobaa_status
+  until:
+    - __noobaa_status.resources | length > 0
+    - __noobaa_status.resources[0].status.phase is defined
+    - __noobaa_status.resources[0].status.phase == 'Available'
+  retries: 10
+  delay: 30
+  when: ocp_odf_apply
+
+- name: 'Create NooBaa (Multicloud Object Gateway) manifest'
+  ansible.builtin.template:
+    src: 'noobaa.yaml.j2'
+    dest: "{{ ocp_odf_path }}/odf-noobaa.yaml"
+    mode: '0644'
+
+- name: 'Apply noobaa manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_odf_path }}/odf-noobaa.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  register: __odf_nooba
+  until: __odf_nooba is not failed
+  retries: 10
+  delay: 30
+  when: ocp_odf_apply and not ansible_check_mode
+
+- name: 'Create manifest for NooBaa BackingStore'
+  ansible.builtin.template:
+    src: 'noobaa-pv.yaml.j2'
+    dest: "{{ ocp_odf_path }}/odf-noobaa-pv.yaml"
+    mode: '0644'
+  loop: "{{ ocp_odf_noobaa_backingstores }}"
+
+- name: 'Apply noobaa backingstore manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_odf_path }}/odf-noobaa-pv.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  register: __odf_nooba_pv
+  until: __odf_nooba_pv is not failed
+  retries: 10
+  delay: 30
+  when: ocp_odf_apply and not ansible_check_mode
+
+- name: 'Set Noobaa BackingStore as default for ObjectBucketClaims'
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: 'noobaa.io/v1alpha1'
+      kind: 'BucketClass'
+      metadata:
+        name: 'noobaa-default-bucket-class'
+      spec:
+        placementPolicy:
+          tiers:
+            - backingStores:
+                - 'noobaa-pv-backing-store'
+  ignore_errors: "{{ ansible_check_mode }}"

@@ -1,32 +1,38 @@
 ---
 - name: 'Create ODF installation manifest'
-  ansible.builtin.template:
-    src: 'odf-init.yaml.j2'
-    dest: "{{ ocp_odf_path }}/odf-subscription.yaml"
-    mode: '0644'
-  notify: 'odf install'
+  ansible.builtin.include_role:
+    name: 'ocp_olm'
+    tasks_from: 'subscription.yaml'
+  loop:
+    - operator_name: 'odf-operator'
+      ns: "{{ ocp_odf_ns }}"
+      monitoring: True
+      operator_group: 'openshift-storage-operatorgroup'
+      source: "{{ ocp_odf_source }}"
+  tags: ['olm']
 
-- name: 'Create ODF StorageCluster manifests'
-  ansible.builtin.template:
-    src: 'storagecluster.yaml.j2'
-    dest: "{{ ocp_odf_path }}/odf-storagecluster-{{ item.name }}.yaml"
-    mode: '0644'
+- name: 'Waiting for odf-operator pods'
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        namespace: "{{ ocp_odf_ns }}"
+    label_selectors:
+      - 'name=ocs-operator'
+    wait: yes
+    wait_condition:
+      type: Ready
+      status: "True"
+    wait_timeout: 300
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: 'Create storageclusters'
+  ansible.builtin.include_tasks:
+    file: 'storageclusters.yaml'
   loop: "{{ ocp_odf_clusters }}"
-  notify: 'odf clusters'
 
-- name: 'Create NooBaa (Multicloud Object Gateway) manifest'
-  ansible.builtin.template:
-    src: 'noobaa.yaml.j2'
-    dest: "{{ ocp_odf_path }}/odf-noobaa.yaml"
-    mode: '0644'
+- name: 'Configure NooBaa'
+  ansible.builtin.include_tasks:
+    file: 'noobaa.yaml'
   when: ocp_odf_noobaa
-  notify: 'odf noobaa'
-
-- name: 'Create manifest for NooBaa BackingStore'
-  ansible.builtin.template:
-    src: 'noobaa-pv.yaml.j2'
-    dest: "{{ ocp_odf_path }}/odf-noobaa-pv.yaml"
-    mode: '0644'
-  loop: "{{ ocp_odf_noobaa_backingstores }}"
-  when: ocp_odf_noobaa
-  notify: 'odf noobaa pv'
