@@ -52,7 +52,7 @@
         host_network: "{{ lab_node_network_base }}0/24"
         masters: 1
         domain: 'local.lab'
-        ip: "{{ lab_node_network_base }}64"
+        api_vips: ["{{ lab_node_network_base }}64"]
 
 - name: 'Extract spoke cluster configuration'
   ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml

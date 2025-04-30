@@ -75,7 +75,7 @@
         masters: 1
         ssh_key: "{{ lab_ssh_pubkey_fips }}"
         domain: 'local.lab'
-        ip: '192.168.125.25'
+        api_vips: ['192.168.125.25']
       - name: 'spoke2'
         ns: 'spoke2'
         image: 'img4.15.14-x86-64-appsub'
@@ -84,7 +84,7 @@
         masters: 1
         ssh_key: "{{ lab_ssh_pubkey_fips }}"
         domain: 'local.lab'
-        ip: '192.168.125.30'
+        api_vips: ['192.168.125.30']
 
 - name: 'Extract spoke1 cluster configuration'
   ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml

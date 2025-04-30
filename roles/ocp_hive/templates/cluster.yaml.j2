@@ -59,6 +59,20 @@ spec:
       - "{{ item.service_network | default('172.30.0.0/16') }}"
     machineNetwork:
       - cidr: "{{ item.host_network }}"
+{% if item.masters > 1 %}
+{% if 'api_vips' in item.keys() %}
+  apiVIPs:
+{% for ipaddr in item.api_vips %}
+    - {{ ipaddr }}
+{% endfor %}
+{% endif %}
+{% if 'ingress_vips' in item.keys() %}
+  ingressVIPs:
+{% for ipaddr in item.ingress_vips %}
+    - {{ ipaddr }}
+{% endfor %}
+{% endif %}
+{% endif %}
   provisionRequirements:
     controlPlaneAgents: {{ item.masters }}
 {% if item.workers | default(0) > 0 %}
