@@ -53,6 +53,6 @@
     - __acm_status.resources | length > 0
     - __acm_status.resources[0].status.phase is defined
     - __acm_status.resources[0].status.phase == 'Running'
-  retries: 20
+  retries: 30
   delay: 30
   when: ocp_acm_apply
