@@ -1,0 +1,58 @@
+---
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: acm-hub-1
+rendezvousIP: 192.168.125.71
+hosts:
+  - hostname: acm-hub-1-master-1
+    interfaces:
+      - name: eth0
+        macAddress: be:be:ca:fe:03:71
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: be:be:ca:fe:03:71
+          ipv4:
+            enabled: True
+            dhcp: True
+          ipv6:
+            enabled: False
+    rootDeviceHints:
+      deviceName: "/dev/vda"
+  - hostname: acm-hub-1-master-2
+    interfaces:
+      - name: eth0
+        macAddress: be:be:ca:fe:03:72
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: be:be:ca:fe:03:72
+          ipv4:
+            enabled: True
+            dhcp: True
+          ipv6:
+            enabled: False
+    rootDeviceHints:
+      deviceName: "/dev/vda"
+  - hostname: acm-hub-1-master-3
+    interfaces:
+      - name: eth0
+        macAddress: be:be:ca:fe:03:73
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: be:be:ca:fe:03:73
+          ipv4:
+            enabled: True
+            dhcp: True
+          ipv6:
+            enabled: False
+    rootDeviceHints:
+      deviceName: "/dev/vda"
