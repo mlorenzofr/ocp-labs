@@ -2,6 +2,7 @@
 rh_release: '9.4.0'
 lab_host_packages:
   - 'bash-completion'
+  - 'bind-utils'
   - 'chrony'
   - 'cpio'
   - 'git'
@@ -14,6 +15,7 @@ lab_host_packages:
   - 'nmap'
   - 'nmstate'
   - 'policycoreutils-python-utils'
+  - 'python3-pip'
   # - 'python3-cherrypy'
   - 'qemu-kvm'
   - 'rsync'
