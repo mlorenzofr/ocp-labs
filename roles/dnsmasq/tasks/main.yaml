@@ -9,13 +9,16 @@
     - 'packages'
     - 'yum'
 
+- name: Gather service facts
+  ansible.builtin.service_facts:
+
 - name: 'Disable systemd-resolved'
   ansible.builtin.service:
     name: 'systemd-resolved'
     state: 'stopped'
     enabled: false
   ignore_errors: "{{ ansible_check_mode }}"
-  when: dnsmasq_disable_resolved
+  when: dnsmasq_disable_resolved and 'systemd-resolved' in ansible_facts.services
 
 - name: 'Enable dnsmasq in firewalld'
   ansible.posix.firewalld:
