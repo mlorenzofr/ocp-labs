@@ -19,7 +19,7 @@
 
 - name: 'Download oc'
   ansible.builtin.unarchive:
-    src: "{{ lab_host_ocp_mirror }}/x86_64/clients/ocp/{{ item.version }}/{{ lab_host_oc_source }}"
+    src: "{{ lab_host_ocp_mirror }}/{{ ansible_machine }}/clients/ocp/{{ item.version }}/{{ lab_host_oc_source }}"
     include: ['oc']
     remote_src: true
     dest: '/tmp/'
@@ -74,7 +74,7 @@
 
 - name: 'Download openshift-install'
   ansible.builtin.unarchive:
-    src: "{{ lab_host_ocp_mirror }}/x86_64/clients/ocp/{{ item.version }}/openshift-install-linux.tar.gz"
+    src: "{{ lab_host_ocp_mirror }}/{{ ansible_machine }}/clients/ocp/{{ item.version }}/openshift-install-linux.tar.gz"
     include: ['openshift-install']
     remote_src: true
     dest: '/tmp/'
@@ -121,7 +121,7 @@
 
 - name: 'Download oc-mirror'
   ansible.builtin.unarchive:
-    src: "{{ lab_host_ocp_mirror }}/x86_64/clients/ocp/{{ item.version }}/oc-mirror.tar.gz"
+    src: "{{ lab_host_ocp_mirror }}/{{ ansible_machine }}/clients/ocp/{{ item.version }}/oc-mirror.tar.gz"
     include: ['oc-mirror']
     remote_src: true
     dest: '/tmp/'
