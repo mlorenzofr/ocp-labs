@@ -29,6 +29,7 @@
     state: 'restarted'
     enabled: true
   listen: 'svc restart squid'
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Restart ksushy service'
   ansible.builtin.service:
@@ -36,3 +37,4 @@
     state: 'restarted'
     enabled: true
   listen: 'svc restart ksushy'
+  ignore_errors: "{{ ansible_check_mode }}"

@@ -33,6 +33,7 @@
   ansible.builtin.pip:
     name: "{{ lab_host_pip_packages }}"
     state: 'present'
+  ignore_errors: "{{ ansible_check_mode }}"
   tags:
     - 'pip'
     - 'python'
