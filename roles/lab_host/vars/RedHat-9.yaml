@@ -26,6 +26,7 @@ lab_host_packages:
   - 'tmux'
   - 'vim-enhanced'
   - 'virt-install'
+  - 'virt-viewer'
 lab_host_pip_packages:
   - 'strato-skipper==2.0.2'
   - 'kubernetes'
