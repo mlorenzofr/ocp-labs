@@ -27,6 +27,7 @@ lab_host_packages:
   - 'vim-enhanced'
   - 'virt-install'
   - 'virt-viewer'
+  - 'wget'
 lab_host_pip_packages:
   - 'strato-skipper==2.0.2'
   - 'kubernetes'
