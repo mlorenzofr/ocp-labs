@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  role_name: libvirt
+  namespace: mlorenzofr
+  author: 'Manuel Lorenzo'
+  description: 'Install and configure libvirt'
+  company: 'Red Hat'
+  license: 'MIT'
+  min_ansible_version: '2.12'
+  platforms:
+    - name: 'EL'
+      versions:
+        - '8'
+        - '9'
+  galaxy_tags: []
+dependencies: []

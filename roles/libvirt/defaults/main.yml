@@ -1,0 +1,9 @@
+---
+libvirt_default_cpus: 12
+libvirt_default_memory: 24000
+libvirt_default_disks: []
+libvirt_default_networks: []
+libvirt_default_net: 'default'
+libvirt_hosts: []
+libvirt_mac_base: '52:54:00:ff:ff:'
+libvirt_networks: []

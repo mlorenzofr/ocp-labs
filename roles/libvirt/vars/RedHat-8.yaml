@@ -1,0 +1,11 @@
+---
+libvirt_packages:
+  - 'libguestfs'
+  - 'libguestfs-tools-c'
+  - 'libvirt'
+  - 'libvirt-daemon-driver-qemu'
+  - 'qemu-kvm'
+  - 'virt-install'
+libvirt_services:
+  - 'libvirtd'
+...

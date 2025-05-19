@@ -1,0 +1,18 @@
+---
+lab_host_packages:
+  - 'libguestfs'
+  - 'libguestfs-tools-c'
+  - 'libvirt'
+  - 'libvirt-daemon-driver-qemu'
+  - 'qemu-kvm'
+  - 'virt-install'
+  - 'virt-viewer'
+libvirt_services:
+  - 'virtqemud'
+  - 'virtnetworkd'
+  - 'virtnodedevd'
+  - 'virtnwfilterd'
+  - 'virtsecretd'
+  - 'virtinterfaced'
+  - 'virtstoraged'
+...

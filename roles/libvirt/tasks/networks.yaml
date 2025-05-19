@@ -1,0 +1,20 @@
+---
+- name: 'libvirt networks definitions'
+  community.libvirt.virt_net:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default('present') }}"
+    autostart: "{{ item.autostart | default(true if item.state | default('present') == 'present' else false) }}"
+    xml: "{{ lookup('template', 'templates/networks/{}.xml.j2'.format(item.template)) }}"
+  loop: "{{ libvirt_networks }}"
+  tags:
+    - libvirt_network
+
+- name: 'activate libvirt networks'
+  community.libvirt.virt_net:
+    name: "{{ item.name }}"
+    state: 'active'
+  loop: "{{ libvirt_networks }}"
+  when: item.state | default('present') == 'present'
+  tags:
+    - libvirt_network
+...

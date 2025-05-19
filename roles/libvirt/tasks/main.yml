@@ -1,0 +1,28 @@
+---
+- name: 'Import OS version variables'
+  ansible.builtin.include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yaml"
+  tags:
+    - always
+
+- name: 'Install libvirt packaged'
+  ansible.builtin.package:
+    name: "{{ libvirt_packages }}"
+    state: 'present'
+  ignore_errors: "{{ ansible_check_mode }}"
+  tags:
+    - 'dnf'
+    - 'packages'
+    - 'yum'
+  notify:
+    - 'svc restart libvirtd'
+
+- name: 'Ensure libvirtd services are enabled and started'
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop: "{{ libvirt_services }}"
+
+- name: 'Include network management tasks'
+  ansible.builtin.include_tasks: networks.yaml
+  when: libvirt_networks is defined and libvirt_networks | length > 0
