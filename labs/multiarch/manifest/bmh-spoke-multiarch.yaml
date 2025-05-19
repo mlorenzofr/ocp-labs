@@ -1,0 +1,63 @@
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: multiarch-bmh-1
+  namespace: managed
+  labels:
+    infraenvs.agent-install.openshift.io: spoke-multiarch
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: multiarch-bmh-1
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: be:be:ca:fe:02:64
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.125.1:9000/redfish/v1/Systems/local/multiarch-bmh-1
+    credentialsName: multiarch-bmh-1-bmc-secret
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: multiarch-bmh-2
+  namespace: managed
+  labels:
+    infraenvs.agent-install.openshift.io: spoke-multiarch
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: multiarch-bmh-2
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: be:be:ca:fe:02:65
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.125.1:9000/redfish/v1/Systems/local/multiarch-bmh-2
+    credentialsName: multiarch-bmh-2-bmc-secret
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: multiarch-bmh-3
+  namespace: managed
+  labels:
+    infraenvs.agent-install.openshift.io: spoke-multiarch
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: multiarch-bmh-3
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: be:be:ca:fe:02:66
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.125.1:9000/redfish/v1/Systems/local/multiarch-bmh-3
+    credentialsName: multiarch-bmh-3-bmc-secret

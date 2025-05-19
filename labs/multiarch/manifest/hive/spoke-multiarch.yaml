@@ -1,0 +1,88 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: extra-manifests
+  namespace: managed
+data:
+  99_workload_partitioning.yaml: |
+    apiVersion: machineconfiguration.openshift.io/v1
+    kind: MachineConfig
+    metadata:
+      labels:
+        machineconfiguration.openshift.io/role: master
+      name: 02-master-workload-partitioning
+    spec:
+      config:
+        ignition:
+          version: 3.2.0
+        storage:
+          files:
+          - contents:
+              source: data:text/plain;charset=utf-8;base64,W2NyaW8ucnVudGltZS53b3JrbG9hZHMubWFuYWdlbWVudF0KYWN0aXZhdGlvbl9hbm5vdGF0aW9uID0gInRhcmdldC53b3JrbG9hZC5vcGVuc2hpZnQuaW8vbWFuYWdlbWVudCIKYW5ub3RhdGlvbl9wcmVmaXggPSAicmVzb3VyY2VzLndvcmtsb2FkLm9wZW5zaGlmdC5pbyIKcmVzb3VyY2VzID0geyAiY3B1c2hhcmVzIiA9IDAsICJjcHVzZXQiID0gIjAtNyIgfQo=
+            mode: 420
+            overwrite: true
+            path: /etc/crio/crio.conf.d/01-workload-partitioning
+            user:
+              name: root
+          - contents:
+              source: data:text/plain;charset=utf-8;base64,ewogICJtYW5hZ2VtZW50IjogewogICAgImNwdXNldCI6ICIwLTciCiAgfQp9Cg==
+            mode: 420
+            overwrite: true
+            path: /etc/kubernetes/openshift-workload-pinning
+            user:
+              name: root
+---
+apiVersion: extensions.hive.openshift.io/v1beta1
+kind: AgentClusterInstall
+metadata:
+  name: spoke-multiarch
+  namespace: managed
+spec:
+  manifestsConfigMapRef:
+    name: extra-manifests
+  clusterDeploymentRef:
+    name: spoke-multiarch
+  imageSetRef:
+    name: img4.18.6-multi-appsub
+  networking:
+    networkType: "OVNKubernetes"
+    clusterNetwork:
+      - cidr: "10.128.0.0/14"
+        hostPrefix: 23
+    serviceNetwork:
+      - "172.32.0.0/16"
+    machineNetwork:
+      - cidr: "192.168.125.0/24"
+  apiVIPs:
+    - 192.168.125.102
+  ingressVIPs:
+    - 192.168.125.103
+  provisionRequirements:
+    controlPlaneAgents: 3
+  sshPublicKey: <redacted>
+---
+apiVersion: hive.openshift.io/v1
+kind: ClusterDeployment
+metadata:
+  name: spoke-multiarch
+  namespace: managed
+  annotations:
+    hive.openshift.io/try-install-once: "true"
+spec:
+  baseDomain: local.lab
+  clusterName: spoke-multiarch
+  controlPlaneConfig:
+    servingCertificates: {}
+  clusterInstallRef:
+    group: extensions.hive.openshift.io
+    kind: AgentClusterInstall
+    name: spoke-multiarch
+    version: v1beta1
+  platform:
+    agentBareMetal:
+      agentSelector:
+        matchLabels:
+          cluster-name: "spoke-multiarch"
+  pullSecretRef:
+    name: pullsecret-cluster-spoke-multiarch

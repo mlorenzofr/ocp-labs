@@ -1,0 +1,17 @@
+---
+apiVersion: agent-install.openshift.io/v1beta1
+kind: InfraEnv
+metadata:
+  name: spoke-multiarch
+  namespace: managed
+spec:
+  additionalNTPSources:
+    - 192.168.125.1
+  clusterRef:
+    name: spoke-multiarch
+    namespace: managed
+  agentLabels:
+    cluster-name: "spoke-multiarch"
+  pullSecretRef:
+    name: pull-secret-spoke-multiarch
+  sshAuthorizedKey: <redacted>
