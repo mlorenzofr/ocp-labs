@@ -73,12 +73,12 @@ spec:
 {% set version_major = '.'.join(image.ocp_version.split('.')[0:2]) %}
     - openshiftVersion: "{{ version_major }}"
 {% if not 'url' in image.keys() %}
-      url: "https://mirror.openshift.com/pub/openshift-v4/{{ image.arch }}/dependencies/rhcos/{{ version_major }}/{{ image.ocp_version }}/rhcos-{{ image.ocp_version }}-{{ image.arch }}-live.{{ image.arch }}.iso"
+      url: "https://mirror.openshift.com/pub/openshift-v4/{{ image.arch }}/dependencies/rhcos/{{ version_major }}/{{ image.ocp_version }}/rhcos-{{ image.ocp_version }}-{{ 'aarch64' if image.arch == 'arm64' else image.arch }}-live.{{ image.arch }}.iso"
 {% else %}
       url: "{{ image.url }}"
 {% endif %}
 {% if not 'rootfs' in image.keys() %}
-      rootFSUrl: "https://mirror.openshift.com/pub/openshift-v4/{{ image.arch }}/dependencies/rhcos/{{ version_major }}/{{ image.ocp_version }}/rhcos-{{ image.ocp_version }}-{{ image.arch }}-live-rootfs.{{ image.arch }}.img"
+      rootFSUrl: "https://mirror.openshift.com/pub/openshift-v4/{{ image.arch }}/dependencies/rhcos/{{ version_major }}/{{ image.ocp_version }}/rhcos-{{ image.ocp_version }}-{{ 'aarch64' if image.arch == 'arm64' else image.arch }}-live-rootfs.{{ image.arch }}.img"
 {% else %}
 {% if image.rootfs != '' %}
       rootFSUrl: "{{ image.rootfs }}"
