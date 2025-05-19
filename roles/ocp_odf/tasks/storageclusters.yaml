@@ -1,0 +1,17 @@
+---
+- name: 'Create storagecluster manifest'
+  ansible.builtin.template:
+    src: 'storagecluster.yaml.j2'
+    dest: "{{ ocp_odf_path }}/storagecluster-{{ item.name }}.yaml"
+    mode: '0644'
+
+- name: 'Apply storagecluster manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_odf_path }}/storagecluster-{{ item.name }}.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  register: __odf_clusters
+  until: __odf_clusters is not failed
+  retries: 10
+  delay: 30
+  when: ocp_odf_apply and not ansible_check_mode

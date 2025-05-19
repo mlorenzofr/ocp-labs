@@ -2,10 +2,10 @@
 This role installs and configures **O**penshift **D**ata **F**oundation (ODF) on Openshift cluster.
 
 ## Requirements
-This role requires `ocp_localstorage` role.
+This role requires `ocp_localstorage` or `ocp_lvms` roles for local storage.
 
 ## Role Variables
-* `ocp_odf_install`. _Bool_. Set wether the role should apply manifests or simply create them.
+* `ocp_odf_apply`. _Bool_. Set wether the role should apply manifests or simply create them.
 * `ocp_odf_ns`. _String_. Namespace for the Local Storage Operator.
 * `ocp_odf_noobaa`. _Bool_. Enable Multicloud Object Gateway (_Noobaa_).
 * `ocp_odf_noobaa_backingstores`. _List_. List of Noobaa `BackingStores`.
@@ -15,7 +15,7 @@ This role requires `ocp_localstorage` role.
 * `ocp_odf_noobaa_storage`. _String_. Default storage size for NooBaa.
 * `ocp_odf_noobaa_storageclass`. _String_. Default StorageClass used by NooBaa, leave it empty to use the default SC.
 * `ocp_odf_path`. _String_. Path where the manifest files are saved.
-* `ocp_odf_subscription_channel`. _String_. Operator subscription channel.
+* `ocp_odf_source`. _String_. Name of the catalog source name for installing the odf-operator.
 * `ocp_odf_storage`. _String_. Local storage operator to use (`lvms` or `local-storage`).
 * `ocp_odf_clusters`. _List_. List of `StorageClusters`.
 
@@ -43,7 +43,6 @@ This role requires `ocp_localstorage` role.
 - hosts: servers
 
   vars:
-    ocp_odf_install: true
     ocp_odf_path: '/home/labs/localstorage'
     ocp_odf_clusters:
       - name: 'ocs-storagecluster'

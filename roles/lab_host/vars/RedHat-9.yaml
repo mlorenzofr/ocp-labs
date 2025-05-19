@@ -1,0 +1,55 @@
+---
+rh_release: '9.4.0'
+lab_host_packages:
+  - 'bash-completion'
+  - 'bind-utils'
+  - 'chrony'
+  - 'cpio'
+  - 'git'
+  - 'jq'
+  - 'kpartx'
+  - 'libguestfs'
+  - 'libguestfs-tools-c'
+  - 'libvirt'
+  - 'libvirt-daemon-driver-qemu'
+  - 'nmap'
+  - 'nmstate'
+  - 'policycoreutils-python-utils'
+  - 'python3-pip'
+  # - 'python3-cherrypy'
+  - 'qemu-kvm'
+  - 'rsync'
+  - 'skopeo'
+  - 'squid'
+  - 'tar'
+  - 'telnet'
+  - 'tmux'
+  - 'vim-enhanced'
+  - 'virt-install'
+  - 'virt-viewer'
+  - 'wget'
+lab_host_pip_packages:
+  - 'strato-skipper==2.0.2'
+  - 'kubernetes'
+lab_host_scripts:
+  - 'extract-ignition.sh'
+  - 'kubelet-renew-certificates.sh'
+  - 'ocp-snapshot.sh'
+lab_host_repos:
+  - name: 'beaker-AppStream-debuginfo'
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ rh_release }}/AppStream/{{ ansible_machine }}/debug/tree"
+  - name: 'beaker-AppStream'
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ rh_release }}/AppStream/{{ ansible_machine }}/os"
+  - name: 'beaker-BaseOS-debuginfo'
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ rh_release }}/BaseOS/{{ ansible_machine }}/debug/tree"
+  - name: 'beaker-BaseOS'
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ rh_release }}/BaseOS/{{ ansible_machine }}/os"
+  - name: 'beaker-CRB-debuginfo'
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ rh_release }}/CRB/{{ ansible_machine }}/debug/tree"
+  - name: 'beaker-CRB'
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ rh_release }}/CRB/{{ ansible_machine }}/os"
+  - name: 'beaker-HighAvailability-debuginfo'
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ rh_release }}/HighAvailability/{{ ansible_machine }}/debug/tree"
+  - name: 'beaker-HighAvailability'
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ rh_release }}/HighAvailability/{{ ansible_machine }}/os"
+...

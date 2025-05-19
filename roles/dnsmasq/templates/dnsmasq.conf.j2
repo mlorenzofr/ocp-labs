@@ -77,14 +77,13 @@ no-poll
 no-hosts
 {% endif %}
 
+{% for domain in dnsmasq_local_domains %}
+local=/{{ domain }}/
+{% endfor %}
 {% for server in dnsmasq_servers %}
 server={% if 'base' in server.keys() %}/{{ server.base }}/{% endif %}{{ server.address }}{% if 'interface' in server.keys() %}@{{ server.interface }}{% endif %}{% if 'port' in server.keys() %}#{{ server.port }}{% endif %}
 
 {% endfor %}
-
-# Add local-only domains here, queries in these domains are answered
-# from /etc/hosts or DHCP only.
-#local=/localnet/
 
 # Add the IPs of all queries to yahoo.com, google.com, and their
 # subdomains to the vpn and search ipsets:

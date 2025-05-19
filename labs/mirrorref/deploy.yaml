@@ -122,7 +122,7 @@
         host_network: "{{ lab_node_network_base }}0/24"
         masters: 1
         domain: 'local.lab'
-        ip: "{{ lab_node_network_base }}64"
+        api_vips: ["{{ lab_node_network_base }}64"]
         registry: 'mirror-registry-config'
 
 - name: 'Extract spoke cluster configuration'

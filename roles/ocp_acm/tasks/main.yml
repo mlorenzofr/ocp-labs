@@ -12,6 +12,13 @@
       source: "{{ ocp_acm_source }}"
   tags: ['olm']
 
+- name: 'Create ACM namespace'
+  kubernetes.core.k8s:
+    name: "{{ ocp_acm_ns }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+
 - name: 'Create pull-secret for ACM (base64)'
   kubernetes.core.k8s:
     state: present
@@ -53,6 +60,6 @@
     - __acm_status.resources | length > 0
     - __acm_status.resources[0].status.phase is defined
     - __acm_status.resources[0].status.phase == 'Running'
-  retries: 20
+  retries: 30
   delay: 30
   when: ocp_acm_apply

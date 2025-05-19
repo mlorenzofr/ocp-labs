@@ -61,7 +61,7 @@
         host_network: '192.168.140.0/24'
         masters: 1
         domain: 'local.lab'
-        ip: '192.168.140.25'
+        api_vips: ['192.168.125.25']
 
 - name: 'Prepare okd cluster configuration'
   ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml

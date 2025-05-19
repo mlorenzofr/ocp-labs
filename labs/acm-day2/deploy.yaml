@@ -1,0 +1,112 @@
+---
+# Run it with:
+#   ap labs/acm-day2/deploy.yaml
+
+- name: 'Clean acm-hub lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'acm-hub-1'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Clean acm-spoke lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'acm-spoke-1'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'ocp'
+    - 'acm-hub-1'
+  vars:
+    lab_name: 'acm-hub-1'
+    lab_abi_ip: "{{ lab_node_network_base }}71"
+    lab_api_ips: ["{{ lab_node_network_base }}102"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}103"]
+    lab_node_memory: 28000
+    lab_node_disk_data: 60
+    lab_hosts:
+      - {id: '71', role: 'master'}
+      - {id: '72', role: 'master'}
+      - {id: '73', role: 'master'}
+    start_install: true
+
+- name: 'Install ACM on hub cluster'
+  ansible.builtin.import_playbook: ../../playbooks/setup/hive.yml
+  tags:
+    - 'postinst'
+    - 'acm'
+  vars:
+    lab_name: 'acm-hub-1'
+
+    ocp_assisted_service_op: 'acm'
+    ocp_assisted_service_infraenvs:
+      - name: 'spoke1'
+        ns: 'managed'
+        ntp: ["{{ lab_node_network_base }}1"]
+        redfish: "{{ lab_node_network_base }}1"
+        inventory:
+          - {'name': "{{ lab_name }}-bmh-1", 'id': '74'}
+          - {'name': "{{ lab_name }}-bmh-2", 'id': '75'}
+          - {'name': "{{ lab_name }}-bmh-3", 'id': '76'}
+
+    ocp_hive_clusters:
+      - name: 'spoke1'
+        ns: 'managed'
+        image: 'img4.18.6-x86-64-appsub'
+        service_network: '172.32.0.0/16'
+        host_network: "{{ lab_node_network_base }}0/24"
+        masters: 3
+        domain: 'local.lab'
+        api_vips: ["{{ lab_node_network_base }}104"]
+        ingress_vips: ["{{ lab_node_network_base }}105"]
+
+- name: 'Extract spoke cluster configuration'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml
+  vars:
+    lab_name: 'acm-hub-1'
+    lab_path: '/root/labs'
+    hive_cluster_name: 'spoke1'
+    hive_ns: 'managed'
+  tags:
+    - 'postinst'
+    - 'hive-config'
+
+- name: Additional tasks
+  hosts: lab
+  gather_facts: false
+
+  vars:
+    lab_name: 'acm-hub-1'
+    lab_configs: "/root/labs/{{ lab_name }}/config"
+    lab_network_name: 'lab-network'
+    lab_install: true
+    lab_mac_base: 'be:be:ca:fe:02:'
+    lab_node_network_base: '192.168.125.'
+    lab_node_disk_pool: 'ocp'
+
+    ocp_assisted_service_op: 'acm'
+    ocp_assisted_service_infraenvs:
+      - name: 'spoke1'
+        ns: 'managed'
+        ntp: ["{{ lab_node_network_base }}1"]
+        redfish: "{{ lab_node_network_base }}1"
+        inventory:
+          - {'name': "{{ lab_name }}-bmh-1", 'id': '74'}
+          - {'name': "{{ lab_name }}-bmh-2", 'id': '75'}
+          - {'name': "{{ lab_name }}-bmh-3", 'id': '76'}
+          - {'name': "{{ lab_name }}-bmh-4", 'id': '77'}
+
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  roles:
+    - role: ocp_assisted_service
+      tags:
+        - 'add-node'
+        - 'never'

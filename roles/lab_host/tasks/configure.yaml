@@ -20,7 +20,8 @@
     path: '/root/.config/containers'
     owner: 'root'
     group: 'root'
-    mode: '0755'
+    mode: '0750'
+    state: 'directory'
 
 - name: 'Create containers authentication file'
   ansible.builtin.copy:

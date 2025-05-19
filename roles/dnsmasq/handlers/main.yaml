@@ -5,3 +5,4 @@
     state: 'restarted'
     enabled: true
   listen: 'svc restart dnsmasq'
+  ignore_errors: "{{ ansible_check_mode }}"

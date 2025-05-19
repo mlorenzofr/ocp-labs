@@ -3,12 +3,13 @@
   community.general.copr:
     name: 'karmab/kcli'
     state: 'enabled'
-    chroot: 'epel-8-x86_64'
+    chroot: "epel-{{ ansible_distribution_major_version }}-{{ ansible_machine }}"
 
 - name: 'Install kcli package'
   ansible.builtin.package:
     name: 'kcli'
     state: 'present'
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Install ksushy service'
   ansible.builtin.command:
@@ -17,6 +18,14 @@
   notify:
     - 'systemd daemon-reload'
     - 'svc restart ksushy'
+
+- name: 'Create ksushy override directory'
+  ansible.builtin.file:
+    path: '/etc/systemd/system/ksushy.service.d'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+    state: directory
 
 - name: 'Add ksushy overrides'
   ansible.builtin.template:

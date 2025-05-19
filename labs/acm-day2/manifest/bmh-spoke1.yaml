@@ -1,0 +1,84 @@
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: acm-hub-1-bmh-1
+  namespace: managed
+  labels:
+    infraenvs.agent-install.openshift.io: spoke1
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: acm-hub-1-bmh-1
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: be:be:ca:fe:02:74
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.125.1:9000/redfish/v1/Systems/local/acm-hub-1-bmh-1
+    credentialsName: acm-hub-1-bmh-1-bmc-secret
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: acm-hub-1-bmh-2
+  namespace: managed
+  labels:
+    infraenvs.agent-install.openshift.io: spoke1
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: acm-hub-1-bmh-2
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: be:be:ca:fe:02:75
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.125.1:9000/redfish/v1/Systems/local/acm-hub-1-bmh-2
+    credentialsName: acm-hub-1-bmh-2-bmc-secret
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: acm-hub-1-bmh-3
+  namespace: managed
+  labels:
+    infraenvs.agent-install.openshift.io: spoke1
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: acm-hub-1-bmh-3
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: be:be:ca:fe:02:76
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.125.1:9000/redfish/v1/Systems/local/acm-hub-1-bmh-3
+    credentialsName: acm-hub-1-bmh-3-bmc-secret
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: acm-hub-1-bmh-4
+  namespace: managed
+  labels:
+    infraenvs.agent-install.openshift.io: spoke1
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: acm-hub-1-bmh-4
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: be:be:ca:fe:02:77
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.125.1:9000/redfish/v1/Systems/local/acm-hub-1-bmh-4
+    credentialsName: acm-hub-1-bmh-4-bmc-secret

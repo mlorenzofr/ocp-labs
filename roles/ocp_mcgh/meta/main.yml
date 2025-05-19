@@ -13,5 +13,6 @@ galaxy_info:
         - '8'
   galaxy_tags: []
 dependencies:
-  - name: 'ocp_lvms'
-  - name: 'ocp_acm'
+  - name: 'ocp_assisted_service'
+    vars:
+      ocp_assisted_service_op: 'acm'

@@ -45,6 +45,7 @@ RUN ansible-galaxy collection install \
         community.general:==${ANSIBLE_COMM_GENERAL_VERSION} \
         community.libvirt \
         ansible.posix \
+        containers.podman \
         karmab.kcli \
         kubernetes.core
 

@@ -7,24 +7,24 @@ metadata:
     pod-security.kubernetes.io/enforce: privileged
     pod-security.kubernetes.io/audit: privileged
     pod-security.kubernetes.io/warn: privileged
-  name: {{ ocp_lvms_ns }}
+  name: openshift-storage
 ---
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
   name: openshift-storage-operatorgroup
-  namespace: {{ ocp_lvms_ns }}
+  namespace: openshift-storage
 spec:
   targetNamespaces:
-  - {{ ocp_lvms_ns }}
+    - openshift-storage
 ---
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: lvms
-  namespace: {{ ocp_lvms_ns }}
+  namespace: openshift-storage
 spec:
-  installPlanApproval: Automatic
   name: lvms-operator
-  source: {{ ocp_lvms_source }}
+  installPlanApproval: Automatic
+  source: redhat-operators
   sourceNamespace: openshift-marketplace

@@ -5,3 +5,4 @@
     state: 'reloaded'
     enabled: true
   listen: 'svc reload haproxy'
+  ignore_errors: "{{ ansible_check_mode }}"

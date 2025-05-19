@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: extra-manifests
-  namespace: {{ item.ns }}
+  namespace: managed
 data:
   99_workload_partitioning.yaml: |
     apiVersion: machineconfiguration.openshift.io/v1
@@ -36,71 +36,53 @@ data:
 apiVersion: extensions.hive.openshift.io/v1beta1
 kind: AgentClusterInstall
 metadata:
-  name: {{ item.name }}
-  namespace: {{ item.ns }}
+  name: spoke1
+  namespace: managed
 spec:
   manifestsConfigMapRef:
     name: extra-manifests
   clusterDeploymentRef:
-    name: {{ item.name }}
+    name: spoke1
   imageSetRef:
-    name: {{ item.image }}
-{% if 'registry' in item.keys() %}
-  mirrorRegistryRef:
-    name: {{ item.registry }}
-    namespace: {{ item.ns }}
-{% endif %}
+    name: img4.18.6-x86-64-appsub
   networking:
-    networkType: "{{ item.network_type | default('OVNKubernetes') }}"
+    networkType: "OVNKubernetes"
     clusterNetwork:
-      - cidr: "{{ item.cluster_network | default('10.128.0.0/14') }}"
+      - cidr: "10.128.0.0/14"
         hostPrefix: 23
     serviceNetwork:
-      - "{{ item.service_network | default('172.30.0.0/16') }}"
+      - "172.32.0.0/16"
     machineNetwork:
-      - cidr: "{{ item.host_network }}"
-{% if item.masters > 1 %}
-{% if 'api_vips' in item.keys() %}
+      - cidr: "192.168.125.0/24"
   apiVIPs:
-{% for ipaddr in item.api_vips %}
-    - {{ ipaddr }}
-{% endfor %}
-{% endif %}
-{% if 'ingress_vips' in item.keys() %}
+    - 192.168.125.104
   ingressVIPs:
-{% for ipaddr in item.ingress_vips %}
-    - {{ ipaddr }}
-{% endfor %}
-{% endif %}
-{% endif %}
+    - 192.168.125.105
   provisionRequirements:
-    controlPlaneAgents: {{ item.masters }}
-{% if item.workers | default(0) > 0 %}
-    workerAgents: {{ item.workers }}
-{% endif %}
-  sshPublicKey: '{{ item.ssh_key | default(ocp_hive_ssh_key) }}'
+    controlPlaneAgents: 3
+  sshPublicKey: '<redacted>'
 ---
 apiVersion: hive.openshift.io/v1
 kind: ClusterDeployment
 metadata:
-  name: {{ item.name }}
-  namespace: {{ item.ns }}
+  name: spoke1
+  namespace: managed
   annotations:
     hive.openshift.io/try-install-once: "true"
 spec:
-  baseDomain: {{ item.domain }}
-  clusterName: {{ item.name }}
+  baseDomain: local.lab
+  clusterName: spoke1
   controlPlaneConfig:
     servingCertificates: {}
   clusterInstallRef:
     group: extensions.hive.openshift.io
     kind: AgentClusterInstall
-    name: {{ item.name }}
+    name: spoke1
     version: v1beta1
   platform:
     agentBareMetal:
       agentSelector:
         matchLabels:
-          cluster-name: "{{ item.name }}"
+          cluster-name: "spoke1"
   pullSecretRef:
-    name: pullsecret-cluster-{{ item.name }}
+    name: pullsecret-cluster-spoke1
