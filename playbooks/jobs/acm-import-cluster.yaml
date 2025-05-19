@@ -59,7 +59,7 @@
         name: 'ocp_acm'
         tasks_from: 'import.yaml'
       vars:
-        cluster_name: "{{ cluster_name }}"
+        cluster: "{{ cluster_name }}"
         acm_cwd: "{{ lab_path }}/{{ lab_name }}/import"
         kubeconfig: "{{ kubeconfig_data }}"
 ...

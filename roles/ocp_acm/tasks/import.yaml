@@ -2,19 +2,19 @@
 - name: 'Create managedcluster manifest'
   ansible.builtin.template:
     src: 'managedcluster.yaml.j2'
-    dest: "{{ acm_cwd }}/managedcluster-{{ cluster_name }}.yaml"
+    dest: "{{ acm_cwd }}/managedcluster-{{ cluster }}.yaml"
     owner: 'root'
     group: 'root'
     mode: '0600'
 
 - name: 'Create import namespace'
   kubernetes.core.k8s:
-    name: "{{ cluster_name }}"
+    name: "{{ cluster }}"
     api_version: v1
     kind: Namespace
     state: present
     # labels:
-    #  cluster.open-cluster-management.io/managedCluster: '{{ cluster_name }}'
+    #  cluster.open-cluster-management.io/managedCluster: '{{ cluster }}'
 
 - name: 'Create kubeconfig secret'
   kubernetes.core.k8s:
@@ -24,15 +24,16 @@
       kind: 'Secret'
       metadata:
         name: 'auto-import-secret'
-        namespace: "{{ cluster_name }}"
+        namespace: "{{ cluster }}"
       type: 'Opaque'
       stringData:
         autoImportRetry: "5"
-        kubeconfig: "'{{ kubeconfig }}'"
+      data:
+        kubeconfig: "{{ kubeconfig | b64encode }}"
 
 - name: 'Apply managedcluster manifest'
   kubernetes.core.k8s:
     state: 'present'
-    src: "{{ acm_cwd }}/managedcluster-{{ cluster_name }}.yaml"
+    src: "{{ acm_cwd }}/managedcluster-{{ cluster }}.yaml"
   ignore_errors: "{{ ansible_check_mode }}"
 ...
