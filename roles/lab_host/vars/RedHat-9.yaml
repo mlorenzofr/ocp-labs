@@ -1,5 +1,5 @@
 ---
-rh_release: '9.4.0'
+rh_release: '9.5.0'
 lab_host_packages:
   - 'bash-completion'
   - 'bind-utils'

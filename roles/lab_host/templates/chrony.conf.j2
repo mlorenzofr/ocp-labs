@@ -11,3 +11,8 @@ bindcmdaddress ::
 {% for network in lab_host_networks %}
 allow {{ network.cidr }}
 {% endfor %}
+{% if ansible_distribution_major_version == '9' %}
+
+# Use NTP servers from DHCP.
+sourcedir /run/chrony-dhcp
+{% endif %}
