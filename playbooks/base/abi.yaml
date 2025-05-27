@@ -25,6 +25,7 @@
     lab_node_network_base: '192.168.125.'
     lab_node_role: 'node'
     libvirt_image_dir: '/home/libvirt-ocp'
+    install_extra_manifests: []
     lab_hosts:
       - {'id': '31'}
       - {'id': '32'}
@@ -61,6 +62,22 @@
       ansible.builtin.include_tasks:
         file: '../setup/calico.yaml'
       when: calico_version is defined
+
+    - name: 'Add extra manifests'
+      block:
+        - name: 'Create openshift manifests directory'
+          ansible.builtin.file:
+            path: "{{ lab_path }}/{{ lab_name }}/deploy/openshift"
+            state: 'directory'
+        - name: 'Copy custom manifests'
+          ansible.builtin.template:
+            src: "{{ item.src }}"
+            dest: "{{ lab_path }}/{{ lab_name }}/deploy/openshift/{{ item.dest }}"
+            mode: '0640'
+          loop: "{{ install_extra_manifests }}"
+      when:
+        - install_extra_manifests is defined
+        - install_extra_manifests | length > 0
 
     - name: 'Generate bootstrap ISO image'
       ansible.builtin.command:
