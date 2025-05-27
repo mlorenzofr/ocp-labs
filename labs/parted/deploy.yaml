@@ -1,0 +1,43 @@
+---
+# Run it with:
+#   ap labs/parted/deploy.yaml
+
+- name: 'Clean parted lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'parted'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'parted'
+    lab_abi_ip: "{{ lab_node_network_base }}31"
+    lab_api_ips: ["{{ lab_node_network_base }}108"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}109"]
+    lab_local_path: "/ansible/labs/{{ lab_name }}"
+    lab_worker_replicas: 0
+    lab_node_memory: 22000
+    lab_node_disk_sys: 130
+    lab_hosts:
+      - {id: '31'}
+      - {id: '32'}
+      - {id: '33'}
+    lab_custom_capability_set: 'None'
+    lab_custom_capabilities:
+      - baremetal
+      - MachineAPI
+      - marketplace
+      - OperatorLifecycleManager
+      - Console
+      - Ingress
+      - Storage
+      - NodeTuning
+      - DeploymentConfig
+    start_install: true
+    install_extra_manifests:
+      - {src: "{{ lab_local_path }}/manifest/parted.yaml.j2", dest: '50_parted.yaml'}
