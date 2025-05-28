@@ -1,0 +1,13 @@
+---
+- name: 'Create ImageContentSourcePolicy manifest'
+  ansible.builtin.template:
+    src: 'icsp.yaml.j2'
+    dest: "{{ ocp_mco_path }}/icsp-{{ item.name }}.yaml"
+    mode: '0644'
+
+- name: 'Apply ImageContentSourcePolicy manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_mco_path }}/icsp-{{ item.name }}.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_mco_apply and not ansible_check_mode

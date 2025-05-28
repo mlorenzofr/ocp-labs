@@ -1,8 +1,22 @@
 ---
-- name: 'Create ImageContentSourcePolicy manifests'
-  ansible.builtin.template:
-    src: 'icsp.yaml.j2'
-    dest: "{{ ocp_mco_path }}/icsp-{{ item.name }}.yaml"
-    mode: '0644'
+- name: 'Create ImageContentSourcePolicies'
+  ansible.builtin.include_tasks:
+    file: 'icsp.yaml'
   loop: "{{ ocp_mco_icsp }}"
-  notify: 'update icsp'
+
+- name: 'Create authorized_keys manifest'
+  ansible.builtin.template:
+    src: 'ssh-keys.yaml.j2'
+    dest: "{{ ocp_mco_path }}/authorized_keys.yaml"
+    mode: '0644'
+  when: ocp_mco_authorized_keys | length > 0
+
+- name: 'Apply authorized_keys manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_mco_path }}/authorized_keys.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  when:
+    - ocp_mco_apply
+    - not ansible_check_mode
+    - ocp_mco_authorized_keys | length > 0

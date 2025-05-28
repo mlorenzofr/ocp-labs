@@ -1,4 +1,5 @@
 ---
+ocp_mco_authorized_keys: []
 ocp_mco_icsp: []
-ocp_mco_install: "{{ lab_install | default(false) }}"
-ocp_mco_path: "{{ lab_configs }}"
+ocp_mco_apply: "{{ ocp_apply | default(true) }}"
+ocp_mco_path: "{{ lab_configs | default('/tmp') }}"
