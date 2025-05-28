@@ -6,10 +6,14 @@ kind: BareMetalHost
 metadata:
   name: {{ hostname }}
   namespace: {{ infra.ns }}
+{% if infra.ns != 'openshift-machine-api' %}
   labels:
     infraenvs.agent-install.openshift.io: {{ infra.name }}
+{% endif %}
   annotations:
+{% if infra.ns != 'openshift-machine-api' %}
     inspect.metal3.io: disabled
+{% endif %}
     bmac.agent-install.openshift.io/hostname: {{ hostname }}
 {% if 'role' in bmh.keys() %}
     bmac.agent-install.openshift.io/role: "{{ bmh.role }}"
