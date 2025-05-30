@@ -1,0 +1,18 @@
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: stdslim-bmh-1
+  namespace: openshift-machine-api
+  annotations:
+    bmac.agent-install.openshift.io/hostname: stdslim-bmh-1
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: be:be:ca:fe:05:54
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.125.1:9000/redfish/v1/Systems/local/stdslim-bmh-1
+    credentialsName: stdslim-bmh-1-bmc-secret

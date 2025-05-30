@@ -1,0 +1,105 @@
+---
+# Run it with:
+#   ap labs/javed1/deploy.yaml
+
+- name: 'Clean std-slim lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'stdslim'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'stdslim'
+    lab_abi_ip: "{{ lab_node_network_base }}51"
+    lab_api_ips: ["{{ lab_node_network_base }}58"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}59"]
+    lab_mac_base: 'be:be:ca:fe:05:'
+    lab_worker_replicas: 0
+    lab_node_memory: 22000
+    lab_node_disk_data: 60
+    lab_hosts:
+      - {id: '51'}
+      - {id: '52'}
+      - {id: '53'}
+    lab_custom_capability_set: 'None'
+    lab_custom_capabilities:
+      - baremetal
+      - MachineAPI
+      - marketplace
+      - OperatorLifecycleManager
+      - Console
+      - Ingress
+      - Storage
+      - NodeTuning
+      - DeploymentConfig
+    start_install: true
+
+- name: 'Import setup playbook'
+  ansible.builtin.import_playbook: ../../playbooks/setup/mce.yaml
+  tags:
+    - 'postinst'
+  vars:
+    lab_name: 'stdslim'
+    lab_mac_base: 'be:be:ca:fe:05:'
+
+- name: 'Add new worker nodes (day-2)'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/add-worker.yaml
+  vars:
+    lab_name: 'stdslim'
+    lab_mac_base: 'be:be:ca:fe:05:'
+
+    ocp_baremetal_infras:
+      - name: 'workers'
+        ns: 'openshift-machine-api'
+        ntp: ["{{ lab_node_network_base }}1"]
+        redfish: "{{ lab_node_network_base }}1"
+        inventory:
+          - {'name': "{{ lab_name }}-bmh-1", 'id': '54'}
+          # - {'name': "{{ lab_name }}-bmh-2", 'id': '55'}
+  tags:
+    - 'postinst'
+    - 'workers'
+
+- name: 'Post-installation tasks'
+  hosts: ['lab']
+
+  vars:
+    lab_name: 'stdslim'
+    lab_path: '/root/labs'
+    lab_configs: "{{ lab_path }}/{{ lab_name }}/config"
+    ocp_mco_authorized_keys:
+      - "{{ ocp_ssh_key }}"
+      # - 'ssh-rsa .... '
+
+  environment:
+    KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  tags:
+    - 'postinst'
+
+  roles:
+    - role: 'ocp_mco'
+      tags:
+        - 'mco'
+        - 'authorized_keys'
+
+  tasks:
+    - name: 'Scale worker nodes'
+      kubernetes.core.k8s_scale:
+        api_version: 'machine.openshift.io/v1beta1'
+        kind: 'machinesets'
+        namespace: 'openshift-machine-api'
+        label_selectors:
+          - 'machine.openshift.io/cluster-api-machine-role=worker'
+          - 'machine.openshift.io/cluster-api-machine-type=worker'
+        replicas: 2
+        wait: no
+      check_mode: true  # This resource is not supported by the ansible module and must be done manually
+      tags:
+        - 'scale'
