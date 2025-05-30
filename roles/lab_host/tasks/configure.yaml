@@ -50,3 +50,9 @@
     mode: '0644'
   notify:
     - 'svc restart squid'
+
+- name: 'Enable squid service'
+  ansible.builtin.service:
+    name: 'squid'
+    enabled: true
+  ignore_errors: "{{ ansible_check_mode }}"
