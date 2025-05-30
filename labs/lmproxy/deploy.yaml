@@ -1,0 +1,31 @@
+---
+# Run it with:
+#   ap labs/lmproxy/deploy.yaml
+
+- name: 'Clean lmproxy lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'lmproxy'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'lmproxy'
+    lab_abi_ip: "{{ lab_node_network_base }}21"
+    lab_api_ips: ["{{ lab_node_network_base }}100"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}101"]
+    lab_mac_base: 'be:be:ca:fe:06:'
+    lab_node_memory: 22000
+    lab_node_network_base: '192.168.129.'
+    lab_proxy_http: "http://{{ lab_node_network_base }}1:3128"
+    lab_network_name: 'pinnedis-net'
+    lab_hosts:
+      - {id: '21'}
+      - {id: '22'}
+      - {id: '23'}
+    start_install: true
