@@ -1,0 +1,13 @@
+---
+- name: 'Create ConsolePlugin manifest'
+  ansible.builtin.template:
+    src: 'console_plugin.yaml.j2'
+    dest: "{{ ocp_olm_path }}/console-plugin-{{ item.name }}.yaml"
+    mode: '0644'
+
+- name: 'Install ConsolePlugin manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_olm_path }}/console-plugin-{{ item.name }}.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_olm_apply

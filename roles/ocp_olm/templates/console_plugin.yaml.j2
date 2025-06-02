@@ -1,0 +1,12 @@
+---
+apiVersion: console.openshift.io/v1alpha1
+kind: ConsolePlugin
+metadata:
+  name: '{{ item.name }}'
+spec:
+  displayName: '{{ item.display_name | default(item.name) }}'
+  service:
+    name: '{{ item.name }}'
+    namespace: '{{ item.ns }}'
+    port: {{ item.port }}
+    basePath: '{{ item.base_path | default('/') }}'
