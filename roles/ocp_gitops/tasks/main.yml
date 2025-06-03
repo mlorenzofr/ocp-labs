@@ -1,0 +1,26 @@
+---
+- name: 'Create gitops installation manifest'
+  ansible.builtin.include_role:
+    name: 'ocp_olm'
+    tasks_from: 'subscription.yaml'
+  loop:
+    - operator_name: 'openshift-gitops-operator'
+      ns: "{{ ocp_gitops_ns }}"
+      monitoring: True
+      global: True
+      operator_group: 'openshift-gitops-operatorgroup'
+      channel: "{{ ocp_gitops_channel }}"
+      source: "{{ ocp_gitops_source }}"
+  tags: ['olm']
+
+- name: 'Create gitops ConsolePlugin'
+  ansible.builtin.include_role:
+    name: 'ocp_olm'
+    tasks_from: 'console_plugin.yaml'
+  loop:
+    - name: 'gitops-plugin'
+      display_name: 'GitOps Plugin'
+      ns: "{{ ocp_gitops_console_ns }}"
+      port: "{{ ocp_gitops_console_port }}"
+  when: ocp_gitops_console_plugin
+  tags: ['olm']
