@@ -1,4 +1,5 @@
 ---
+{% if item.ns != 'openshift-operators' %}
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -13,6 +14,8 @@ metadata:
 {% endif %}
   name: {{ item.ns }}
 ---
+{% endif %}
+{% if item.operator_group | default('') != 'global-operators' %}
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
@@ -24,6 +27,7 @@ spec:
     - {{ item.ns }}
 {% endif %}
 ---
+{% endif %}
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
