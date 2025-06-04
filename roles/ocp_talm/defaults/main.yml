@@ -1,0 +1,7 @@
+---
+ocp_talm_apply: "{{ ocp_apply | default(true) }}"
+ocp_talm_channel: 'stable'
+ocp_talm_ns: 'openshift-operators'
+ocp_talm_operatorgroup: 'global-operators'
+ocp_talm_path: "{{ lab_configs | default('/tmp') }}"
+ocp_talm_source: 'redhat-operators'

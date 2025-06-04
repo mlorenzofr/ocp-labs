@@ -1,0 +1,14 @@
+---
+- name: 'Create TALM installation manifest'
+  ansible.builtin.include_role:
+    name: 'ocp_olm'
+    tasks_from: 'subscription.yaml'
+  loop:
+    - operator_name: 'topology-aware-lifecycle-manager'
+      ns: "{{ ocp_talm_ns }}"
+      monitoring: True
+      global: True
+      operator_group: "{{ ocp_talm_operatorgroup }}"
+      channel: "{{ ocp_talm_channel }}"
+      source: "{{ ocp_talm_source }}"
+  tags: ['olm']
