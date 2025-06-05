@@ -10,6 +10,7 @@ None.
 * `ocp_acm_ns`. _String_. Namespace for the Operator.
 * `ocp_acm_path`. _String_. Path where the manifest files are saved.
 * `ocp_acm_pullsecret`. _String_. Pull secret credentials for distribution registry.
+* `ocp_acm_siteconfig`. _Bool_. Enable or disable `SiteConfig` component (ZTP).
 * `ocp_acm_source`. _String_. Name of the `CatalogSource` to install ACM.
 
 ## Example Playbook

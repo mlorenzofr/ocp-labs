@@ -5,4 +5,5 @@ acm_cwd: '/tmp'
 ocp_acm_ns: 'open-cluster-management'
 ocp_acm_path: "{{ lab_configs | default('/tmp') }}"
 ocp_acm_pullsecret: "{{ ocp_pullsecret_b64 }}"
+ocp_acm_siteconfig: False
 ocp_acm_source: 'redhat-operators'

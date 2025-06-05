@@ -63,3 +63,18 @@
   retries: 30
   delay: 30
   when: ocp_acm_apply
+
+- name: 'Enable siteconfig component'
+  kubernetes.core.k8s_json_patch:
+    api_version: 'operator.open-cluster-management.io/v1'
+    kind: 'MultiClusterHub'
+    name: 'multiclusterhub'
+    namespace: 'open-cluster-management'
+    patch:
+      - op: 'add'
+        path: '/spec/overrides/components/-'
+        value:
+          name: 'siteconfig'
+          enabled: true
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_acm_siteconfig
