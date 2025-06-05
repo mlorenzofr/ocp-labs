@@ -24,3 +24,8 @@
       port: "{{ ocp_gitops_console_port }}"
   when: ocp_gitops_console_plugin
   tags: ['olm']
+
+- name: 'Prepare ztp secrets'
+  ansible.builtin.include_tasks:
+    file: 'secrets.yaml'
+  loop: "{{ ocp_gitops_secrets }}"
