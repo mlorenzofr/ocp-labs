@@ -1,4 +1,5 @@
 ---
+{% if ocp_assisted_service_config.items() | length > 0 %}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -8,8 +9,9 @@ data:
 {% for option, value in ocp_assisted_service_config.items() %}
   {{ option | upper }}: {{ value }}
 {% endfor %}
-{% if ocp_assisted_service_registries | length > 0 %}
 ---
+{% endif %}
+{% if ocp_assisted_service_registries | length > 0 %}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -33,15 +35,17 @@ data:
           location = "{{ registry.mirror }}"
           pull-from-mirror = "digest-only"
 {% endfor %}
-{% endif %}
 ---
+{% endif %}
 apiVersion: agent-install.openshift.io/v1beta1
 kind: AgentServiceConfig
 metadata:
   namespace: {{ ocp_assisted_service_ns }}
   name: agent
+{% if ocp_assisted_service_config.items() | length > 0 %}
   annotations:
     unsupported.agent-install.openshift.io/assisted-service-configmap: assisted-service-config
+{% endif %}
 spec:
   databaseStorage:
     storageClassName: {{ ocp_assisted_service_sc_name }}
