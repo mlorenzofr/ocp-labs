@@ -1,0 +1,40 @@
+---
+- name: 'Pull ztp-site-generator image'
+  containers.podman.podman_image:
+    name: "{{ ocp_gitops_site_generator_image }}"
+    tag: "{{ ocp_gitops_site_generator_tag }}"
+
+- name: 'Create out directory'
+  ansible.builtin.file:
+    path: "{{ ocp_gitops_site_generator_out_dir }}"
+    owner: 'root'
+    group: 'root'
+    mode: '0750'
+    state: 'directory'
+
+- name: 'Extract ztp-site-generator files'
+  ansible.builtin.shell:
+    cmd: >
+      podman run --log-driver=none --rm
+      {{ ocp_gitops_site_generator_image }}:{{ ocp_gitops_site_generator_tag }}
+      extract /home/ztp --tar
+      | tar x -C {{ ocp_gitops_site_generator_out_dir }}
+    creates: "{{ ocp_gitops_site_generator_out_dir }}/argocd"
+
+- name: 'Patch argocd resource'
+  ansible.builtin.command:
+    cmd: >
+      oc patch argocd openshift-gitops -n {{ ocp_gitops_console_ns }}
+      --type=merge
+      --patch-file {{ ocp_gitops_site_generator_out_dir }}/argocd/deployment/argocd-openshift-gitops-patch.json
+  environment:
+    PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
+
+- name: 'Patch multiclusterengine resource'
+  ansible.builtin.command:
+    cmd: >
+      oc patch multiclusterengines.multicluster.openshift.io multiclusterengine
+      --type=merge
+      --patch-file {{ ocp_gitops_site_generator_out_dir }}/argocd/deployment/disable-cluster-proxy-addon.json
+  environment:
+    PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'

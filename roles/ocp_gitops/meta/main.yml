@@ -13,4 +13,10 @@ galaxy_info:
         - '8'
         - '9'
   galaxy_tags: []
-dependencies: []
+dependencies:
+  - name: 'ocp_assisted_service'
+    vars:
+      ocp_acm_siteconfig: True
+      ocp_assisted_service_config: {}
+      ocp_assisted_service_op: 'acm'
+    when: ocp_gitops_ztp

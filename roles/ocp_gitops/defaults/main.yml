@@ -10,4 +10,8 @@ ocp_gitops_ns: 'openshift-gitops-operator'
 ocp_gitops_path: "{{ lab_configs | default('/tmp') }}"
 ocp_gitops_secrets: []
 ocp_gitops_pull_secret: "{{ ocp_pullsecret_b64 }}"
+ocp_gitops_site_generator_image: 'registry.redhat.io/openshift4/ztp-site-generate-rhel8'
+ocp_gitops_site_generator_tag: 'latest'
+ocp_gitops_site_generator_out_dir: '/tmp/ztp-out'
 ocp_gitops_source: 'redhat-operators'
+ocp_gitops_ztp: False

@@ -29,3 +29,8 @@
   ansible.builtin.include_tasks:
     file: 'secrets.yaml'
   loop: "{{ ocp_gitops_secrets }}"
+
+- name: 'Include ZTP site generator tasks'
+  ansible.builtin.include_tasks:
+    file: 'site_generator.yaml'
+  when: ocp_gitops_ztp
