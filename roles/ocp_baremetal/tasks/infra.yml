@@ -1,4 +1,11 @@
 ---
+- name: 'Create bmh namespace'
+  kubernetes.core.k8s:
+    name: "{{ infra.ns }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+
 - name: 'Create secrets for BMC credentials'
   kubernetes.core.k8s:
     state: present
