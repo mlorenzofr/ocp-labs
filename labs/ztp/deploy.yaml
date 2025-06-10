@@ -1,0 +1,179 @@
+---
+# Run it with:
+#   ap labs/ztp/deploy.yaml
+
+- name: 'Clean ztp lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'ztp'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'ztp'
+    lab_abi_ip: "{{ lab_node_network_base }}61"
+    lab_api_ips: ["{{ lab_node_network_base }}100"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}101"]
+    lab_node_memory: 28000
+    lab_node_disk_data: 60
+    lab_hosts:
+      - {id: '61', role: 'master'}
+      - {id: '62', role: 'master'}
+      - {id: '63', role: 'master'}
+    start_install: true
+
+- name: 'Prepare ZTP'
+  hosts:
+    - 'lab'
+  gather_facts: false
+  tags:
+    - 'postinst'
+    - 'ztp'
+  vars:
+    lab_network_name: 'lab-network'
+    lab_mac_base: 'be:be:ca:fe:02:'
+    lab_node_network_base: '192.168.125.'
+    lab_node_disk_pool: 'ocp'
+    lab_install: true
+
+    lab_name: 'ztp'
+    lab_configs: "/root/labs/{{ lab_name }}/config"
+
+    ocp_gitops_ztp: True
+    ocp_gitops_site_generator_tag: 'v4.18'
+    ocp_gitops_site_generator_out_dir: "{{ lab_configs }}/ztp"
+    ocp_gitops_secrets:
+      - ns: 'ztp-sno'
+        pull_secret_name: 'ztp-pull-secret'
+        nodes:
+          - hostname: 'ztp-bmh-1'
+
+    # Create the VM and DNS entries, but don't create k8s resources
+    # The k8s resources will be created with ZTP
+    ocp_baremetal_apply: False
+    ocp_baremetal_infras:
+      - name: 'ztp'
+        ns: 'ztp-sno'
+        ntp: ["{{ lab_node_network_base }}1"]
+        redfish: "{{ lab_node_network_base }}1"
+        inventory:
+          - {name: "{{ lab_name }}-bmh-1", id: '64'}
+
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+  roles:
+    - 'ocp_baremetal'
+    - 'ocp_talm'
+    - 'ocp_gitops'
+
+  tasks:
+    # This is the ClusterImageSet used in our ClusterInstance definition
+    - name: 'Make ZTP cluster image visible'
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: 'hive.openshift.io/v1'
+          kind: 'ClusterImageSet'
+          metadata:
+            name: 'img4.18.16-x86-64-appsub'
+            labels:
+              visible: 'true'
+
+    # Create DNS records for the spoke cluster
+    - name: 'Create dnsmasq snippet for ztp-sno cluster'
+      ansible.builtin.include_role:
+        name: 'dnsmasq'
+        tasks_from: 'extra_conf.yaml'
+      vars:
+        cluster_name: 'ztp-sno'
+        cluster_domain: 'local.lab'
+        cluster_api_vip: "{{ lab_node_network_base }}64"
+        dnsmasq_conf_snippets:
+          - {src: 'openshift-cluster.conf.j2', dest: "{{ lab_name }}-ztp-sno-cluster.conf"}
+      tags:
+        - 'dnsmasq'
+
+- name: 'Configure ArgoCD apps'
+  hosts:
+    - 'lab'
+  gather_facts: false
+  tags:
+    - 'argocd'
+    - 'never'
+  vars:
+    lab_name: 'ztp'
+    argo_configs: "/root/labs/{{ lab_name }}/config/ztp/argocd/deployment"
+    argo_repo: 'https://github.com/mlorenzofr/ztp-example'
+    argo_siteconfig: 'siteconfig'
+    argo_policies: 'policygenerator'
+    argo_branch: 'master'
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+    PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
+
+  tasks:
+    - name: 'Configure clusters-app'
+      block:
+        - name: 'configure siteconfig path'
+          ansible.builtin.lineinfile:
+            path: "{{ argo_configs }}/clusters-app.yaml"
+            regexp: '^(\s+)path: .*'
+            line: "\\1path: {{ argo_siteconfig }}"
+            backrefs: true
+        - name: 'configure repository'
+          ansible.builtin.lineinfile:
+            path: "{{ argo_configs }}/clusters-app.yaml"
+            regexp: '^(\s+)repoURL: .*'
+            line: "\\1repoURL: {{ argo_repo }}"
+            backrefs: true
+        - name: 'configure branch'
+          ansible.builtin.lineinfile:
+            path: "{{ argo_configs }}/clusters-app.yaml"
+            regexp: '^(\s+)targetRevision: .*'
+            line: "\\1targetRevision: {{ argo_branch }}"
+            backrefs: true
+      ignore_errors: "{{ ansible_check_mode }}"
+      notify: 'Apply argocd manifests'
+
+    - name: 'Configure policies-app'
+      block:
+        - name: 'configure policies path'
+          ansible.builtin.lineinfile:
+            path: "{{ argo_configs }}/policies-app.yaml"
+            regexp: '^(\s+)path: .*'
+            line: "\\1path: {{ argo_policies }}"
+            backrefs: true
+        - name: 'configure repository'
+          ansible.builtin.lineinfile:
+            path: "{{ argo_configs }}/policies-app.yaml"
+            regexp: '^(\s+)repoURL: .*'
+            line: '\1repoURL: {{ argo_repo }}'
+            backrefs: true
+        - name: 'configure branch'
+          ansible.builtin.lineinfile:
+            path: "{{ argo_configs }}/policies-app.yaml"
+            regexp: '^(\s+)targetRevision: .*'
+            line: '\1targetRevision: {{ argo_branch }}'
+            backrefs: true
+      ignore_errors: "{{ ansible_check_mode }}"
+      notify: 'Apply argocd manifests'
+
+  handlers:
+    - name: 'Apply argocd manifests'
+      ansible.builtin.command:
+        cmd: "oc apply -k {{ argo_configs }}"
+
+- name: 'Extract spoke cluster configuration'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml
+  vars:
+    lab_name: 'ztp'
+    lab_path: '/root/labs'
+    hive_cluster_name: 'ztp-sno'
+    hive_ns: 'ztp-sno'
+  tags:
+    - 'hive-config'
+    - 'never'

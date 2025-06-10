@@ -1,0 +1,12 @@
+---
+apiVersion: console.openshift.io/v1alpha1
+kind: ConsolePlugin
+metadata:
+  name: 'gitops-plugin'
+spec:
+  displayName: 'GitOps Plugin'
+  service:
+    name: 'gitops-plugin'
+    namespace: 'openshift-gitops'
+    port: 9001
+    basePath: '/'
