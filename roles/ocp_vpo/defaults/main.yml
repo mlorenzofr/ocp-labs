@@ -1,0 +1,8 @@
+---
+ocp_vpo_apply: "{{ ocp_apply | default(true) }}"
+ocp_vpo_channel: 'fast'
+ocp_vpo_ns: 'openshift-operators'
+ocp_vpo_operatorgroup: 'global-operators'
+ocp_vpo_path: "{{ lab_configs | default('/tmp') }}"
+ocp_vpo_source: 'community-operators'
+ocp_vpo_version: ''

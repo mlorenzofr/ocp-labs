@@ -1,0 +1,15 @@
+---
+- name: 'Install Validated Pattern Operator'
+  ansible.builtin.include_role:
+    name: 'ocp_olm'
+    tasks_from: 'subscription.yaml'
+  loop:
+    - operator_name: 'patterns-operator'
+      ns: "{{ ocp_vpo_ns }}"
+      monitoring: True
+      global: True
+      operator_group: "{{ ocp_vpo_operatorgroup }}"
+      channel: "{{ ocp_vpo_channel }}"
+      source: "{{ ocp_vpo_source }}"
+      csv: "{{ ocp_vpo_version }}"
+  tags: ['olm']
