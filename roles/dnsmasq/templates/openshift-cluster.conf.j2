@@ -1,0 +1,7 @@
+{{ ansible_managed | comment }}
+
+# {{ cluster_name }} cluster records
+
+host-record=api-int.{{ cluster_name }}.{{ cluster_domain }},{{ cluster_api_vip }}
+host-record=api.{{ cluster_name }}.{{ cluster_domain }},{{ cluster_api_vip }}
+address=/apps.{{ cluster_name }}.{{ cluster_domain }}/{{ cluster_ingress_vip | default(cluster_api_vip) }}

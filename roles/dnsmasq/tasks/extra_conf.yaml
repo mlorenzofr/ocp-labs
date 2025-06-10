@@ -12,4 +12,6 @@
   ignore_errors: "{{ ansible_check_mode }}"
   notify:
     - 'svc restart dnsmasq'
+  tags:
+    - 'dnsmasq'
 ...
