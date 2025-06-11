@@ -1,0 +1,58 @@
+---
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: ztvp
+rendezvousIP: 192.168.125.71
+hosts:
+  - hostname: ztvp-node-1
+    interfaces:
+      - name: eth0
+        macAddress: ce:00:0a:ba:ee:71
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: ce:00:0a:ba:ee:71
+          ipv4:
+            enabled: True
+            dhcp: True
+          ipv6:
+            enabled: False
+    rootDeviceHints:
+      deviceName: "/dev/vda"
+  - hostname: ztvp-node-2
+    interfaces:
+      - name: eth0
+        macAddress: ce:00:0a:ba:ee:72
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: ce:00:0a:ba:ee:72
+          ipv4:
+            enabled: True
+            dhcp: True
+          ipv6:
+            enabled: False
+    rootDeviceHints:
+      deviceName: "/dev/vda"
+  - hostname: ztvp-node-3
+    interfaces:
+      - name: eth0
+        macAddress: ce:00:0a:ba:ee:73
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: ce:00:0a:ba:ee:73
+          ipv4:
+            enabled: True
+            dhcp: True
+          ipv6:
+            enabled: False
+    rootDeviceHints:
+      deviceName: "/dev/vda"

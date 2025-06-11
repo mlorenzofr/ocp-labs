@@ -28,6 +28,10 @@ haproxy_labs:
   # - {'name': 'dan', 'domain': 'manor.lab', 'backends': ['192.168.128.11']}
   - {'name': 'stdslim', 'backends': ['192.168.125.59']}
   - {'name': 'ztp', 'backends': ['192.168.125.101']}
+  - name: 'ztvp'
+    backends: ['192.168.125.103']
+    api: True
+    api_ips: ['192.168.125.102']
   # - name: 'cnv'
   #   backends: ['[fd00:0:0:1::11]']
   #   api: True

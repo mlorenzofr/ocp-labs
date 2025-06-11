@@ -1,0 +1,56 @@
+---
+# Run it with:
+#   ap labs/ztvp/deploy.yaml
+
+- name: 'Clean ztvp lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'ztvp'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'ztvp'
+    lab_abi_ip: "{{ lab_node_network_base }}71"
+    lab_api_ips: ["{{ lab_node_network_base }}102"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}103"]
+    lab_mac_base: 'ce:00:0a:ba:ee:'
+    lab_worker_replicas: 0
+    lab_node_memory: 22000
+    lab_node_disk_data: 60
+    lab_hosts:
+      - {id: '71'}
+      - {id: '72'}
+      - {id: '73'}
+    lab_custom_capability_set: 'None'
+    lab_custom_capabilities:
+      - baremetal
+      - MachineAPI
+      - marketplace
+      - OperatorLifecycleManager
+      - Console
+      - Ingress
+      - Storage
+      - NodeTuning
+      - DeploymentConfig
+    start_install: true
+
+- name: 'ZTVP post-installation tasks'
+  hosts:
+    - 'lab'
+  gather_facts: false
+  tags:
+    - 'postinst'
+  vars:
+    lab_name: 'ztvp'
+    lab_configs: "/root/labs/{{ lab_name }}/config"
+
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+  roles:
+    - 'ocp_lvms'
