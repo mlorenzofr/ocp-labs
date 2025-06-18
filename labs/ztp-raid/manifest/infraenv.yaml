@@ -1,0 +1,20 @@
+---
+apiVersion: agent-install.openshift.io/v1beta1
+kind: InfraEnv
+metadata:
+  annotations:
+    siteconfig.open-cluster-management.io/sync-wave: "1"
+  name: "ztp-sno"
+  namespace: "ztp-sno"
+spec:
+  clusterRef:
+    name: "ztp-sno"
+    namespace: "ztp-sno"
+  sshAuthorizedKey: "<redacted>"
+  pullSecretRef:
+    name: "ztp-pull-secret"
+  additionalNTPSources:
+    - 192.168.125.1
+  nmStateConfigLabelSelector:
+    matchLabels:
+      nmstate-label: "ztp-sno"

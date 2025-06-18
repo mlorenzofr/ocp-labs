@@ -1,0 +1,73 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-node-templates-rfe-5666
+  namespace: open-cluster-management
+immutable: true
+data:
+  BareMetalHost: |-
+    apiVersion: metal3.io/v1alpha1
+    kind: BareMetalHost
+    metadata:
+      name: "{{ .SpecialVars.CurrentNode.HostName }}"
+      namespace: "{{ .Spec.ClusterName }}"
+      annotations:
+        siteconfig.open-cluster-management.io/sync-wave: "3"
+        inspect.metal3.io: "{{ .SpecialVars.CurrentNode.IronicInspect }}"
+    {{ if .SpecialVars.CurrentNode.NodeLabels }}
+    {{ range $key, $value := .SpecialVars.CurrentNode.NodeLabels }}
+        bmac.agent-install.openshift.io.node-label.{{ $key }}: {{ $value | quote}}
+    {{ end }}
+    {{ end }}
+        bmac.agent-install.openshift.io/hostname: "{{ .SpecialVars.CurrentNode.HostName }}"
+    {{ if .SpecialVars.CurrentNode.InstallerArgs  }}
+        bmac.agent-install.openshift.io/installer-args: '{{ .SpecialVars.CurrentNode.InstallerArgs  }}'
+    {{ end }}
+    {{ if .SpecialVars.CurrentNode.IgnitionConfigOverride }}
+        bmac.agent-install.openshift.io/ignition-config-overrides: '{{ .SpecialVars.CurrentNode.IgnitionConfigOverride }}'
+    {{ end }}
+        bmac.agent-install.openshift.io/role: "{{ .SpecialVars.CurrentNode.Role }}"
+      labels:
+        infraenvs.agent-install.openshift.io: "{{ .Spec.ClusterName }}"
+    spec:
+      bootMode: "{{ .SpecialVars.CurrentNode.BootMode }}"
+      bmc:
+        address: "{{ .SpecialVars.CurrentNode.BmcAddress }}"
+        disableCertificateVerification: true
+        credentialsName: "{{ .SpecialVars.CurrentNode.BmcCredentialsName.Name }}"
+      bootMACAddress: "{{ .SpecialVars.CurrentNode.BootMACAddress }}"
+      automatedCleaningMode: "{{ .SpecialVars.CurrentNode.AutomatedCleaningMode }}"
+      online: true
+    {{ if .SpecialVars.CurrentNode.RootDeviceHints }}
+      rootDeviceHints:
+    {{ .SpecialVars.CurrentNode.RootDeviceHints | toYaml | indent 4 }}
+    {{ end }}
+    {{ if or .SpecialVars.CurrentNode.Raid.HardwareRAIDVolumes .SpecialVars.CurrentNode.Raid.SoftwareRAIDVolumes }}
+      raid:
+      {{- if .SpecialVars.CurrentNode.Raid.HardwareRAIDVolumes }}
+        hardwareRAIDVolumes:
+    {{ .SpecialVars.CurrentNode.Raid.HardwareRAIDVolumes | toYaml | indent 10 }}
+      {{ end }}
+      {{- if .SpecialVars.CurrentNode.Raid.SoftwareRAIDVolumes }}
+        softwareRAIDVolumes:
+    {{ .SpecialVars.CurrentNode.Raid.SoftwareRAIDVolumes | toYaml | indent 10 }}
+      {{ end }}
+    {{ end }}
+  NMStateConfig: |-
+    {{ if .SpecialVars.CurrentNode.NodeNetwork }}
+    apiVersion: agent-install.openshift.io/v1beta1
+    kind: NMStateConfig
+    metadata:
+      annotations:
+        siteconfig.open-cluster-management.io/sync-wave: "1"
+      name: "{{ .SpecialVars.CurrentNode.HostName }}"
+      namespace: "{{ .Spec.ClusterName }}"
+      labels:
+        nmstate-label: "{{ .Spec.ClusterName }}"
+    spec:
+      config:
+    {{ .SpecialVars.CurrentNode.NodeNetwork.NetConfig | toYaml | indent 4 }}
+      interfaces:
+    {{ .SpecialVars.CurrentNode.NodeNetwork.Interfaces | toYaml | indent 4 }}
+    {{ end }}

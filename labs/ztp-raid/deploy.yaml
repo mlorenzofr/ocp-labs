@@ -1,0 +1,273 @@
+---
+# Run it with:
+#   ap labs/zraid/deploy.yaml
+
+- name: 'Clean zraid lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'zraid'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'zraid'
+    lab_abi_ip: "{{ lab_node_network_base }}61"
+    lab_api_ips: ["{{ lab_node_network_base }}100"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}101"]
+    lab_node_memory: 28000
+    lab_node_disk_data: 60
+    lab_hosts:
+      - {id: '61', role: 'master'}
+      - {id: '62', role: 'master'}
+      - {id: '63', role: 'master'}
+    start_install: true
+
+- name: 'Prepare ZTP'
+  hosts:
+    - 'lab'
+  gather_facts: false
+  tags:
+    - 'postinst'
+    - 'ztp'
+  vars:
+    lab_network_name: 'lab-network'
+    lab_mac_base: 'be:be:ca:fe:02:'
+    lab_node_network_base: '192.168.125.'
+    lab_node_disk_pool: 'ocp'
+    lab_install: true
+
+    lab_name: 'zraid'
+    lab_configs: "/root/labs/{{ lab_name }}/config"
+    lab_local_path: '/ansible/labs/ztp-raid'
+
+    ocp_gitops_ztp: True
+    ocp_gitops_site_generator_tag: 'v4.18'
+    ocp_gitops_site_generator_out_dir: "{{ lab_configs }}/ztp"
+    ocp_gitops_secrets:
+      - ns: 'ztp-sno'
+        pull_secret_name: 'ztp-pull-secret'
+        nodes:
+          - hostname: "{{ lab_name}}-bmh-1"
+
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+  roles:
+    - 'ocp_talm'
+    - 'ocp_gitops'
+
+  tasks:
+    # Add the ConfigMap with the custom template and clusterinstance CRD with RAID support
+    - name: 'Add the custom node template'
+      block:
+        - name: 'Copy custom manifests'
+          ansible.builtin.copy:
+            src: "{{ lab_local_path }}/manifest/{{ item }}"
+            dest: "{{ lab_configs }}/{{ item }}"
+            mode: '0640'
+          loop:
+            - 'ai-node-templates-rfe-5666.yaml'
+            - 'clusterinstances-crd.yaml'
+        - name: 'Apply custom manifests'
+          kubernetes.core.k8s:
+            state: 'present'
+            src: "{{ lab_configs }}/{{ item }}"
+          loop:
+            - 'ai-node-templates-rfe-5666.yaml'
+            - 'clusterinstances-crd.yaml'
+          ignore_errors: "{{ ansible_check_mode }}"
+
+    # Configure M3 to watch in all namespaces
+    - name: 'Set watchAllNamespaces for provisioning'
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: 'metal3.io/v1alpha1'
+          kind: 'Provisioning'
+          metadata:
+            name: 'provisioning-configuration'
+          spec:
+            watchAllNamespaces: true
+
+    # This is the ClusterImageSet used in our ClusterInstance definition
+    - name: 'Make ZTP cluster image visible'
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: 'hive.openshift.io/v1'
+          kind: 'ClusterImageSet'
+          metadata:
+            name: 'img4.18.16-x86-64-appsub'
+            labels:
+              visible: 'true'
+
+    # Create DNS records for the spoke cluster
+    - name: 'Create dnsmasq snippet for ztp-sno cluster'
+      ansible.builtin.include_role:
+        name: 'dnsmasq'
+        tasks_from: 'extra_conf.yaml'
+      vars:
+        cluster_name: 'ztp-sno'
+        cluster_domain: 'local.lab'
+        cluster_api_vip: "{{ lab_node_network_base }}64"
+        dnsmasq_conf_snippets:
+          - {src: 'openshift-cluster.conf.j2', dest: "{{ lab_name }}-ztp-sno-cluster.conf"}
+      tags:
+        - 'dnsmasq'
+
+    - name: 'Create dnsmasq snippet for Baremetal host'
+      ansible.builtin.include_role:
+        name: 'dnsmasq'
+        tasks_from: 'extra_conf.yaml'
+      vars:
+        dnsmasq_dhcp_hosts:
+          - hwaddr: "{{ lab_mac_base }}64"
+            hostname: "{{ lab_name }}-bmh-1"
+            ipaddr: "{{ lab_node_network_base }}64"
+        dnsmasq_conf_snippets:
+          - {src: 'dhcp-hosts.conf.j2', dest: "{{ lab_name }}-spoke.conf"}
+      tags: ['dnsmasq']
+
+    - name: 'Create VM for spoke cluster'
+      karmab.kcli.kcli_vm:
+        name: "{{ lab_name }}-bmh-1"
+        state: 'present'
+        parameters:
+          start: false
+          uefi_legacy: true
+          plan: "{{ lab_name }}"
+          memory: '24000'
+          numcpus: '16'
+          disks:
+            - {"size": '130', "pool": "{{ lab_node_disk_pool }}"}
+            - {"size": '130', "pool": "{{ lab_node_disk_pool }}"}
+          nets:
+            - {"name": "{{ lab_network_name }}", "mac": "{{ lab_mac_base }}64"}
+
+    - name: 'Stop operators for testing'
+      block:
+        - name: 'Stop Cluster Version Operator (CVO)'
+          kubernetes.core.k8s_scale:
+            api_version: v1
+            kind: 'Deployment'
+            name: 'cluster-version-operator'
+            namespace: 'openshift-cluster-version'
+            replicas: 0
+        - name: 'Stop Operator Lifecycle Manager (OLM)'
+          kubernetes.core.k8s_scale:
+            api_version: v1
+            kind: 'Deployment'
+            name: 'olm-operator'
+            namespace: 'openshift-operator-lifecycle-manager'
+            replicas: 0
+
+- name: 'Create siteconfig secrets'
+  hosts:
+    - 'lab'
+  gather_facts: false
+  tags:
+    - 'secrets'
+    - 'never'
+  vars:
+    lab_name: 'zraid'
+    ocp_gitops_secrets:
+      - ns: 'ztp-sno'
+        pull_secret_name: 'ztp-pull-secret'
+        nodes:
+          - hostname: "{{ lab_name}}-bmh-1"
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  tasks:
+    - name: 'Import gitops role'
+      ansible.builtin.include_role:
+        name: 'ocp_gitops'
+        tasks_from: 'secrets.yaml'
+      loop: "{{ ocp_gitops_secrets }}"
+
+- name: 'Configure ArgoCD apps'
+  hosts:
+    - 'lab'
+  gather_facts: false
+  tags:
+    - 'argocd'
+    - 'never'
+  vars:
+    lab_name: 'zraid'
+    argo_configs: "/root/labs/{{ lab_name }}/config/ztp/argocd/deployment"
+    argo_repo: 'https://github.com/mlorenzofr/ztp-example'
+    argo_siteconfig: 'siteconfig'
+    argo_policies: 'policygenerator'
+    argo_branch: 'zraid'
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+    PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
+
+  tasks:
+    - name: 'Configure clusters-app'
+      block:
+        - name: 'configure siteconfig path'
+          ansible.builtin.lineinfile:
+            path: "{{ argo_configs }}/clusters-app.yaml"
+            regexp: '^(\s+)path: .*'
+            line: "\\1path: {{ argo_siteconfig }}"
+            backrefs: true
+        - name: 'configure repository'
+          ansible.builtin.lineinfile:
+            path: "{{ argo_configs }}/clusters-app.yaml"
+            regexp: '^(\s+)repoURL: .*'
+            line: "\\1repoURL: {{ argo_repo }}"
+            backrefs: true
+        - name: 'configure branch'
+          ansible.builtin.lineinfile:
+            path: "{{ argo_configs }}/clusters-app.yaml"
+            regexp: '^(\s+)targetRevision: .*'
+            line: "\\1targetRevision: {{ argo_branch }}"
+            backrefs: true
+      ignore_errors: "{{ ansible_check_mode }}"
+      notify: 'Apply argocd manifests'
+
+    - name: 'Configure policies-app'
+      block:
+        - name: 'configure policies path'
+          ansible.builtin.lineinfile:
+            path: "{{ argo_configs }}/policies-app.yaml"
+            regexp: '^(\s+)path: .*'
+            line: "\\1path: {{ argo_policies }}"
+            backrefs: true
+        - name: 'configure repository'
+          ansible.builtin.lineinfile:
+            path: "{{ argo_configs }}/policies-app.yaml"
+            regexp: '^(\s+)repoURL: .*'
+            line: '\1repoURL: {{ argo_repo }}'
+            backrefs: true
+        - name: 'configure branch'
+          ansible.builtin.lineinfile:
+            path: "{{ argo_configs }}/policies-app.yaml"
+            regexp: '^(\s+)targetRevision: .*'
+            line: '\1targetRevision: {{ argo_branch }}'
+            backrefs: true
+      ignore_errors: "{{ ansible_check_mode }}"
+      notify: 'Apply argocd manifests'
+
+    # The infraenv is not automatically created, it might be due to the stopping of CVO
+    # This creates the resource
+    - name: 'Prepare infraenv'
+      block:
+        - name: 'Copy infraenv manifest'
+          ansible.builtin.copy:
+            src: "{{ lab_local_path }}/manifest/infraenv.yaml"
+            dest: "{{ lab_configs }}/infraenv.yaml"
+            mode: '0640'
+        - name: 'Apply infraenv manifests'
+          kubernetes.core.k8s:
+            state: 'present'
+            src: "{{ lab_configs }}/infraenv.yaml"
+          ignore_errors: "{{ ansible_check_mode }}"
+
+  handlers:
+    - name: 'Apply argocd manifests'
+      ansible.builtin.command:
+        cmd: "oc apply -k {{ argo_configs }}"
