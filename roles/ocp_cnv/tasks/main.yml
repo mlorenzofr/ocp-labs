@@ -1,14 +1,45 @@
 ---
-- name: 'Create CNV installation manifest'
-  ansible.builtin.template:
-    src: 'cnv-init.yaml.j2'
-    dest: "{{ ocp_cnv_path }}/cnv-subscription.yaml"
-    mode: '0644'
-  notify: 'cnv install'
+- name: 'Create CNV subscription'
+  ansible.builtin.include_role:
+    name: 'ocp_olm'
+    tasks_from: 'subscription.yaml'
+  loop:
+    - operator_name: 'kubevirt-hyperconverged'
+      ns: "{{ ocp_cnv_ns }}"
+      operator_group: "{{ ocp_cnv_operatorgroup }}"
+      channel: "{{ ocp_cnv_channel }}"
+      source: "{{ ocp_cnv_source }}"
+      csv: "{{ ocp_cnv_version }}"
+  tags: ['olm']
 
-- name: 'Create CNV HyperConverged manifests'
+- name: 'Create hyperconverged manifest'
   ansible.builtin.template:
     src: 'hyperconverged.yaml.j2'
     dest: "{{ ocp_cnv_path }}/cnv-hyperconverged.yaml"
     mode: '0644'
-  notify: 'cnv install'
+
+- name: 'Apply hyperconverged manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_cnv_path }}/cnv-hyperconverged.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  register: __cnv
+  until: __cnv is not failed
+  retries: 10
+  delay: 30
+  when: ocp_cnv_apply
+
+- name: 'Waiting until hyperconverged is running'
+  kubernetes.core.k8s_info:
+    api_version: 'hco.kubevirt.io/v1beta1'
+    kind: 'HyperConverged'
+    name: 'kubevirt-hyperconverged'
+    namespace: "{{ ocp_cnv_ns }}"
+  register: __cnv_hco_status
+  until:
+    - __cnv_hco_status.resources | length > 0
+    - __cnv_hco_status.resources[0].status.systemHealthStatus is defined
+    - __cnv_hco_status.resources[0].status.systemHealthStatus == 'Running'
+  retries: 20
+  delay: 30
+  when: ocp_cnv_apply
