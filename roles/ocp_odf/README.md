@@ -14,9 +14,11 @@ This role requires `ocp_localstorage` or `ocp_lvms` roles for local storage.
 * `ocp_odf_noobaa_memory`. _String_. Memory limit for NooBaa
 * `ocp_odf_noobaa_storage`. _String_. Default storage size for NooBaa.
 * `ocp_odf_noobaa_storageclass`. _String_. Default StorageClass used by NooBaa, leave it empty to use the default SC.
+* `ocp_odf_on_masters`. _Bool_. Enable the use of master nodes as storage nodes.
 * `ocp_odf_path`. _String_. Path where the manifest files are saved.
 * `ocp_odf_source`. _String_. Name of the catalog source name for installing the odf-operator.
 * `ocp_odf_storage`. _String_. Local storage operator to use (`lvms` or `local-storage`).
+* `ocp_odf_storage_nodes`. _List_. List with the names iof the nodes to be used as storage nodes.
 * `ocp_odf_clusters`. _List_. List of `StorageClusters`.
 
 ### Variables for `ocp_odf_clusters` elements

@@ -27,6 +27,17 @@
     wait_timeout: 300
   ignore_errors: "{{ ansible_check_mode }}"
 
+- name: 'Label storage nodes'
+  kubernetes.core.k8s:
+    state: patched
+    kind: Node
+    name: "{{ item }}"
+    definition:
+      metadata:
+        labels:
+          cluster.ocs.openshift.io/openshift-storage: ''
+  loop: "{{ ocp_odf_storage_nodes }}"
+
 - name: 'Create storageclusters'
   ansible.builtin.include_tasks:
     file: 'storageclusters.yaml'

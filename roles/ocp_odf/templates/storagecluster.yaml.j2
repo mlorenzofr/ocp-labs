@@ -27,7 +27,26 @@ spec:
           storageClassName: {{ ds.storageclass }}
           volumeMode: Block
       name: {{ ds.name }}
+{% if ocp_odf_storage_nodes | length > 0 %}
+      placement:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: cluster.ocs.openshift.io/openshift-storage
+                    operator: In
+                    values:
+                      - ""
+{% else %}
       placement: {}
+{% endif %}
+{% if ocp_odf_on_masters %}
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Equal
+          value: ""
+          effect: NoSchedule
+{% endif %}
       portable: false
       replica: {{ ds.replica }}
 {% if 'resources' in ds.keys() %}

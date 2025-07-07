@@ -7,8 +7,10 @@ ocp_odf_noobaa_dbtype: 'postgres'
 ocp_odf_noobaa_memory: '1Gi'
 ocp_odf_noobaa_storage: '50Gi'
 ocp_odf_noobaa_storageclass: ''
+ocp_odf_on_masters: False
 ocp_odf_path: "{{ lab_configs | default('/tmp') }}"
 ocp_odf_source: 'redhat-operators'
 ocp_odf_storage: 'lvms'
+ocp_odf_storage_nodes: []
 ocp_odf_clusters: []
 ocp_odf_noobaa_backingstores: []
