@@ -39,7 +39,7 @@
   until:
     - __cnv_hco_status.resources | length > 0
     - __cnv_hco_status.resources[0].status.systemHealthStatus is defined
-    - __cnv_hco_status.resources[0].status.systemHealthStatus == 'Running'
+    - __cnv_hco_status.resources[0].status.systemHealthStatus == 'healthy'
   retries: 20
   delay: 30
   when: ocp_cnv_apply
