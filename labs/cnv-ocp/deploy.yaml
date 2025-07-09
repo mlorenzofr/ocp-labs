@@ -1,0 +1,66 @@
+---
+# Run it with:
+#   ap labs/cnv-ocp/deploy.yaml
+
+- name: 'Clean cnv-ocp lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'cnvn'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'cnvn'
+    lab_abi_ip: "{{ lab_node_network_base }}41"
+    lab_api_ips: ["{{ lab_node_network_base }}108"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}109"]
+    lab_node_memory: 33000
+    lab_node_disk_data: 300
+    lab_hosts:
+      - {id: '41', role: 'master'}
+      - {id: '42', role: 'master'}
+      - {id: '43', role: 'master'}
+    start_install: true
+
+- name: 'Setup Openshift Data Foundation (ODF)'
+  ansible.builtin.import_playbook: ../../playbooks/setup/odf.yaml
+  tags:
+    - 'postinst'
+    - 'odf'
+  vars:
+    lab_name: 'cnvn'
+    ocp_odf_on_masters: True
+    ocp_odf_storage_nodes:
+      - 'cnvn-master-1'
+      - 'cnvn-master-2'
+      - 'cnvn-master-3'
+
+- name: 'Import MCE setup playbook'
+  ansible.builtin.import_playbook: ../../playbooks/setup/mce.yaml
+  tags:
+    - 'postinst'
+    - 'mce'
+  vars:
+    lab_name: 'cnvn'
+
+- name: 'Setup Container Native Virtualization (CNV)'
+  gather_facts: false
+  hosts: ['lab']
+
+  vars:
+    lab_name: 'cnvn'
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  roles:
+    - role: 'ocp_cnv'
+      vars:
+        ocp_cnv_path: "/root/labs/{{ lab_name }}/config"
+      tags:
+        - 'postinst'
+        - 'cnv'

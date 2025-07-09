@@ -1,0 +1,44 @@
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  name: ocs1
+  namespace: openshift-storage
+spec:
+  manageNodes: false
+  resources:
+    mds:
+      limits:
+        cpu: "3"
+        memory: "8Gi"
+      requests:
+        cpu: "3"
+        memory: "8Gi"
+  monDataDirHostPath: /var/lib/rook
+  storageDeviceSets:
+    - count: 1
+      dataPVCTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: "180Gi"
+          storageClassName: lvms-vg1
+          volumeMode: Block
+      name: deviceset1
+      placement:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: cluster.ocs.openshift.io/openshift-storage
+                    operator: In
+                    values:
+                      - ""
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Equal
+          value: ""
+          effect: NoSchedule
+      portable: false
+      replica: 3
