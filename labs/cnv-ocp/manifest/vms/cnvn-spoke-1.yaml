@@ -1,0 +1,44 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: cnvn-spoke-1
+  namespace: default
+spec:
+  runStrategy: Always
+  template:
+    spec:
+      domain:
+        devices:
+          disks:
+            - name: vda
+              disk:
+                bus: virtio
+          interfaces:
+            - name: default
+              masquerade: {}
+          networkInterfaceMultiqueue: true
+        resources:
+          requests:
+            memory: "16G"
+        cpu:
+          cores: 12
+      networks:
+        - name: default
+          pod: {}
+      volumes:
+        - name: vda
+          dataVolume:
+            name: cnvn-spoke-1
+  dataVolumeTemplates:
+    - metadata:
+        name: cnvn-spoke-1
+      spec:
+        source:
+          blank: {}
+        pvc:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 120Gi
+          storageClassName: ocs1-ceph-rbd-virtualization

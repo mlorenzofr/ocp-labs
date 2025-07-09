@@ -7,6 +7,12 @@
 ```shell
 ap labs/cnv-ocp/deploy.yaml
 ```
+2. Create the virtual machines for the spoke cluster:
+```shell
+for i in {1..3}; do oc apply -f vms/cnvn-spoke-${i}.yaml; done
+```
+3. Prepare the **fakefish** image.
+4. Deploy **fakefish** in the hub cluster as it's explained in the [documentation](https://github.com/openshift-metal3/fakefish/blob/main/user-docs/running-fakefish-on-ocp-for-kubevirt.md).
 
 ## Validation
 1. Check if the cluster is running:
@@ -56,6 +62,14 @@ assisted-image-service-0   1/1     Running   0          17h
 $ oc get pods -n multicluster-engine -l app=assisted-service
 NAME                               READY   STATUS    RESTARTS   AGE
 assisted-service-d4f9885c7-rfl55   2/2     Running   0          19h
+```
+4. Check the `VirtualMachines`:
+```shell
+$ oc get virtualmachine -A
+NAMESPACE   NAME           AGE     STATUS    READY
+default     cnvn-spoke-1   29m     Running   True
+default     cnvn-spoke-2   7m11s   Running   True
+default     cnvn-spoke-3   3m47s   Running   True
 ```
 
 ## Links

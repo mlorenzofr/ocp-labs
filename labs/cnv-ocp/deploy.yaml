@@ -19,7 +19,8 @@
     lab_abi_ip: "{{ lab_node_network_base }}41"
     lab_api_ips: ["{{ lab_node_network_base }}108"]
     lab_ingress_ips: ["{{ lab_node_network_base }}109"]
-    lab_node_memory: 33000
+    lab_node_cpus: 24
+    lab_node_memory: 56000
     lab_node_disk_data: 300
     lab_hosts:
       - {id: '41', role: 'master'}
@@ -64,3 +65,87 @@
       tags:
         - 'postinst'
         - 'cnv'
+
+- name: 'Setup spoke cluster (using VMs)'
+  gather_facts: false
+  hosts: ['lab']
+
+  vars:
+    lab_name: 'cnvn'
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  tags:
+    - 'postinst'
+    - 'spoke'
+
+  tasks:
+    # Configure M3 to watch in all namespaces
+    - name: 'Set watchAllNamespaces for provisioning'
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: 'metal3.io/v1alpha1'
+          kind: 'Provisioning'
+          metadata:
+            name: 'provisioning-configuration'
+          spec:
+            watchAllNamespaces: true
+
+    # This is the ClusterImageSet used in our ClusterInstance definition
+    - name: 'Make spoke cluster image visible'
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: 'hive.openshift.io/v1'
+          kind: 'ClusterImageSet'
+          metadata:
+            name: 'img4.18.16-x86-64-appsub'
+            labels:
+              visible: 'true'
+
+    - name: 'Create spoke cluster namespace'
+      kubernetes.core.k8s:
+        name: spoke
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: 'Create pull-secret for spoke cluster'
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: 'v1'
+          kind: 'Secret'
+          type: 'kubernetes.io/dockerconfigjson'
+          metadata:
+            name: 'pullsecret-cluster-spoke'
+            namespace: 'spoke'
+          data:
+            .dockerconfigjson: "{{ ocp_pullsecret_b64 }}"
+
+    - name: 'Create secrets for BMC credentials'
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: 'v1'
+          kind: 'Secret'
+          type: 'Opaque'
+          metadata:
+            name: "cnvn-spoke-{{ item }}-bmc-secret"
+            namespace: 'spoke'
+          data:
+            password: "{{ ocp_bmc_password }}"
+            username: "{{ ocp_bmc_username }}"
+      loop: [1, 2, 3]
+
+    - name: 'Create pull-secret for infraenv'
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: 'v1'
+          kind: 'Secret'
+          type: 'kubernetes.io/dockerconfigjson'
+          metadata:
+            name: "pull-secret-spoke"
+            namespace: 'spoke'
+          data:
+            .dockerconfigjson: "{{ ocp_pullsecret_b64 }}"
