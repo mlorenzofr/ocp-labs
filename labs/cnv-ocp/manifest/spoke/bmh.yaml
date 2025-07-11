@@ -1,0 +1,66 @@
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: cnvn-spoke-1
+  namespace: spoke
+  labels:
+    infraenvs.agent-install.openshift.io: spoke
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: cnvn-spoke-1
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: 02:f2:1e:00:00:00
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://fakefish-cnvn-spoke-1-default-fakefish.apps.cnvn.local.lab/redfish/v1/Systems/1
+
+    credentialsName: cnvn-spoke-1-bmc-secret
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: cnvn-spoke-2
+  namespace: spoke
+  labels:
+    infraenvs.agent-install.openshift.io: spoke
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: cnvn-spoke-2
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: 02:f2:1e:00:00:01
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://fakefish-cnvn-spoke-2-default-fakefish.apps.cnvn.local.lab/redfish/v1/Systems/1
+
+    credentialsName: cnvn-spoke-2-bmc-secret
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: cnvn-spoke-3
+  namespace: spoke
+  labels:
+    infraenvs.agent-install.openshift.io: spoke
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: cnvn-spoke-3
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: 02:f2:1e:00:00:02
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://fakefish-cnvn-spoke-3-default-fakefish.apps.cnvn.local.lab/redfish/v1/Systems/1
+
+    credentialsName: cnvn-spoke-3-bmc-secret
