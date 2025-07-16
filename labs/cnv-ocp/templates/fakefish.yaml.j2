@@ -1,0 +1,69 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: fakefish-{{ bmc_name }}-default
+  name: fakefish-{{ bmc_name }}-default
+  namespace: fakefish
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fakefish-{{ bmc_name }}-default
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: fakefish-{{ bmc_name }}-default
+    spec:
+      volumes:
+      - name: kubevirt-kubeconfig
+        secret:
+          secretName: kubevirt-cluster-kubeconfig
+      containers:
+      - image: {{ fakefish_image }}
+        imagePullPolicy: Always
+        name: fakefish
+        resources: {}
+        args:
+        - "--remote-bmc"
+        - "{{ bmc_name }}_default"
+        - "--tls-mode"
+        - "disabled"
+        volumeMounts:
+        - name: kubevirt-kubeconfig
+          readOnly: true
+          mountPath: /var/tmp/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: fakefish-{{ bmc_name }}-default
+  name: fakefish-{{ bmc_name }}-default
+  namespace: fakefish
+spec:
+  ports:
+  - name: http
+    port: 9000
+    protocol: TCP
+    targetPort: 9000
+  selector:
+    app: fakefish-{{ bmc_name }}-default
+  type: ClusterIP
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: fakefish-{{ bmc_name }}-default
+  namespace: fakefish
+spec:
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+  to:
+    kind: "Service"
+    name: fakefish-{{ bmc_name }}-default
+    weight: null

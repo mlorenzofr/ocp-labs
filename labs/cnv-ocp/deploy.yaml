@@ -66,6 +66,70 @@
         - 'postinst'
         - 'cnv'
 
+- name: 'Setup fakefish'
+  gather_facts: false
+  hosts: ['lab']
+
+  vars:
+    lab_name: 'cnvn'
+    fakefish_image: 'quay.io/mlorenzofr/fakefish:latest'
+    config_path: "/root/labs/{{ lab_name }}/config/fakefish"
+    lab_local_path: '/ansible/labs/cnv-ocp'
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  tags:
+    - 'never'
+    - 'fakefish'
+
+  tasks:
+    - name: 'Create fakefish manifest directory'
+      ansible.builtin.file:
+        path: "{{ config_path }}"
+        state: 'directory'
+        owner: 'root'
+        group: 'root'
+        mode: '0755'
+
+    - name: 'Copy fakefish rbac manifest'
+      ansible.builtin.copy:
+        src: "{{ lab_local_path }}/manifest/fakefish/fakefish-rbac.yaml"
+        dest: "{{ config_path }}/fakefish-rbac.yaml"
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+
+    - name: 'Apply fakefish rbac manifest'
+      kubernetes.core.k8s:
+        state: 'present'
+        src: "{{ config_path }}/fakefish-rbac.yaml"
+      ignore_errors: "{{ ansible_check_mode }}"
+
+    # Create fakefish deployment manifests, one per each VM
+    - name: 'Create fakefish deployment manifest'
+      ansible.builtin.template:
+        src: 'fakefish.yaml.j2'
+        dest: "{{ config_path }}/fakefish-deploy-{{ bmc_name }}.yaml"
+        mode: '0644'
+      loop:
+        - 'cnvn-spoke-1'
+        - 'cnvn-spoke-2'
+        - 'cnvn-spoke-3'
+      loop_control:
+        loop_var: bmc_name
+
+    - name: 'Apply fakefish deployment manifests'
+      kubernetes.core.k8s:
+        state: 'present'
+        src: "{{ config_path }}/fakefish-deploy-{{ bmc_name }}.yaml"
+      loop:
+        - 'cnvn-spoke-1'
+        - 'cnvn-spoke-2'
+        - 'cnvn-spoke-3'
+      loop_control:
+        loop_var: bmc_name
+      ignore_errors: "{{ ansible_check_mode }}"
+
 - name: 'Setup spoke cluster (using VMs)'
   gather_facts: false
   hosts: ['lab']
@@ -76,7 +140,7 @@
     KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
 
   tags:
-    - 'postinst'
+    - 'never'
     - 'spoke'
 
   tasks:
@@ -149,3 +213,14 @@
             namespace: 'spoke'
           data:
             .dockerconfigjson: "{{ ocp_pullsecret_b64 }}"
+
+- name: 'Extract spoke cluster configuration'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml
+  vars:
+    lab_name: 'cnvn'
+    lab_path: '/root/labs'
+    hive_cluster_name: 'spoke'
+    hive_ns: 'spoke'
+  tags:
+    - 'spoke-config'
+    - 'never'

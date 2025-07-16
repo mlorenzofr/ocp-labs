@@ -13,6 +13,16 @@ for i in {1..3}; do oc apply -f vms/cnvn-spoke-${i}.yaml; done
 ```
 3. Prepare the **fakefish** image.
 4. Deploy **fakefish** in the hub cluster as it's explained in the [documentation](https://github.com/openshift-metal3/fakefish/blob/main/user-docs/running-fakefish-on-ocp-for-kubevirt.md).
+```shell
+ap labs/cnv-ocp/deploy.yaml --tags fakefish
+```
+5. With the virtual machines stopped, apply the cluster manifest.
+> [!WARNING]
+> After create a new `BaremetalHost`, bound to the `InfraEnv`, review if the PVC with the discovery ISO has been created. If it's not present, remove the `BaremetalHost` and retry.
+6. The cluster installation begins.
+> [!WARNING]
+> The NTP validation takes some time to be validated
+> The discovery ISO doesn't work after writing the image to disk. It may require stop the VM and change the boot order or remove the CD-ROM manually.
 
 ## Validation
 1. Check if the cluster is running:
@@ -70,6 +80,67 @@ NAMESPACE   NAME           AGE     STATUS    READY
 default     cnvn-spoke-1   29m     Running   True
 default     cnvn-spoke-2   7m11s   Running   True
 default     cnvn-spoke-3   3m47s   Running   True
+```
+5. Check resources related with the cluster deployment:
+```shell
+$ oc get infraenv,clusterdeployment,bmh -n spoke
+NAME                                        ISO CREATED AT
+infraenv.agent-install.openshift.io/spoke   2025-07-11T15:31:21Z
+
+NAME                                        INFRAID                                PLATFORM          REGION   VERSION   CLUSTERTYPE   PROVISIONSTATUS   POWERSTATE   AGE
+clusterdeployment.hive.openshift.io/spoke   cecb2a18-d5a3-478f-9f7b-d86ce13c143e   agent-baremetal                                    Provisioned       Running      4d22h
+
+NAME                                   STATE         CONSUMER   ONLINE   ERROR   AGE
+baremetalhost.metal3.io/cnvn-spoke-1   provisioned              true             4d22h
+```
+6. Check if the _spoke_ cluster works:
+```
+$ export KUBECONFIG=~/labs/cnvn/spoke/auth/kubeconfig-32707
+
+$ oc get clusterversion
+NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+version   4.18.16   True        False         4d21h   Cluster version is 4.18.16
+
+$ oc get nodes
+NAME           STATUS   ROLES                         AGE     VERSION
+cnvn-spoke-1   Ready    control-plane,master,worker   4d21h   v1.31.8
+
+$ oc get co
+NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+authentication                             4.18.16   True        False         False      39h
+baremetal                                  4.18.16   True        False         False      4d21h
+cloud-controller-manager                   4.18.16   True        False         False      4d21h
+cloud-credential                           4.18.16   True        False         False      4d21h
+cluster-autoscaler                         4.18.16   True        False         False      4d21h
+config-operator                            4.18.16   True        False         False      4d21h
+console                                    4.18.16   True        False         False      4d21h
+control-plane-machine-set                  4.18.16   True        False         False      4d21h
+csi-snapshot-controller                    4.18.16   True        False         False      4d21h
+dns                                        4.18.16   True        False         False      4d21h
+etcd                                       4.18.16   True        False         False      4d21h
+image-registry                             4.18.16   True        False         False      4d21h
+ingress                                    4.18.16   True        False         False      4d21h
+insights                                   4.18.16   True        False         False      4d21h
+kube-apiserver                             4.18.16   True        False         False      4d21h
+kube-controller-manager                    4.18.16   True        False         False      4d21h
+kube-scheduler                             4.18.16   True        False         False      4d21h
+kube-storage-version-migrator              4.18.16   True        False         False      4d21h
+machine-api                                4.18.16   True        False         False      4d21h
+machine-approver                           4.18.16   True        False         False      4d21h
+machine-config                             4.18.16   True        False         False      4d21h
+marketplace                                4.18.16   True        False         False      4d21h
+monitoring                                 4.18.16   True        False         False      4d21h
+network                                    4.18.16   True        False         False      4d21h
+node-tuning                                4.18.16   True        False         False      4d21h
+olm                                        4.18.16   True        False         False      4d21h
+openshift-apiserver                        4.18.16   True        False         False      3d21h
+openshift-controller-manager               4.18.16   True        False         False      3d21h
+openshift-samples                          4.18.16   True        False         False      4d21h
+operator-lifecycle-manager                 4.18.16   True        False         False      4d21h
+operator-lifecycle-manager-catalog         4.18.16   True        False         False      4d21h
+operator-lifecycle-manager-packageserver   4.18.16   True        False         False      4d21h
+service-ca                                 4.18.16   True        False         False      4d21h
+storage                                    4.18.16   True        False         False      4d21h
 ```
 
 ## Links
