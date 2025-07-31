@@ -16,15 +16,20 @@ spec:
           interfaces:
             - name: default
               masquerade: {}
+            - name: bridge-net
+              bridge: {}
           networkInterfaceMultiqueue: true
         resources:
           requests:
-            memory: "16G"
+            memory: "18G"
         cpu:
-          cores: 12
+          cores: 16
       networks:
         - name: default
           pod: {}
+        - name: bridge-net
+          multus:
+            networkName: br-ex-network
       volumes:
         - name: vda
           dataVolume:

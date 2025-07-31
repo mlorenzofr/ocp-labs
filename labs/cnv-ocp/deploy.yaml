@@ -48,6 +48,7 @@
     - 'mce'
   vars:
     lab_name: 'cnvn'
+    ocp_assisted_service_ui: true
 
 - name: 'Setup Container Native Virtualization (CNV)'
   gather_facts: false
