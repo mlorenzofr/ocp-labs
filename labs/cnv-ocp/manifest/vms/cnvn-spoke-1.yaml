@@ -6,6 +6,16 @@ metadata:
 spec:
   runStrategy: Always
   template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: |-
+          [
+            {
+              "name": "br-ex-network",
+              "ips": ["192.168.125.201/24"],
+              "gateway": "192.168.125.1"
+            }
+          ]
     spec:
       domain:
         devices:
@@ -21,9 +31,9 @@ spec:
           networkInterfaceMultiqueue: true
         resources:
           requests:
-            memory: "18G"
+            memory: "16G"
         cpu:
-          cores: 16
+          cores: 12
       networks:
         - name: default
           pod: {}
