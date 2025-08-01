@@ -34,3 +34,6 @@ spec:
   pullSecretRef:
     name: pull-secret-{{ item.name }}
   sshAuthorizedKey: {{ item.ssh_key | default(ocp_assisted_service_ssh_key) }}
+{% if item.full_iso | default(false) %}
+  imageType: full-iso
+{% endif %}

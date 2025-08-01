@@ -34,6 +34,7 @@ To create inventory nodes, this role uses the **ocp_baremetal** role.
 
 ### Variables for `ocp_assisted_service_infraenvs` elements
 * `cluster_name`. _String_. `ClusterDeployment` name to reference in `InfraEnv`.
+* `full_iso`. _Bool_. Change the image type from _minimal_ (default) to _full_.
 * `name`. _String_. `InfraEnv` name.
 * `ns`. _String_. `InfraEnv` namespace.
 * `hypershift`. _Bool_. Enable/Disable HCP configuration fields.
