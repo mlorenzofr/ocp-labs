@@ -6,16 +6,6 @@ metadata:
 spec:
   runStrategy: Always
   template:
-    metadata:
-      annotations:
-        k8s.v1.cni.cncf.io/networks: |-
-          [
-            {
-              "name": "br-ex-network",
-              "ips": ["192.168.125.202/24"],
-              "gateway": "192.168.125.1"
-            }
-          ]
     spec:
       domain:
         devices:
@@ -26,7 +16,7 @@ spec:
           interfaces:
             - name: default
               masquerade: {}
-            - name: bridge-net
+            - name: macvlan-nic
               bridge: {}
           networkInterfaceMultiqueue: true
         resources:
@@ -37,9 +27,9 @@ spec:
       networks:
         - name: default
           pod: {}
-        - name: bridge-net
+        - name: macvlan-nic
           multus:
-            networkName: br-ex-network
+            networkName: macvlan-net
       volumes:
         - name: vda
           dataVolume:

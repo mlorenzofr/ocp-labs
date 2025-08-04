@@ -1,14 +1,14 @@
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
 metadata:
-  name: br-ex-network
+  name: macvlan-net
   namespace: default
 spec:
   config: '{
-    "cniVersion": "0.3.1",
-    "name": "br-ex-network",
+    "cniVersion": "0.4.0",
+    "name": "macvlan-net",
     "type": "macvlan",
-    "master": "br-ex",
+    "master": "enp11s0",
     "mode": "bridge",
     "ipam": {
       "type": "dhcp"

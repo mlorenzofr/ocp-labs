@@ -215,6 +215,71 @@
           data:
             .dockerconfigjson: "{{ ocp_pullsecret_b64 }}"
 
+- name: 'Setup VMs'
+  gather_facts: false
+  hosts: ['lab']
+
+  vars:
+    lab_name: 'cnvn'
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  tags:
+    - 'never'
+    - 'vms'
+
+  tasks:
+    - name: 'Get current Cluster Network Operator configuration'
+      kubernetes.core.k8s_info:
+        kind: 'Network'
+        api_version: 'operator.openshift.io/v1'
+        name: 'cluster'
+      register: cno_config
+
+    - name: 'Ensure spec.additionalNetworks key exists'
+      kubernetes.core.k8s_json_patch:
+        kind: 'Network'
+        api_version: 'operator.openshift.io/v1'
+        name: 'cluster'
+        patch:
+          - op: add
+            path: /spec/additionalNetworks
+            value: []
+      when: cno_config.resources[0].spec.additionalNetworks is not defined
+
+    - name: 'Re-read CNO configuration after potential patch'
+      kubernetes.core.k8s_info:
+        kind: 'Network'
+        api_version: 'operator.openshift.io/v1'
+        name: 'cluster'
+      register: cno_config_updated
+
+    # Enable DHCP IPAM CNI Daemon
+    - name: 'Enable DHCP IPAM CNI Daemon'
+      kubernetes.core.k8s_json_patch:
+        api_version: 'operator.openshift.io/v1'
+        kind: 'Network'
+        name: 'cluster'
+        patch:
+          - op: add
+            path: /spec/additionalNetworks/-
+            value:
+              name: 'macvlan-dhcp-cno-trigger'
+              type: 'Raw'
+              rawCNIConfig: |
+                  {
+                    "cniVersion": "0.4.0",
+                    "name": "macvlan-dhcp-cno-trigger",
+                    "type": "macvlan",
+                    "ipam": {
+                      "type": "dhcp"
+                    }
+                  }
+      when: >
+        cno_config_updated.resources[0].spec.additionalNetworks
+        | selectattr('name', 'equalto', 'macvlan-dhcp-cno-trigger')
+        | list | length == 0
+
 - name: 'Extract spoke cluster configuration'
   ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml
   vars:
