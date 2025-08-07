@@ -1,0 +1,27 @@
+---
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: br-cnv-bridge-policy
+spec:
+  desiredState:
+    interfaces:
+      - name: enp11s0
+        type: ethernet
+        state: up
+        ipv4:
+          enabled: false
+        ipv6:
+          enabled: false
+      - name: br-cnv
+        type: linux-bridge
+        state: up
+        bridge:
+          options:
+            stp:
+              enabled: true
+          port:
+            - name: enp11s0
+        ipv4:
+          enabled: true
+          dhcp: true

@@ -236,6 +236,9 @@
     - 'never'
     - 'vms'
 
+  roles:
+    - role: 'ocp_nmstate'
+
   tasks:
     - name: 'Create custom resources'
       block:
