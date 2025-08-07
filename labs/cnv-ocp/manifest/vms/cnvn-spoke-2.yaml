@@ -16,7 +16,7 @@ spec:
           interfaces:
             - name: default
               masquerade: {}
-            - name: macvlan-nic
+            - name: bridge-nic
               bridge: {}
           networkInterfaceMultiqueue: true
         resources:
@@ -27,9 +27,9 @@ spec:
       networks:
         - name: default
           pod: {}
-        - name: macvlan-nic
+        - name: bridge-nic
           multus:
-            networkName: macvlan-net
+            networkName: bridge-net
       volumes:
         - name: vda
           dataVolume:

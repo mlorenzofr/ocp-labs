@@ -1,0 +1,59 @@
+---
+- name: 'Enable device passthrough'
+  block:
+    - name: 'Get current HyperConverged resource'
+      kubernetes.core.k8s_info:
+        kind: 'HyperConverged'
+        api_version: 'hco.kubevirt.io/v1beta1'
+        namespace: 'openshift-cnv'
+        name: 'kubevirt-hyperconverged'
+      register: hco_state
+    - name: 'Ensure spec.permittedHostDevices object exists'
+      kubernetes.core.k8s_json_patch:
+        kind: 'HyperConverged'
+        api_version: 'hco.kubevirt.io/v1beta1'
+        namespace: 'openshift-cnv'
+        name: 'kubevirt-hyperconverged'
+        patch:
+          - op: add
+            path: /spec/permittedHostDevices
+            value: {}
+      when: hco_state.resources[0].spec.permittedHostDevices is not defined
+    - name: 'Set pciHostDevices to empty array'
+      kubernetes.core.k8s_json_patch:
+        kind: 'HyperConverged'
+        api_version: 'hco.kubevirt.io/v1beta1'
+        namespace: 'openshift-cnv'
+        name: 'kubevirt-hyperconverged'
+        patch:
+          - op: add
+            path: /spec/permittedHostDevices/pciHostDevices
+            value: []
+      when: (hco_state.resources[0].spec.permittedHostDevices | default({})).pciHostDevices is not defined
+    - name: 'Re-read HCO state if it was changed'
+      kubernetes.core.k8s_info:
+        kind: 'HyperConverged'
+        api_version: 'hco.kubevirt.io/v1beta1'
+        namespace: 'openshift-cnv'
+        name: 'kubevirt-hyperconverged'
+      register: hco_updated_state
+    - name: 'Define the current state for the final task'
+      ansible.builtin.set_fact:
+        current_hco_spec: "{{ (hco_updated_state.resources[0] if hco_updated_state.changed else hco_state.resources[0]).spec }}"
+    - name: 'Add virtio-net device to permittedHostDevices if not present'
+      kubernetes.core.k8s_json_patch:
+        kind: 'HyperConverged'
+        api_version: 'hco.kubevirt.io/v1beta1'
+        namespace: 'openshift-cnv'
+        name: 'kubevirt-hyperconverged'
+        patch:
+          - op: add
+            path: /spec/permittedHostDevices/pciHostDevices/-
+            value:
+              # This is the PCI address of the VirtIO-Net device (lspci -nn)
+              pciDeviceSelector: '1af4:1041'
+              resourceName: 'kubevirt.io/virtio-net'
+      when: >
+        (current_hco_spec.permittedHostDevices.pciHostDevices | default([]))
+        | selectattr('pciDeviceSelector', 'equalto', '1af4:1041')
+        | list | length == 0

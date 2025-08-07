@@ -1,0 +1,15 @@
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: bridge-net
+  namespace: default
+spec:
+  config: '{
+      "cniVersion": "0.4.0",
+      "name": "bridge-net",
+      "type": "cnv-bridge",
+      "bridge": "br-cnv",
+      "ipam": {
+        "type": "dhcp"
+      }
+    }'
