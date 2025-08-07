@@ -1,0 +1,7 @@
+---
+ocp_nmstate_apply: "{{ ocp_apply | default(true) }}"
+ocp_nmstate_channel: 'stable'
+ocp_nmstate_ns: 'openshift-nmstate'
+ocp_nmstate_operatorgroup: 'openshift-nmstate-group'
+ocp_nmstate_path: "{{ lab_configs | default('/tmp') }}"
+ocp_nmstate_source: 'redhat-operators'

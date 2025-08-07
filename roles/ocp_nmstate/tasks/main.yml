@@ -1,0 +1,29 @@
+---
+- name: 'Create nmstate installation manifest'
+  ansible.builtin.include_role:
+    name: 'ocp_olm'
+    tasks_from: 'subscription.yaml'
+  loop:
+    - operator_name: 'kubernetes-nmstate-operator'
+      ns: "{{ ocp_nmstate_ns }}"
+      monitoring: True
+      privileged: True
+      operator_group: "{{ ocp_nmstate_operatorgroup }}"
+      channel: "{{ ocp_nmstate_channel }}"
+      source: "{{ ocp_nmstate_source }}"
+  tags: ['olm']
+
+- name: 'Create nmstate manifest'
+  ansible.builtin.template:
+    src: 'nmstate.yaml.j2'
+    dest: "{{ ocp_nmstate_path }}/nmstate.yaml"
+    mode: '0644'
+  when: ocp_nmstate_apply
+  tags: ['nmstate']
+
+- name: 'Apply nmstate manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_nmstate_path }}/nmstate.yaml"
+  when: ocp_nmstate_apply
+  tags: ['nmstate']
