@@ -7,14 +7,14 @@
 ```shell
 ap labs/cnv-ocp/deploy.yaml
 ```
-2. Create the virtual machines for the spoke cluster:
-```shell
-for i in {1..3}; do oc apply -f vms/cnvn-spoke-${i}.yaml; done
+2. Attach a new network interface to the machines for the CNV network.
+3. Prepare the spoke cluster:
 ```
-3. Prepare the **fakefish** image.
-4. Deploy **fakefish** in the hub cluster as it's explained in the [documentation](https://github.com/openshift-metal3/fakefish/blob/main/user-docs/running-fakefish-on-ocp-for-kubevirt.md).
+ap labs/cnv-ocp/deploy.yaml --tags spoke
+```
+4. Configure the networking for the CNV environment:
 ```shell
-ap labs/cnv-ocp/deploy.yaml --tags fakefish
+ap labs/cnv-ocp/deploy.yaml --tags cnv-networking
 ```
 5. With the virtual machines stopped, apply the cluster manifest.
 > [!WARNING]

@@ -131,6 +131,98 @@
         loop_var: bmc_name
       ignore_errors: "{{ ansible_check_mode }}"
 
+- name: 'Setup CNV networking'
+  gather_facts: false
+  hosts: ['lab']
+
+  vars:
+    lab_name: 'cnvn'
+    lab_local_path: '/ansible/labs/cnv-ocp'
+    lab_configs: "/root/labs/{{ lab_name }}/config"
+    lab_custom_manifests:
+      - 'nad-bridge.yaml'
+      - 'nncp.yaml'
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  tags:
+    - 'never'
+    - 'cnv-networking'
+
+  roles:
+    - role: 'ocp_nmstate'
+
+  tasks:
+    - name: 'Create custom resources'
+      block:
+        - name: 'Create VM manifests directory'
+          ansible.builtin.file:
+            path: "{{ lab_configs }}/vms"
+            state: 'directory'
+            owner: 'root'
+            group: 'root'
+            mode: '0755'
+        - name: 'Copy custom manifests'
+          ansible.builtin.copy:
+            src: "{{ lab_local_path }}/manifest/vms/{{ item }}"
+            dest: "{{ lab_configs }}/vms/{{ item }}"
+          loop: "{{ lab_custom_manifests }}"
+        - name: 'Apply VM manifests'
+          kubernetes.core.k8s:
+            state: 'present'
+            src: "{{ lab_configs }}/vms/{{ item }}"
+          loop: "{{ lab_custom_manifests }}"
+          ignore_errors: "{{ ansible_check_mode }}"
+
+    - name: 'Enable DHCP IPAM CNI Daemon'
+      block:
+        - name: 'Get current Cluster Network Operator configuration'
+          kubernetes.core.k8s_info:
+            kind: 'Network'
+            api_version: 'operator.openshift.io/v1'
+            name: 'cluster'
+          register: cno_config
+        - name: 'Ensure spec.additionalNetworks key exists'
+          kubernetes.core.k8s_json_patch:
+            kind: 'Network'
+            api_version: 'operator.openshift.io/v1'
+            name: 'cluster'
+            patch:
+              - op: add
+                path: /spec/additionalNetworks
+                value: []
+          when: cno_config.resources[0].spec.additionalNetworks is not defined
+        - name: 'Re-read CNO configuration after potential patch'
+          kubernetes.core.k8s_info:
+            kind: 'Network'
+            api_version: 'operator.openshift.io/v1'
+            name: 'cluster'
+          register: cno_config_updated
+        - name: 'Add DHCP IPAM CNI Daemon configuration'
+          kubernetes.core.k8s_json_patch:
+            api_version: 'operator.openshift.io/v1'
+            kind: 'Network'
+            name: 'cluster'
+            patch:
+              - op: add
+                path: /spec/additionalNetworks/-
+                value:
+                  name: 'bridge-dhcp-cno-trigger'
+                  type: 'Raw'
+                  rawCNIConfig: |
+                    {
+                      "cniVersion": "0.4.0",
+                      "name": "bridge-dhcp-cno-trigger",
+                      "type": "bridge",
+                      "ipam": {
+                        "type": "dhcp"
+                      }
+                    }
+          when: >
+            cno_config_updated.resources[0].spec.additionalNetworks
+            | selectattr('name', 'equalto', 'bridge-dhcp-cno-trigger')
+            | list | length == 0
+
 - name: 'Setup spoke cluster (using VMs)'
   gather_facts: false
   hosts: ['lab']
@@ -225,9 +317,8 @@
     lab_configs: "/root/labs/{{ lab_name }}/config"
     lab_custom_manifests:
       - 'cnvn-spoke-1.yaml'
-      - 'cnvn-spoke-2.yaml'
-      - 'cnvn-spoke-3.yaml'
-      - 'nad-bridge.yaml'
+      #- 'cnvn-spoke-2.yaml'
+      #- 'cnvn-spoke-3.yaml'
     lab_libvirt_passthrough: false
   environment:
     KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
@@ -235,9 +326,6 @@
   tags:
     - 'never'
     - 'vms'
-
-  roles:
-    - role: 'ocp_nmstate'
 
   tasks:
     - name: 'Create custom resources'
@@ -265,55 +353,6 @@
       ansible.builtin.include_tasks:
         file: 'passthrough.yaml'
       when: lab_libvirt_passthrough
-
-    - name: 'Enable DHCP IPAM CNI Daemon'
-      block:
-        - name: 'Get current Cluster Network Operator configuration'
-          kubernetes.core.k8s_info:
-            kind: 'Network'
-            api_version: 'operator.openshift.io/v1'
-            name: 'cluster'
-          register: cno_config
-        - name: 'Ensure spec.additionalNetworks key exists'
-          kubernetes.core.k8s_json_patch:
-            kind: 'Network'
-            api_version: 'operator.openshift.io/v1'
-            name: 'cluster'
-            patch:
-              - op: add
-                path: /spec/additionalNetworks
-                value: []
-          when: cno_config.resources[0].spec.additionalNetworks is not defined
-        - name: 'Re-read CNO configuration after potential patch'
-          kubernetes.core.k8s_info:
-            kind: 'Network'
-            api_version: 'operator.openshift.io/v1'
-            name: 'cluster'
-          register: cno_config_updated
-        - name: 'Add DHCP IPAM CNI Daemon configuration'
-          kubernetes.core.k8s_json_patch:
-            api_version: 'operator.openshift.io/v1'
-            kind: 'Network'
-            name: 'cluster'
-            patch:
-              - op: add
-                path: /spec/additionalNetworks/-
-                value:
-                  name: 'bridge-dhcp-cno-trigger'
-                  type: 'Raw'
-                  rawCNIConfig: |
-                    {
-                      "cniVersion": "0.4.0",
-                      "name": "bridge-dhcp-cno-trigger",
-                      "type": "bridge",
-                      "ipam": {
-                        "type": "dhcp"
-                      }
-                    }
-          when: >
-            cno_config_updated.resources[0].spec.additionalNetworks
-            | selectattr('name', 'equalto', 'bridge-dhcp-cno-trigger')
-            | list | length == 0
 
 - name: 'Extract spoke cluster configuration'
   ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml
