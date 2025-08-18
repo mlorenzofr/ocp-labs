@@ -20,7 +20,7 @@
     lab_api_ips: ["{{ lab_node_network_base }}108"]
     lab_ingress_ips: ["{{ lab_node_network_base }}109"]
     lab_node_cpus: 24
-    lab_node_memory: 56000
+    lab_node_memory: 58000
     lab_node_disk_data: 300
     lab_hosts:
       - {id: '41', role: 'master'}
