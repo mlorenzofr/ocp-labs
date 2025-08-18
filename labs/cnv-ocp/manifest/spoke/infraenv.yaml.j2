@@ -2,16 +2,16 @@
 apiVersion: agent-install.openshift.io/v1beta1
 kind: InfraEnv
 metadata:
-  name: spoke
+  name: spoke-cnv
   namespace: spoke
 spec:
   additionalNTPSources:
     - 192.168.125.1
   clusterRef:
-    name: spoke
+    name: spoke-cnv
     namespace: spoke
   agentLabels:
-    cluster-name: "spoke"
+    cluster-name: "spoke-cnv"
   pullSecretRef:
     name: pull-secret-spoke
   sshAuthorizedKey: {{ lab_ssh_pubkey }}

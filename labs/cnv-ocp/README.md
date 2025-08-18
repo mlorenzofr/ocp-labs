@@ -28,6 +28,18 @@ ap labs/cnv-ocp/deploy.yaml --tags vms
 > [!WARNING]
 > The NTP validation takes some time to be validated
 > The discovery ISO doesn't work after writing the image to disk. It may require stop the VM and change the boot order or remove the CD-ROM manually.
+9. The agent resources must be approved manually.
+```shell
+$ oc get agent -n spoke
+NAMESPACE   NAME                                   CLUSTER   APPROVED   ROLE     STAGE
+spoke       53f824e5-d158-5082-827a-03d99fe632ac   spoke     false      worker
+spoke       9b75c89d-163a-51ee-893a-9f72c1dbde42   spoke     false      master
+spoke       9cca4b6d-65b4-5249-a5e4-e13fbb721abc   spoke     false      worker
+
+$ oc patch agent/53f824e5-d158-5082-827a-03d99fe632ac -n spoke --patch '{"spec":{"approved":true}}' --type=merge
+$ oc patch agent/9b75c89d-163a-51ee-893a-9f72c1dbde42 -n spoke --patch '{"spec":{"approved":true}}' --type=merge
+$ oc patch agent/9cca4b6d-65b4-5249-a5e4-e13fbb721abc -n spoke --patch '{"spec":{"approved":true}}' --type=merge
+```
 
 ## Validation
 1. Check if the cluster is running:

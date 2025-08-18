@@ -310,6 +310,21 @@
           data:
             .dockerconfigjson: "{{ ocp_pullsecret_b64 }}"
 
+    # Create DNS records for the spoke cluster
+    - name: 'Create dnsmasq snippet for ztp-sno cluster'
+      ansible.builtin.include_role:
+        name: 'dnsmasq'
+        tasks_from: 'extra_conf.yaml'
+      vars:
+        cluster_name: 'spoke-cnv'
+        cluster_domain: 'local.lab'
+        cluster_api_vip: '192.168.129.10'
+        cluster_ingress_vip: '192.168.129.11'
+        dnsmasq_conf_snippets:
+          - {src: 'openshift-cluster.conf.j2', dest: "{{ lab_name }}-spoke-cluster.conf"}
+      tags:
+        - 'dnsmasq'
+
     - name: 'Create cluster resources'
       block:
         - name: 'Create cluster manifests directory'

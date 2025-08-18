@@ -36,13 +36,13 @@ data:
 apiVersion: extensions.hive.openshift.io/v1beta1
 kind: AgentClusterInstall
 metadata:
-  name: spoke
+  name: spoke-cnv
   namespace: spoke
 spec:
   manifestsConfigMapRef:
     name: extra-manifests
   clusterDeploymentRef:
-    name: spoke
+    name: spoke-cnv
   imageSetRef:
     name: img4.18.16-x86-64-appsub
   networking:
@@ -65,24 +65,24 @@ spec:
 apiVersion: hive.openshift.io/v1
 kind: ClusterDeployment
 metadata:
-  name: spoke
+  name: spoke-cnv
   namespace: spoke
   annotations:
     hive.openshift.io/try-install-once: "true"
 spec:
   baseDomain: local.lab
-  clusterName: spoke
+  clusterName: spoke-cnv
   controlPlaneConfig:
     servingCertificates: {}
   clusterInstallRef:
     group: extensions.hive.openshift.io
     kind: AgentClusterInstall
-    name: spoke
+    name: spoke-cnv
     version: v1beta1
   platform:
     agentBareMetal:
       agentSelector:
         matchLabels:
-          cluster-name: "spoke"
+          cluster-name: "spoke-cnv"
   pullSecretRef:
     name: pullsecret-cluster-spoke
