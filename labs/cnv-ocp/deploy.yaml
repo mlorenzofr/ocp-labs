@@ -229,6 +229,9 @@
 
   vars:
     lab_name: 'cnvn'
+    cluster_files: 'spoke'
+    lab_local_path: '/ansible/labs/cnv-ocp'
+    lab_configs: "/root/labs/{{ lab_name }}/config"
   environment:
     KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
 
@@ -307,6 +310,80 @@
           data:
             .dockerconfigjson: "{{ ocp_pullsecret_b64 }}"
 
+    - name: 'Create cluster resources'
+      block:
+        - name: 'Create cluster manifests directory'
+          ansible.builtin.file:
+            path: "{{ lab_configs }}/{{ cluster_files }}"
+            state: 'directory'
+            owner: 'root'
+            group: 'root'
+            mode: '0755'
+        - name: 'Create cluster manifests'
+          ansible.builtin.template:
+            src: "{{ lab_local_path }}/manifest/{{ cluster_files }}/{{ item }}"
+            dest: "{{ lab_configs }}/{{ cluster_files }}/{{ item | replace('.j2', '') }}"
+          loop:
+            - 'cluster.yaml.j2'
+            - 'infraenv.yaml.j2'
+        - name: 'Apply cluster manifests'
+          kubernetes.core.k8s:
+            state: 'present'
+            src: "{{ lab_configs }}/{{ cluster_files }}/{{ item }}"
+          loop:
+            - 'cluster.yaml'
+            - 'infraenv.yaml'
+          ignore_errors: "{{ ansible_check_mode }}"
+
+    - name: 'Check if the discovery image is available'
+      kubernetes.core.k8s_info:
+        kind: 'PersistentVolumeClaim'
+        api_version: 'v1'
+        name: 'spoke-discovery-image-{{ item }}'
+        namespace: 'default'
+      loop: [1, 2, 3]
+      register: discovery_image
+
+    - name: 'Create discovery image PVC'
+      block:
+        - name: 'Get discovery iso url'
+          kubernetes.core.k8s_info:
+            kind: 'InfraEnv'
+            api_version: 'agent-install.openshift.io/v1beta1'
+            name: 'spoke'
+            namespace: 'spoke'
+          register: discovery_image_url
+          failed_when: discovery_image_url.resources[0].status.isoDownloadURL is not defined
+          retries: 10
+          delay: 30
+        - name: 'Download discovery iso'
+          ansible.builtin.get_url:
+            url: "{{ discovery_image_url.resources[0].status.isoDownloadURL }}"
+            dest: '/tmp/spoke-discovery-image.iso'
+            mode: '0644'
+            validate_certs: false
+          when: discovery_image.results[0].resources | length == 0
+          retries: 10
+          delay: 30
+        - name: 'Upload discovery iso to PVC'
+          ansible.builtin.command:
+            cmd: >
+              virtctl image-upload pvc spoke-discovery-image-{{ item }}
+              --image-path=/tmp/spoke-discovery-image.iso
+              --size=1Gi
+              --storage-class=ocs1-ceph-rbd-virtualization
+              --namespace=default
+              --insecure
+          environment:
+            PATH: '/usr/local/bin:/usr/bin:/bin'
+          loop: [1, 2, 3]
+          when: discovery_image.results[0].resources | length == 0
+        - name: 'Delete discovery iso'
+          ansible.builtin.file:
+            path: '/tmp/spoke-discovery-image.iso'
+            state: 'absent'
+          when: discovery_image.results[0].resources | length == 0
+
 - name: 'Setup VMs'
   gather_facts: false
   hosts: ['lab']
@@ -317,8 +394,8 @@
     lab_configs: "/root/labs/{{ lab_name }}/config"
     lab_custom_manifests:
       - 'cnvn-spoke-1.yaml'
-      #- 'cnvn-spoke-2.yaml'
-      #- 'cnvn-spoke-3.yaml'
+      - 'cnvn-spoke-2.yaml'
+      - 'cnvn-spoke-3.yaml'
     lab_libvirt_passthrough: false
   environment:
     KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"

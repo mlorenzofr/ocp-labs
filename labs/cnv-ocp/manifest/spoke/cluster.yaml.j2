@@ -53,10 +53,14 @@ spec:
     serviceNetwork:
       - "172.32.0.0/16"
     machineNetwork:
-      - cidr: "10.0.2.0/24"
+      - cidr: "192.168.129.0/24"
+  apiVIPs:
+    - 192.168.129.10
+  ingressVIPs:
+    - 192.168.129.11
   provisionRequirements:
-    controlPlaneAgents: 1
-  sshPublicKey: <redacted>
+    controlPlaneAgents: 3
+  sshPublicKey: {{ lab_ssh_pubkey }}
 ---
 apiVersion: hive.openshift.io/v1
 kind: ClusterDeployment

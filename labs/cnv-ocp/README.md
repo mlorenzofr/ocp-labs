@@ -8,18 +8,23 @@
 ap labs/cnv-ocp/deploy.yaml
 ```
 2. Attach a new network interface to the machines for the CNV network.
-3. Prepare the spoke cluster:
-```
-ap labs/cnv-ocp/deploy.yaml --tags spoke
-```
-4. Configure the networking for the CNV environment:
+3. Configure the networking for the CNV environment:
 ```shell
 ap labs/cnv-ocp/deploy.yaml --tags cnv-networking
 ```
-5. With the virtual machines stopped, apply the cluster manifest.
+4. Prepare the spoke cluster:
+```
+ap labs/cnv-ocp/deploy.yaml --tags spoke
+```
+5. Configure the DHCP networking (manually, here we don't have BMH's)
+6. Create the `VirtualMachines`:
+```
+ap labs/cnv-ocp/deploy.yaml --tags vms
+```
+7. With the virtual machines stopped, attach the discovery ISO using the Web UI.
 > [!WARNING]
 > After create a new `BaremetalHost`, bound to the `InfraEnv`, review if the PVC with the discovery ISO has been created. If it's not present, remove the `BaremetalHost` and retry.
-6. The cluster installation begins.
+8. Start the VMs, the cluster installation should begin.
 > [!WARNING]
 > The NTP validation takes some time to be validated
 > The discovery ISO doesn't work after writing the image to disk. It may require stop the VM and change the boot order or remove the CD-ROM manually.
@@ -73,7 +78,11 @@ $ oc get pods -n multicluster-engine -l app=assisted-service
 NAME                               READY   STATUS    RESTARTS   AGE
 assisted-service-d4f9885c7-rfl55   2/2     Running   0          19h
 ```
-4. Check the `VirtualMachines`:
+4. From the Beaker machine, check if the bridge **br-cnv** was configured correctly:
+```shell
+for i in {1..3}; do kssh cnvn-master-${i} ip a l br-cnv; done
+```
+5. Check the `VirtualMachines`:
 ```shell
 $ oc get virtualmachine -A
 NAMESPACE   NAME           AGE     STATUS    READY
@@ -81,7 +90,7 @@ default     cnvn-spoke-1   29m     Running   True
 default     cnvn-spoke-2   7m11s   Running   True
 default     cnvn-spoke-3   3m47s   Running   True
 ```
-5. Check resources related with the cluster deployment:
+6. Check resources related with the cluster deployment:
 ```shell
 $ oc get infraenv,clusterdeployment,bmh -n spoke
 NAME                                        ISO CREATED AT
@@ -93,7 +102,7 @@ clusterdeployment.hive.openshift.io/spoke   cecb2a18-d5a3-478f-9f7b-d86ce13c143e
 NAME                                   STATE         CONSUMER   ONLINE   ERROR   AGE
 baremetalhost.metal3.io/cnvn-spoke-1   provisioned              true             4d22h
 ```
-6. Check if the _spoke_ cluster works:
+7. Check if the _spoke_ cluster works:
 ```
 $ export KUBECONFIG=~/labs/cnvn/spoke/auth/kubeconfig-32707
 

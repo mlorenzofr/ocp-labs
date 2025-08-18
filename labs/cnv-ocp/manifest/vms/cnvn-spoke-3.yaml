@@ -21,7 +21,7 @@ spec:
           networkInterfaceMultiqueue: true
         resources:
           requests:
-            memory: "16G"
+            memory: "18G"
         cpu:
           cores: 12
       networks:
