@@ -10,6 +10,7 @@
     lab_path: '/root/labs'
     libvirt_image_dir: '/home/libvirt-ocp'
     lab_appliance: false
+    lab_platform: 'baremetal'
 
   tasks:
     - name: 'Test lab_name'
