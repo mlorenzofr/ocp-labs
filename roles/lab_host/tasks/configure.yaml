@@ -56,3 +56,16 @@
     name: 'squid'
     enabled: true
   ignore_errors: "{{ ansible_check_mode }}"
+
+- name: 'Configure aws credentials'
+  community.general.ini_file:
+    path: '/root/.aws/credentials'
+    section: 'default'
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  loop:
+    - { option: 'aws_access_key_id', value: "{{ lab_aws_access_key_id }}" }
+    - { option: 'aws_secret_access_key', value: "{{ lab_aws_secret_access_key }}" }
+    - { option: 'region', value: "{{ lab_aws_region | default('us-east-1') }}" }
+    - { option: 'output', value: "{{ lab_aws_output | default('json') }}" }
+  when: lab_aws_access_key_id is defined and lab_aws_secret_access_key is defined
