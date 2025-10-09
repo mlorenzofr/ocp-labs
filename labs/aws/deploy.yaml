@@ -1,0 +1,21 @@
+---
+# Run it with:
+#   ap labs/aws/deploy.yaml
+
+- name: 'Clean aws lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'aws'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import AWS playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/aws.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'aws'
+    lab_cluster_name: 'ztvp'
+    lab_worker_replicas: 0
+    start_install: true

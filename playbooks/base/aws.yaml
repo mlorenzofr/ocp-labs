@@ -1,0 +1,83 @@
+---
+# To start the installation in background inside a tmux session use `-e "start_install=true"`
+#
+# Run examples:
+#   - ansible-playbook playbooks/base/aws.yml -e "start_install=true"
+- name: 'Install Openshift compact cluster on AWS'
+  hosts:
+    - 'lab'
+
+  gather_facts: false
+
+  vars:
+    lab_name: 'aws'
+    lab_domain: "{{ lab_aws_dns_domain }}"
+    lab_platform: 'aws'
+    lab_aws_instance_type_master: 'm5.xlarge'
+    lab_aws_instance_type_worker: 'm5.xlarge'
+    lab_aws_region: 'us-east-1'
+    lab_master_replicas: 3
+    lab_worker_replicas: 0
+    lab_node_network: '10.0.0.0/16'
+    lab_cluster_network: '10.128.0.0/14'
+    lab_service_network: '172.30.0.0/16'
+
+  roles:
+    - 'lab'
+
+  tasks:
+    - name: 'Execute base handlers'
+      ansible.builtin.meta: flush_handlers
+
+    - name: 'Copy configuration files to deploy directory'
+      ansible.builtin.copy:
+        src: "{{ lab_path }}/{{ lab_name }}/config/{{ item }}"
+        dest: "{{ lab_path }}/{{ lab_name }}/deploy/{{ item }}"
+        mode: '0640'
+        remote_src: true
+      loop:
+        - 'install-config.yaml'
+
+    - name: 'Generate cluster manifests'
+      ansible.builtin.command:
+        cmd: >
+          openshift-install create manifests
+          --dir {{ lab_path }}/{{ lab_name }}/deploy
+        creates: "{{ lab_path }}/{{ lab_name }}/deploy/.openshift_install_state.json"
+      environment:
+        PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
+
+    - name: 'Copy custom manifests'
+      ansible.builtin.copy:
+        src: "{{ item.manifest }}"
+        dest: "{{ lab_path }}/{{ lab_name }}/deploy/manifests/{{ item.name }}"
+        mode: '0640'
+      loop: "{{ lab_custom_manifests }}"
+
+    - name: 'Launch install process in a tmux session'
+      ansible.builtin.command:
+        cmd: >
+          /usr/bin/tmux new-session -s ocp-install-{{ lab_name }} -d
+          "/usr/local/bin/openshift-install --dir {{ lab_path }}/{{ lab_name }}/deploy --log-level debug create cluster"
+      register: tmux_status
+      when: start_install | default(False)
+
+    - name: 'Wait for kubeconfig file'
+      ansible.builtin.wait_for:
+        path: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+        state: 'present'
+      when: start_install | default(False)
+
+    - name: 'Waiting until the installation finishes'
+      ansible.builtin.command:
+        cmd: >
+          oc get clusterversion -o jsonpath='{.items[*].status.conditions[?(@.type=="Available")].status}'
+      register: install_status
+      environment:
+        KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+        PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
+      retries: 125
+      delay: 30
+      until: install_status.stdout == 'True'
+      changed_when: False
+      when: start_install | default(False)

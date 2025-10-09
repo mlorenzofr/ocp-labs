@@ -1,7 +1,8 @@
 ---
 apiVersion: v1
 metadata:
-  name: {{ lab_name }}
+  creationTimestamp: null
+  name: {{ lab_cluster_name | default(lab_name) }}
 baseDomain: {{ lab_domain }}
 networking:
   networkType: {{ lab_network_type }}
@@ -26,17 +27,28 @@ compute:
   - name: worker
     architecture: amd64
     hyperthreading: Enabled
+{% if lab_platform == 'aws' %}
+    platform:
+      aws:
+        type: {{ lab_aws_instance_type_worker }}
+{% endif %}
     replicas: {{ lab_worker_replicas }}
 controlPlane:
   name: master
   architecture: amd64
   hyperthreading: Enabled
+{% if lab_platform == 'aws' %}
+  platform:
+    aws:
+      type: {{ lab_aws_instance_type_master }}
+{% endif %}
   replicas: {{ lab_master_replicas }}
 platform:
 {% if lab_master_replicas == 1 %}
   none: {}
 {% else %}
   {{ lab_platform }}:
+{% if lab_platform == 'baremetal' %}
     apiVIPs: {{ lab_api_ips }}
     ingressVIPs: {{ lab_ingress_ips }}
 {% if not lab_appliance %}
@@ -60,6 +72,12 @@ platform:
           deviceName: "{{ host.disk | default('/dev/vda') }}"
 {% endfor %}
 {% endif %}
+{% endif %}
+{% elif lab_platform == 'aws' %}
+    region: {{ lab_aws_region }}
+    vpc: {}
+publish: External
+additionalTrustBundlePolicy: Proxyonly
 {% endif %}
 {% endif %}
 {% if lab_custom_capability_set != '' %}

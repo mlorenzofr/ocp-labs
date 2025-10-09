@@ -32,7 +32,7 @@ This role depends on the **dnsmasq** role to create DNS resolution for the lab m
 * `lab_node_role`. _String_. Node default role.
 * `lab_ntp_sources`. _List_. List of static NTP servers.
 * `lab_path`. _String_. Path in the server where the files will be placed.
-* `lab_platform`. _String_. Set the platform (`none|baremetal|vsphere`).
+* `lab_platform`. _String_. Set the platform (`none|aws|baremetal|vsphere`).
 * `lab_proxy_http`. _String_. Set HTTP proxy for the cluster.
 * `lab_proxy_https`. _String_. Set HTTPS proxy for the cluster.
 * `lab_proxy_exceptions`. _List_. List with domains or networks excluded for proxy use.
@@ -58,6 +58,11 @@ This role depends on the **dnsmasq** role to create DNS resolution for the lab m
 * `lab_appliance_local_registry`. _Bool_. Enable/Disable local registry in Appliance nodes.
 * `lab_appliance_password`. _String_. Password of user 'core' during the bootstrap phase.
 * `lab_appliance_version`. _String_. Openshift version.
+
+### AWS related variables
+* `lab_aws_instance_type_master`. _String_. Instance type used for master nodes.
+* `lab_aws_instance_type_worker`. _String_. Instance type used for worker nodes.
+* `lab_aws_region`. _String_. AWS region to deploy the lab.
 
 ### Variables for `lab_hosts` items
 * `cpus`. _Number_. Machine vCPUs.

@@ -27,43 +27,6 @@
     mode: '0644'
   ignore_errors: "{{ ansible_check_mode }}"
 
-- name: 'Create agent-config.yaml file'
-  ansible.builtin.template:
-    src: 'agent-config.yaml.j2'
-    dest: "{{ lab_path }}/{{ lab_name }}/config/agent-config.yaml"
-    mode: '0644'
-  ignore_errors: "{{ ansible_check_mode }}"
-  when: lab_abi
-
-- name: 'Create dnsmasq snippet'
-  ansible.builtin.include_role:
-    name: 'dnsmasq'
-    tasks_from: 'extra_conf.yaml'
-  vars:
-    dnsmasq_conf_snippets:
-      - {src: 'dnsmasq-lab.j2', dest: "{{ lab_name }}.conf"}
-  tags: ['dnsmasq']
-
-- name: 'Prepare VMs disks'
-  ansible.builtin.set_fact:
-    __lab_vm_disks:
-      - {"size": "{{ lab_node_disk_sys }}", "pool": "{{ lab_node_disk_pool }}"}
-      - {"size": "{{ item.disk_data | default(lab_node_disk_data) }}", "pool": "{{ lab_node_disk_pool }}"}
-  when: not lab_appliance
-
-- name: 'Create virtual machines'
-  karmab.kcli.kcli_vm:
-    name: "{{ lab_name }}-{{ item.role | default(lab_node_role) }}-{{ ansible_loop.index }}"
-    state: 'present'
-    parameters:
-      start: false
-      uefi_legacy: true
-      plan: "{{ lab_name }}"
-      memory: "{{ item.memory | default(lab_node_memory) }}"
-      numcpus: "{{ item.cpus | default(lab_node_cpus) }}"
-      disks: "{{ __lab_vm_disks }}"
-      nets:
-        - {"name": "{{ lab_network_name }}", "mac": "{{ item.mac | default('{}{}'.format(lab_mac_base, item.id)) }}"}
-  loop: "{{ lab_hosts }}"
-  loop_control:
-    extended: true
+- name: 'Include baremetal tasks'
+  ansible.builtin.include_tasks: baremetal.yaml
+  when: lab_platform == 'baremetal'

@@ -23,6 +23,7 @@
         patterns: "^{{ lab_name }}.*\\.conf$"
         use_regex: true
       register: clean_dnsmasq_files
+      when: lab_platform == 'baremetal'
 
     - name: 'Remove dnsmasq snippets'
       notify: 'Restart dnsmasq service'
@@ -30,6 +31,14 @@
         path: "{{ item }}"
         state: 'absent'
       loop: "{{ clean_dnsmasq_files.files | map(attribute='path') }}"
+      when: lab_platform == 'baremetal'
+
+    - name: 'Remove AWS resources'
+      ansible.builtin.command:
+        cmd: "openshift-install destroy cluster --dir {{ lab_path }}/{{ lab_name }}/deploy --log-level debug"
+      environment:
+        PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
+      when: lab_platform == 'aws'
 
     - name: 'Remove lab files'
       ansible.builtin.file:
@@ -68,6 +77,7 @@
       register: __kcli_plan
       changed_when: __kcli_plan.rc == 0
       failed_when: false
+      when: lab_platform == 'baremetal'
       notify: 'Remove virtual machines'
 
   handlers:
