@@ -21,3 +21,30 @@
     lab_aws_instance_type_master: 't3.2xlarge'
     lab_worker_replicas: 0
     start_install: true
+
+- name: 'Extract spoke cluster configuration'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml
+  vars:
+    lab_name: 'aws'
+    lab_path: '/root/labs'
+    hive_cluster_name: "one-group-one-xnszc"
+    hive_ns: 'one-group-one-xnszc'
+    hive_secret_prefix: 'one-group-one-xnszc-0-xdj4l'
+  tags:
+    - 'never'
+    - 'postinst'
+    - 'hive-config'
+
+- name: 'Import spoke cluster'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/acm-import-cluster.yaml
+  vars:
+    lab_name: 'aws'
+    cluster_name: 'one-group-one-xnszc'
+    cluster_set: 'group-one'
+    cluster_labels:
+      clusterGroup: 'group-one'
+    kubeconfig_path: '/root/labs/aws/one-group-one-xnszc/auth/kubeconfig'
+  tags:
+    - 'never'
+    - 'postinst'
+    - 'import-cluster'

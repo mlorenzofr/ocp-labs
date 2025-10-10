@@ -36,7 +36,11 @@ $ oc get sc
 NAME                PROVISIONER       RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
 gp2-csi             ebs.csi.aws.com   Delete          WaitForFirstConsumer   true                   23m
 gp3-csi (default)   ebs.csi.aws.com   Delete          WaitForFirstConsumer   true                   23m
+
+$ oc get clusterpool -A
+NAMESPACE                 NAME            SIZE   STANDBY   READY   BASEDOMAIN              IMAGESET
+open-cluster-management   aws-group-one   1      0         0       <redacted>              img4.19.10-multi-appsub
 ```
 
 ## Links
-
+- [Hive ClusterPool](https://github.com/openshift/hive/blob/master/docs/clusterpools.md)
