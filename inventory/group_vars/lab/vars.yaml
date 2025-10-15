@@ -32,6 +32,10 @@ haproxy_labs:
     backends: ['192.168.125.103']
     api: True
     api_ips: ['192.168.125.102']
+  - name: 'ztvp-spoke-1'
+    backends: ['192.168.125.75']
+    api: True
+    api_ips: ['192.168.125.75']
   # - name: 'cnv'
   #   backends: ['[fd00:0:0:1::11]']
   #   api: True

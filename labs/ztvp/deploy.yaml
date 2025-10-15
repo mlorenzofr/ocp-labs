@@ -8,12 +8,23 @@
     lab_name: 'ztvp'
   tags:
     - 'clean'
+    - 'ztvp-hub'
     - 'never'
 
-- name: 'Import ABI playbook'
+- name: 'Clean spoke cluster #1'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'ztvp-spoke-1'
+  tags:
+    - 'clean'
+    - 'ztvp-spoke-1'
+    - 'never'
+
+- name: 'Install ZTVP hub cluster'
   ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
   tags:
     - 'ocp'
+    - 'ztvp-hub'
   vars:
     lab_name: 'ztvp'
     lab_abi_ip: "{{ lab_node_network_base }}71"
@@ -40,12 +51,13 @@
       - DeploymentConfig
     start_install: true
 
-- name: 'ZTVP post-installation tasks'
+- name: 'ZTVP hub cluster post-installation tasks'
   hosts:
     - 'lab'
   gather_facts: false
   tags:
     - 'postinst'
+    - 'ztvp-hub'
   vars:
     lab_name: 'ztvp'
     lab_configs: "/root/labs/{{ lab_name }}/config"
@@ -54,3 +66,30 @@
     KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
   roles:
     - 'ocp_lvms'
+
+- name: 'Install hub cluster #1'
+  ansible.builtin.import_playbook: ../../playbooks/base/sno.yaml
+  vars:
+    lab_name: 'ztvp-spoke-1'
+    lab_node_cpus: 16
+    lab_node_memory: 24000
+    start_install: true
+    lab_abi_ip: "{{ lab_node_network_base }}75"
+    lab_api_ips: ["{{ lab_node_network_base }}75"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}75"]
+    lab_hosts:
+      - {id: '75', iface:'enp1s0'}
+    lab_custom_capability_set: 'None'
+    lab_custom_capabilities:
+      - baremetal
+      - MachineAPI
+      - marketplace
+      - OperatorLifecycleManager
+      - Console
+      - Ingress
+      - Storage
+      - NodeTuning
+      - DeploymentConfig
+  tags:
+    - 'ocp'
+    - 'ztvp-spoke-1'
