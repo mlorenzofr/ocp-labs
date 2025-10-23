@@ -20,6 +20,15 @@
     - 'ztvp-spoke-1'
     - 'never'
 
+- name: 'Clean spoke cluster #2'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'ztvp-spoke-2'
+  tags:
+    - 'clean'
+    - 'ztvp-spoke-2'
+    - 'never'
+
 - name: 'Install ZTVP hub cluster'
   ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
   tags:
@@ -67,7 +76,7 @@
   roles:
     - 'ocp_lvms'
 
-- name: 'Install hub cluster #1'
+- name: 'Install spoke cluster #1'
   ansible.builtin.import_playbook: ../../playbooks/base/sno.yaml
   vars:
     lab_name: 'ztvp-spoke-1'
@@ -93,3 +102,32 @@
   tags:
     - 'ocp'
     - 'ztvp-spoke-1'
+    - 'spoke'
+
+- name: 'Install spoke cluster #2'
+  ansible.builtin.import_playbook: ../../playbooks/base/sno.yaml
+  vars:
+    lab_name: 'ztvp-spoke-2'
+    lab_node_cpus: 16
+    lab_node_memory: 24000
+    start_install: true
+    lab_abi_ip: "{{ lab_node_network_base }}76"
+    lab_api_ips: ["{{ lab_node_network_base }}76"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}76"]
+    lab_hosts:
+      - {id: '76', iface:'enp1s0'}
+    lab_custom_capability_set: 'None'
+    lab_custom_capabilities:
+      - baremetal
+      - MachineAPI
+      - marketplace
+      - OperatorLifecycleManager
+      - Console
+      - Ingress
+      - Storage
+      - NodeTuning
+      - DeploymentConfig
+  tags:
+    - 'ocp'
+    - 'ztvp-spoke-2'
+    - 'spoke'
