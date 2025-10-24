@@ -17,7 +17,8 @@
     lab_name: 'ztvp-spoke-1'
   tags:
     - 'clean'
-    - 'ztvp-spoke-1'
+    - 'clean-spoke'
+    - 'clean-ztvp-spoke-1'
     - 'never'
 
 - name: 'Clean spoke cluster #2'
@@ -26,7 +27,8 @@
     lab_name: 'ztvp-spoke-2'
   tags:
     - 'clean'
-    - 'ztvp-spoke-2'
+    - 'clean-spoke'
+    - 'clean-ztvp-spoke-2'
     - 'never'
 
 - name: 'Install ZTVP hub cluster'
@@ -86,6 +88,7 @@
     lab_abi_ip: "{{ lab_node_network_base }}75"
     lab_api_ips: ["{{ lab_node_network_base }}75"]
     lab_ingress_ips: ["{{ lab_node_network_base }}75"]
+    lab_node_disk_data: 10
     lab_hosts:
       - {id: '75', iface:'enp1s0'}
     lab_custom_capability_set: 'None'
@@ -103,6 +106,23 @@
     - 'ocp'
     - 'ztvp-spoke-1'
     - 'spoke'
+    - 'never'
+
+- name: 'ZTVP spoke cluster #1 post-installation tasks'
+  hosts:
+    - 'lab'
+  gather_facts: false
+  tags:
+    - 'postinst'
+    - 'spoke'
+    - 'ztvp-spoke-1'
+  vars:
+    lab_name: 'ztvp-spoke-1'
+    lab_configs: "/root/labs/{{ lab_name }}/config"
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+  roles:
+    - 'ocp_lvms'
 
 - name: 'Install spoke cluster #2'
   ansible.builtin.import_playbook: ../../playbooks/base/sno.yaml
@@ -114,6 +134,7 @@
     lab_abi_ip: "{{ lab_node_network_base }}76"
     lab_api_ips: ["{{ lab_node_network_base }}76"]
     lab_ingress_ips: ["{{ lab_node_network_base }}76"]
+    lab_node_disk_data: 10
     lab_hosts:
       - {id: '76', iface:'enp1s0'}
     lab_custom_capability_set: 'None'
@@ -131,3 +152,20 @@
     - 'ocp'
     - 'ztvp-spoke-2'
     - 'spoke'
+    - 'never'
+
+- name: 'ZTVP spoke cluster #2 post-installation tasks'
+  hosts:
+    - 'lab'
+  gather_facts: false
+  tags:
+    - 'postinst'
+    - 'spoke'
+    - 'ztvp-spoke-2'
+  vars:
+    lab_name: 'ztvp-spoke-2'
+    lab_configs: "/root/labs/{{ lab_name }}/config"
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+  roles:
+    - 'ocp_lvms'
