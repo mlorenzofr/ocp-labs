@@ -77,7 +77,7 @@ spec:
 {% set version_major = '.'.join(image.ocp_version.split('.')[0:2]) %}
     - openshiftVersion: "{{ version_major }}"
 {% if not 'url' in image.keys() %}
-      url: "https://mirror.openshift.com/pub/openshift-v4/{{ image.arch }}/dependencies/rhcos/{{ version_major }}/{{ image.ocp_version }}/rhcos-{{ image.ocp_version }}-{{ 'aarch64' if image.arch == 'arm64' else image.arch }}-live.{{ 'aarch64' if image.arch == 'arm64' else image.arch}}.iso"
+      url: "https://mirror.openshift.com/pub/openshift-v4/{{ image.arch }}/dependencies/rhcos/{{ version_major }}/{{ image.ocp_version }}/rhcos-{{ image.ocp_version }}-{{ 'aarch64' if image.arch == 'arm64' else image.arch }}-live{{ '-iso' if version_major.split('.')[1] | int > 18 else '' }}.{{ 'aarch64' if image.arch == 'arm64' else image.arch}}.iso"
 {% else %}
       url: "{{ image.url }}"
 {% endif %}
