@@ -28,7 +28,7 @@
     start_install: true
 
 - name: 'Install ACM on hub cluster'
-  ansible.builtin.import_playbook: ../../playbooks/setup/hive.yml
+  ansible.builtin.import_playbook: ../../playbooks/setup/hive.yaml
   tags:
     - 'postinst'
     - 'acm'

@@ -29,7 +29,7 @@
     start_install: true
 
 - name: 'Import hive setup playbook'
-  ansible.builtin.import_playbook: ../../playbooks/setup/hive.yml
+  ansible.builtin.import_playbook: ../../playbooks/setup/hive.yaml
   tags:
     - 'postinst'
   vars:

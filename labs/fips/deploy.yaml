@@ -25,7 +25,7 @@
     - 'ocp'
 
 - name: 'Import hive playbook'
-  ansible.builtin.import_playbook: ../../playbooks/setup/hive.yml
+  ansible.builtin.import_playbook: ../../playbooks/setup/hive.yaml
   tags:
     - 'postinst'
     - 'hive'
