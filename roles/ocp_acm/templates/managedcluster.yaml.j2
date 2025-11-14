@@ -6,11 +6,13 @@ metadata:
   labels:
     cloud: '{{ cloud | default('auto-detect') }}'
     vendor: '{{ vendor | default('auto-detect') }}'
-{% if cluster_set %}
+{% if cluster_set is defined %}
     cluster.open-cluster-management.io/clusterset: {{ cluster_set }}
 {% endif %}
-{% for key, value in cluster_labels.items() | default({}) %}
+{% if cluster_labels is defined %}
+{% for key, value in cluster_labels.items() %}
     {{ key }}: {{ value }}
 {% endfor %}
+{% endif %}
 spec:
   hubAcceptsClient: true
