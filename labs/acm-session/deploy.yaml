@@ -1,0 +1,124 @@
+---
+# Run it with:
+#   ap labs/acm/deploy.yaml
+
+- name: 'Clean acm lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'acm'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Clean acm spoke cluster #2'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'acm-spoke-2'
+  tags:
+    - 'clean'
+    - 'clean-spoke-2'
+    - 'never'
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'acm-hub'
+    - 'ocp'
+  vars:
+    lab_name: 'acm'
+    lab_abi_ip: "{{ lab_node_network_base }}61"
+    lab_api_ips: ["{{ lab_node_network_base }}105"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}106"]
+    lab_node_memory: 28000
+    lab_node_disk_data: 60
+    lab_hosts:
+      - {id: '61', role: 'master'}
+      - {id: '62', role: 'master'}
+      - {id: '63', role: 'master'}
+    start_install: true
+
+- name: 'Prepare manifests'
+  ansible.builtin.import_playbook: ../../playbooks/setup/hive.yaml
+  tags:
+    - 'acm-hub'
+    - 'postinst'
+  vars:
+    lab_name: 'acm'
+    ocp_apply: false
+
+    ocp_assisted_service_op: 'acm'
+    ocp_assisted_service_images:
+      - ocp_version: '4.20.0'
+        arch: 'x86_64'
+        version: '9.6.20250826-1'
+    ocp_assisted_service_infraenvs:
+      - name: "spoke-{{ lab_name }}"
+        ns: 'spoke'
+        ntp: ["{{ lab_node_network_base }}1"]
+        redfish: "{{ lab_node_network_base }}1"
+        inventory:
+          - {name: "{{ lab_name }}-bmh-1", id: '64'}
+          - {name: "{{ lab_name }}-bmh-2", id: '65'}
+          - {name: "{{ lab_name }}-bmh-3", id: '66'}
+
+    ocp_hive_clusters:
+      - name: "spoke-{{ lab_name }}"
+        ns: 'spoke'
+        image: 'img4.20.3-x86-64-appsub'
+        service_network: '172.32.0.0/16'
+        host_network: "{{ lab_node_network_base }}0/24"
+        masters: 3
+        domain: 'local.lab'
+        api_vips: ["{{ lab_node_network_base }}107"]
+        ingress_vips: ["{{ lab_node_network_base }}108"]
+
+- name: 'Extract spoke cluster #1 configuration'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml
+  vars:
+    lab_name: 'acm'
+    lab_path: '/root/labs'
+    hive_cluster_name: 'spoke'
+    hive_ns: 'spoke'
+  tags:
+    - 'spoke-config'
+    - 'never'
+
+- name: 'Install spoke cluster #2'
+  ansible.builtin.import_playbook: ../../playbooks/base/sno.yaml
+  vars:
+    lab_name: 'acm-spoke-2'
+    lab_node_cpus: 16
+    lab_node_memory: 24000
+    start_install: true
+    lab_abi_ip: "{{ lab_node_network_base }}67"
+    lab_api_ips: ["{{ lab_node_network_base }}67"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}67"]
+    lab_node_disk_data: 10
+    lab_hosts:
+      - {id: '67', iface:'enp1s0'}
+    lab_custom_capability_set: 'None'
+    lab_custom_capabilities:
+      - baremetal
+      - MachineAPI
+      - marketplace
+      - OperatorLifecycleManager
+      - Console
+      - Ingress
+      - Storage
+      - NodeTuning
+      - DeploymentConfig
+  tags:
+    - 'ocp'
+    - 'acm-spoke-2'
+    - 'never'
+
+- name: 'Import spoke cluster #1'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/acm-import-cluster.yaml
+  vars:
+    lab_name: 'acm'
+    cluster_name: 'acm-spoke-2'
+    kubeconfig_path: '/root/labs/acm-spoke-2/deploy/auth/kubeconfig'
+  tags:
+    - 'import-cluster'
+    - 'import-acm-spoke-2'
+    - 'never'

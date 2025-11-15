@@ -1,0 +1,17 @@
+---
+apiVersion: agent-install.openshift.io/v1beta1
+kind: InfraEnv
+metadata:
+  name: spoke-acm
+  namespace: spoke
+spec:
+  additionalNTPSources:
+    - 192.168.125.1
+  clusterRef:
+    name: spoke-acm
+    namespace: spoke
+  agentLabels:
+    cluster-name: "spoke-acm"
+  pullSecretRef:
+    name: pull-secret-spoke-acm
+  sshAuthorizedKey: <redacted>

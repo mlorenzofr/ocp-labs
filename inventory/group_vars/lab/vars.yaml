@@ -27,7 +27,7 @@ haproxy_labs:
   - {'name': 'appliance', 'domain': 'lab', 'backends': ['192.168.127.6']}
   # - {'name': 'dan', 'domain': 'manor.lab', 'backends': ['192.168.128.11']}
   - {'name': 'stdslim', 'backends': ['192.168.125.59']}
-  - {'name': 'cnvn', 'backends': ['192.168.125.109']}
+  # - {'name': 'cnvn', 'backends': ['192.168.125.109']}
   - name: 'ztvp'
     backends: ['192.168.125.103']
     api: True
@@ -36,6 +36,10 @@ haproxy_labs:
     backends: ['192.168.125.75']
     api: True
     api_ips: ['192.168.125.75']
+  - name: 'acm'
+    backends: ['192.168.125.105']
+    api: True
+    api_ips: ['192.168.125.106']
   # - name: 'cnv'
   #   backends: ['[fd00:0:0:1::11]']
   #   api: True
