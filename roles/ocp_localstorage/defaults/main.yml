@@ -1,8 +1,9 @@
 ---
-ocp_localstorage_install: "{{ lab_install | default(false) }}"
+ocp_localstorage_apply: "{{ ocp_apply | default(true) }}"
 ocp_localstorage_nodes: []
-ocp_localstorage_ns: 'openshift-local-storage'
-ocp_localstorage_path: "{{ lab_configs }}"
-ocp_localstorage_subscription_channel: ''
+ocp_localstorage_ns: 'openshift-storage'
+ocp_localstorage_path: "{{ lab_configs | default('/tmp') }}"
+ocp_localstorage_source: 'redhat-operators'
 ocp_localstorage_volumes: []
 ocp_localstorage_volumesets: []
+...

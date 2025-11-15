@@ -1,23 +1,28 @@
 # ocp_localstorage
+
 This role installs Local Storage Operator on an Openshift cluster and configures the Local Volumes on the nodes.
 
 ## Requirements
+
 None.
 
 ## Role Variables
-* `ocp_localstorage_install`. _Bool_. Set wether the role should apply manifests or simply create them.
+
+* `ocp_localstorage_apply`. _Bool_. Set wether the role should apply manifests or simply create them.
 * `ocp_localstorage_nodes`. _List_. List of nodes used for Local Storage and their Volume labels.
 * `ocp_localstorage_ns`. _String_. Namespace for the Local Storage Operator.
 * `ocp_localstorage_path`. _String_. Path where the manifest files are saved.
-* `ocp_localstorage_subscription_channel`. _String_. Operator subscription channel.
+* `ocp_localstorage_source`. _String_. Name of the catalog source name for installing the Local Storage Operator.
 * `ocp_localstorage_volumes`. _List_. List of Local Volumes.
 * `ocp_localstorage_volumesets`. _List_. List of `LocalVolumeSets`.
 
 ### Variables for `ocp_localstorage_nodes` elements
+
 * `name`. _String_. Node name.
 * `label`. _String_. Label key for the node.
 
 ### Variables for `ocp_localstorage_volumes` elements
+
 * `name`. _String_. Local Volume name.
 * `node_label`. _String_. Node match label for the volume.
 * `storage_classes`. _List_. `StorageClasses` managed by the volume.
@@ -26,6 +31,7 @@ None.
     * `devices`. _List_. List of block devices to use.
 
 ### Variables for `ocp_localstorage_volumesets` elements
+
 * `name`. _String_. `LocalVolumeSet` name.
 * `node_label`. _String_. Node match label.
 * `sc_default`. _Bool_. Set the `StorageClass` associated as default for the cluster.
@@ -36,11 +42,11 @@ None.
 * `partitions`. _Bool_. Enable partitions for automatic detection.
 
 ## Example Playbook
+
 ```yaml
 - hosts: servers
 
   vars:
-    ocp_localstorage_install: true
     ocp_localstorage_path: '/home/labs/localstorage'
     ocp_localstorage_nodes:
       - {'name': 'standard-master-1', label: 'cluster.ocs.openshift.io/openshift-storage'}
@@ -57,7 +63,9 @@ None.
 ```
 
 ## License
+
 MIT / BSD
 
 ## Author Information
+
  - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2024-)

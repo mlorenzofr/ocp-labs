@@ -1,10 +1,17 @@
 ---
 - name: 'Create local-storage installation manifest'
-  ansible.builtin.template:
-    src: 'localstorage-init.yaml.j2'
-    dest: "{{ ocp_localstorage_path }}/localstorage-subscription.yaml"
-    mode: '0644'
-  notify: 'localstorage install'
+  ansible.builtin.include_role:
+    name: 'ocp_olm'
+    tasks_from: 'subscription.yaml'
+  loop:
+    - operator_name: 'local-storage-operator'
+      subscription_name: 'local-storage'
+      ns: "{{ ocp_localstorage_ns }}"
+      monitoring: True
+      privileged: True
+      operator_group: 'openshift-storage-operatorgroup'
+      source: "{{ ocp_localstorage_source }}"
+  tags: ['olm']
 
 - name: 'Create LocalVolumes manifests'
   ansible.builtin.template:
@@ -12,7 +19,14 @@
     dest: "{{ ocp_localstorage_path }}/localvolume-{{ item.name }}.yaml"
     mode: '0644'
   loop: "{{ ocp_localstorage_volumes }}"
-  notify: 'localstorage install'
+
+- name: 'Apply LocalVolumes manifests'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_localstorage_path }}/localvolume-{{ item.name }}.yaml"
+  loop: "{{ ocp_localstorage_volumes }}"
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_localstorage_apply
 
 - name: 'Create LocalVolumeSets manifests'
   ansible.builtin.template:
@@ -20,4 +34,36 @@
     dest: "{{ ocp_localstorage_path }}/localvolumeset-{{ item.name }}.yaml"
     mode: '0644'
   loop: "{{ ocp_localstorage_volumesets }}"
-  notify: 'localstorage install'
+  
+- name: 'Apply LocalVolumeSets manifests'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_localstorage_path }}/localvolumeset-{{ item.name }}.yaml"
+  loop: "{{ ocp_localstorage_volumesets }}"
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_localstorage_apply
+
+- name: 'Label Openshift nodes'
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: 'v1'
+      kind: 'Node'
+      metadata:
+        name: "{{ item.name }}"
+        labels:
+          {{ item.label }}: ''
+  loop: "{{ ocp_localstorage_nodes }}"
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_localstorage_apply
+
+- name: 'Set default StorageClass'
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: 'v1'
+      kind: 'StorageClass'
+      metadata:
+        name: 'localblock'
+        annotations:
+          storageclass.kubernetes.io/is-default-class: 'true'
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_localstorage_apply
