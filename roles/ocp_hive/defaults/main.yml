@@ -1,5 +1,5 @@
 ---
-ocp_hive_apply: "{{ lab_install | default(false) }}"
+ocp_hive_apply: "{{ ocp_apply | default(true) }}"
 ocp_hive_channel: 'alpha'
 ocp_hive_clusters: []
 ocp_hive_clusterimagesets: []

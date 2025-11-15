@@ -9,6 +9,7 @@
         labels:
           visible: 'true'
   ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_hive_apply
 
 - name: 'Create dnsmasq snippet for the cluster nodes'
   ansible.builtin.include_role:
