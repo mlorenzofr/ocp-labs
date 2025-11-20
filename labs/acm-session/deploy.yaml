@@ -77,7 +77,7 @@
   vars:
     lab_name: 'acm'
     lab_path: '/root/labs'
-    hive_cluster_name: 'spoke'
+    hive_cluster_name: 'spoke-acm'
     hive_ns: 'spoke'
   tags:
     - 'spoke-config'
