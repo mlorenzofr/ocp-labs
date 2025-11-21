@@ -8,7 +8,7 @@
     lab_name: 'ztvp'
   tags:
     - 'clean'
-    - 'ztvp-hub'
+    - 'clean-ztvp-hub'
     - 'never'
 
 - name: 'Clean spoke cluster #1'
