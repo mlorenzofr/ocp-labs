@@ -25,8 +25,8 @@ spec:
 {% endif %}
         thinPoolConfig:
           name: {{ class.name }}-pool-1
-          sizePercent: 90
-          overprovisionRatio: 10
+          sizePercent: {{ class.size_percent | default(90) }}
+          overprovisionRatio: {{ class.overprovision_ratio | default(10) }}
         nodeSelector:
           nodeSelectorTerms:
             - matchExpressions:
