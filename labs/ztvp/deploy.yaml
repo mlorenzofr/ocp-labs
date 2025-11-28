@@ -45,7 +45,7 @@
     lab_mac_base: 'ce:00:0a:ba:ee:'
     lab_worker_replicas: 0
     lab_node_memory: 32000
-    lab_node_disk_data: 300
+    lab_node_disk_data: 320
     lab_hosts:
       - {id: '71'}
       - {id: '72'}
