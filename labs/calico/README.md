@@ -41,6 +41,8 @@ ippools     True        False         False      30m
 ```
 
 ## Links
+* [Certified OpenShift CNI Plug-ins](https://access.redhat.com/articles/5436171)
 * [Install an OpenShift 4 cluster with Calico](https://docs.tigera.io/calico/latest/getting-started/kubernetes/openshift/installation)
 * [Calico CTL image repository](https://quay.io/repository/calico/ctl)
 * [OCP Agent-based Install with extra manifests, Calico](https://cloudcult.dev/ocp-agent-based-install-with-extra-manifests-calico/)
+* [How to install other SDN providers on Hypershift](https://github.com/openshift/hypershift/blob/main/docs/content/how-to/sdn/other-sdn-providers.md)
