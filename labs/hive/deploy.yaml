@@ -31,6 +31,7 @@
 - name: 'Import hive setup playbook'
   ansible.builtin.import_playbook: ../../playbooks/setup/hive.yaml
   tags:
+    - 'hub'
     - 'postinst'
   vars:
     lab_name: 'hive'
@@ -47,7 +48,7 @@
     ocp_hive_clusters:
       - name: 'spoke'
         ns: 'hive-sno'
-        image: 'img4.18.6-x86-64-appsub'
+        image: 'img4.20.8-x86-64-appsub'
         service_network: '172.32.0.0/16'
         host_network: "{{ lab_node_network_base }}0/24"
         masters: 1
@@ -62,5 +63,4 @@
     hive_cluster_name: 'spoke'
     hive_ns: 'hive-sno'
   tags:
-    - 'postinst'
     - 'hive-config'
