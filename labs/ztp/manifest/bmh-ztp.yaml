@@ -3,7 +3,7 @@ apiVersion: metal3.io/v1alpha1
 kind: BareMetalHost
 metadata:
   name: ztp-bmh-1
-  namespace: ztp-sno
+  namespace: ztp
   labels:
     infraenvs.agent-install.openshift.io: ztp
   annotations:
@@ -11,7 +11,7 @@ metadata:
     bmac.agent-install.openshift.io/hostname: ztp-bmh-1
 spec:
   automatedCleaningMode: disabled
-  bootMACAddress: be:be:ca:fe:02:64
+  bootMACAddress: be:be:ca:fe:02:44
   online: true
   rootDeviceHints:
     deviceName: /dev/vda
@@ -19,3 +19,87 @@ spec:
     disableCertificateVerification: True
     address: redfish-virtualmedia://192.168.125.1:9000/redfish/v1/Systems/local/ztp-bmh-1
     credentialsName: ztp-bmh-1-bmc-secret
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: ztp-bmh-2
+  namespace: ztp
+  labels:
+    infraenvs.agent-install.openshift.io: ztp
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: ztp-bmh-2
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: be:be:ca:fe:02:45
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.125.1:9000/redfish/v1/Systems/local/ztp-bmh-2
+    credentialsName: ztp-bmh-2-bmc-secret
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: ztp-bmh-3
+  namespace: ztp
+  labels:
+    infraenvs.agent-install.openshift.io: ztp
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: ztp-bmh-3
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: be:be:ca:fe:02:46
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.125.1:9000/redfish/v1/Systems/local/ztp-bmh-3
+    credentialsName: ztp-bmh-3-bmc-secret
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: ztp-bmh-4
+  namespace: ztp
+  labels:
+    infraenvs.agent-install.openshift.io: ztp
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: ztp-bmh-4
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: be:be:ca:fe:02:47
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.125.1:9000/redfish/v1/Systems/local/ztp-bmh-4
+    credentialsName: ztp-bmh-4-bmc-secret
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: ztp-bmh-5
+  namespace: ztp
+  labels:
+    infraenvs.agent-install.openshift.io: ztp
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: ztp-bmh-5
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: be:be:ca:fe:02:48
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.125.1:9000/redfish/v1/Systems/local/ztp-bmh-5
+    credentialsName: ztp-bmh-5-bmc-secret

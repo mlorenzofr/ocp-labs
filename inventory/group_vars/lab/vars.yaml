@@ -36,10 +36,10 @@ haproxy_labs:
     backends: ['192.168.125.75']
     api: True
     api_ips: ['192.168.125.75']
-  - name: 'acm'
-    backends: ['192.168.125.105']
+  - name: 'ztp'
+    backends: ['192.168.125.111']
     api: True
-    api_ips: ['192.168.125.106']
+    api_ips: ['192.168.125.110']
   # - name: 'cnv'
   #   backends: ['[fd00:0:0:1::11]']
   #   api: True

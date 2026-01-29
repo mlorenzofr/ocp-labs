@@ -26,5 +26,5 @@ metadata:
 spec:
   name: lvms-operator
   installPlanApproval: Automatic
-  source: redhat-operators
+  source: redhat-operators-420
   sourceNamespace: openshift-marketplace

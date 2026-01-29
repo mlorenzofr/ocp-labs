@@ -16,15 +16,15 @@
     - 'ocp'
   vars:
     lab_name: 'ztp'
-    lab_abi_ip: "{{ lab_node_network_base }}61"
-    lab_api_ips: ["{{ lab_node_network_base }}100"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}101"]
+    lab_abi_ip: "{{ lab_node_network_base }}41"
+    lab_api_ips: ["{{ lab_node_network_base }}110"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}111"]
     lab_node_memory: 28000
     lab_node_disk_data: 60
     lab_hosts:
-      - {id: '61', role: 'master'}
-      - {id: '62', role: 'master'}
-      - {id: '63', role: 'master'}
+      - {id: '41', role: 'master'}
+      - {id: '42', role: 'master'}
+      - {id: '43', role: 'master'}
     start_install: true
 
 - name: 'Prepare ZTP'
@@ -44,25 +44,43 @@
     lab_name: 'ztp'
     lab_configs: "/root/labs/{{ lab_name }}/config"
 
+    ocp_talm_source: 'redhat-operators-420'
+    ocp_lvms_source: 'redhat-operators-420'
+
+    ocp_assisted_service_images:
+      - ocp_version: '4.20.0'
+        arch: 'x86_64'
+        version: '9.6.20250826-1'
+      - ocp_version: '4.21.0-rc.2'
+        arch: 'x86_64'
+        version: '9.6.20251023-0'
+        url: 'https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/pre-release/4.21.0-ec.3/rhcos-4.21.0-ec.3-x86_64-live-iso.x86_64.iso'
+
     ocp_gitops_ztp: True
-    ocp_gitops_site_generator_tag: 'v4.18'
+    ocp_gitops_site_generator_tag: 'v4.20'
     ocp_gitops_site_generator_out_dir: "{{ lab_configs }}/ztp"
     ocp_gitops_secrets:
-      - ns: 'ztp-sno'
+      - ns: 'ztp'
         pull_secret_name: 'ztp-pull-secret'
         nodes:
           - hostname: 'ztp-bmh-1'
+          - hostname: 'ztp-bmh-2'
+          - hostname: 'ztp-bmh-3'
 
     # Create the VM and DNS entries, but don't create k8s resources
     # The k8s resources will be created with ZTP
     ocp_baremetal_apply: False
     ocp_baremetal_infras:
       - name: 'ztp'
-        ns: 'ztp-sno'
+        ns: 'ztp'
         ntp: ["{{ lab_node_network_base }}1"]
         redfish: "{{ lab_node_network_base }}1"
         inventory:
-          - {name: "{{ lab_name }}-bmh-1", id: '64'}
+          - {name: "{{ lab_name }}-bmh-1", id: '44'}
+          - {name: "{{ lab_name }}-bmh-2", id: '45'}
+          - {name: "{{ lab_name }}-bmh-3", id: '46'}
+          - {name: "{{ lab_name }}-bmh-4", id: '47'}
+          - {name: "{{ lab_name }}-bmh-5", id: '48'}
 
   environment:
     KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
@@ -79,7 +97,7 @@
           apiVersion: 'hive.openshift.io/v1'
           kind: 'ClusterImageSet'
           metadata:
-            name: 'img4.18.16-x86-64-appsub'
+            name: 'img4.21.0-x86-64-appsub'
             labels:
               visible: 'true'
 
@@ -89,11 +107,11 @@
         name: 'dnsmasq'
         tasks_from: 'extra_conf.yaml'
       vars:
-        cluster_name: 'ztp-sno'
+        cluster_name: 'ztp'
         cluster_domain: 'local.lab'
-        cluster_api_vip: "{{ lab_node_network_base }}64"
+        cluster_api_vip: "{{ lab_node_network_base }}112"
         dnsmasq_conf_snippets:
-          - {src: 'openshift-cluster.conf.j2', dest: "{{ lab_name }}-ztp-sno-cluster.conf"}
+          - {src: 'openshift-cluster.conf.j2', dest: "{{ lab_name }}-ztp-cluster.conf"}
       tags:
         - 'dnsmasq'
 
@@ -110,7 +128,7 @@
     argo_repo: 'https://github.com/mlorenzofr/ztp-example'
     argo_siteconfig: 'siteconfig'
     argo_policies: 'policygenerator'
-    argo_branch: 'master'
+    argo_branch: 'ocpbugs-74434'
   environment:
     KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
     PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin'
@@ -172,8 +190,8 @@
   vars:
     lab_name: 'ztp'
     lab_path: '/root/labs'
-    hive_cluster_name: 'ztp-sno'
-    hive_ns: 'ztp-sno'
+    hive_cluster_name: 'ztp'
+    hive_ns: 'ztp'
   tags:
     - 'hive-config'
     - 'never'

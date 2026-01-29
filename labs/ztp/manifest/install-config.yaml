@@ -1,6 +1,7 @@
 ---
 apiVersion: v1
 metadata:
+  creationTimestamp: null
   name: ztp
 baseDomain: local.lab
 networking:
@@ -24,8 +25,8 @@ controlPlane:
   replicas: 3
 platform:
   baremetal:
-    apiVIPs: ['192.168.125.100']
-    ingressVIPs: ['192.168.125.101']
+    apiVIPs: ['192.168.125.110']
+    ingressVIPs: ['192.168.125.111']
     externalMACAddress: be:be:ca:fe:03:00
     provisioningNetwork: Disabled
 pullSecret: '{"auths":{<redacted>}}'
