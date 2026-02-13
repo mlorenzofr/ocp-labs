@@ -61,6 +61,7 @@
       - Storage
       - NodeTuning
       - DeploymentConfig
+      - ImageRegistry
     start_install: true
 
 - name: 'ZTVP hub cluster post-installation tasks'

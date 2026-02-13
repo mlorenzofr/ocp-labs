@@ -40,5 +40,6 @@ capabilities:
     - Storage
     - NodeTuning
     - DeploymentConfig
+    - ImageRegistry
 pullSecret: '{"auths":{<redacted>}}'
 sshKey: <redacted>
