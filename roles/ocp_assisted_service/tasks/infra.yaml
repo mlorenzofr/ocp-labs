@@ -18,7 +18,7 @@
         namespace: "{{ item.ns }}"
       stringData:
         .dockerconfigjson: "'{{ item.pullsecret | default(ocp_assisted_service_pullsecret) }}'"
-  when: item.pullsecret | default(ocp_assisted_service_pullsecret) | regex_search('^\{')
+  when: item.pullsecret | default(ocp_assisted_service_pullsecret) | regex_search('^\{') | bool
 
 - name: 'Create pull-secret (base64)'
   kubernetes.core.k8s:
@@ -32,7 +32,7 @@
         namespace: "{{ item.ns }}"
       data:
         .dockerconfigjson: "{{ item.pullsecret | default(ocp_assisted_service_pullsecret) }}"
-  when: not (item.pullsecret | default(ocp_assisted_service_pullsecret) | regex_search('^\{'))
+  when: not (item.pullsecret | default(ocp_assisted_service_pullsecret) | regex_search('^\{') | bool)
 
 - name: 'Create InfraEnv manifest'
   ansible.builtin.template:
