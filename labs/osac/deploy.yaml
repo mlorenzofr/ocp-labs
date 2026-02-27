@@ -1,0 +1,136 @@
+---
+# Run it with:
+#   ap labs/osac/deploy.yaml
+
+- name: 'Clean osac lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'osac'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Import ABI playbook'
+  ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
+  tags:
+    - 'ocp'
+  vars:
+    lab_name: 'osac'
+    lab_abi_ip: "{{ lab_node_network_base }}61"
+    lab_api_ips: ["{{ lab_node_network_base }}104"]
+    lab_ingress_ips: ["{{ lab_node_network_base }}105"]
+    lab_mac_base: 'be:be:ca:fe:05:'
+    lab_worker_replicas: 0
+    lab_node_memory: 28000
+    lab_node_disk_data: 100
+    lab_hosts:
+      - {id: '61'}
+      - {id: '62'}
+      - {id: '63'}
+    start_install: true
+
+- name: 'Import hive setup playbook'
+  ansible.builtin.import_playbook: ../../playbooks/setup/hive.yaml
+  tags:
+    - 'postinst'
+  vars:
+    lab_name: 'osac'
+    lab_mac_base: 'be:be:ca:fe:05:'
+
+    ocp_assisted_service_op: 'acm'
+    ocp_assisted_service_infraenvs:
+      - name: 'test-cluster'
+        ns: 'test-cluster'
+        ntp: ["{{ lab_node_network_base }}1"]
+        redfish: "{{ lab_node_network_base }}1"
+        inventory:
+          - {'name': "{{ lab_name }}-bmh-1", 'id': '64'}
+
+    ocp_hive_clusters:
+      - name: 'test-cluster'
+        ns: 'test-cluster'
+        image: 'img4.20.8-x86-64-appsub'
+        service_network: '172.32.0.0/16'
+        host_network: "{{ lab_node_network_base }}0/24"
+        masters: 1
+        domain: 'local.lab'
+        api_vips: ["{{ lab_node_network_base }}64"]
+
+- name: 'Extract test-cluster configuration'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml
+  vars:
+    lab_name: 'osac'
+    lab_path: '/root/labs'
+    hive_cluster_name: 'test-cluster'
+    hive_ns: 'test-cluster'
+  tags:
+    - 'spoke-config'
+    - 'never'
+
+- name: 'Import test-cluster'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/acm-import-cluster.yaml
+  vars:
+    lab_name: 'osac'
+    lab_path: '/root/labs'
+    cluster_name: 'test-cluster'
+    kubeconfig_path: "{{ lab_path }}/{{ lab_name }}/{{ cluster_name }}/auth/kubeconfig"
+  tags:
+    - 'import-cluster'
+    - 'never'
+
+- name: Configure Ansible Automation Platform
+  hosts:
+    - 'lab'
+  gather_facts: false
+
+  vars:
+    aap_name: "osac-aap"
+    aap_ns: "ansible-aap"
+    aap_license_file: "{{ lab_configs }}/aap-license.zip"
+    aap_controller_name: "{{ aap_name }}-controller"
+    aap_token_description: "OSAC Operator Token"
+    aap_token_overwrite: true
+    aap_api_path: "/api/v2"
+    aap_api_user: "admin"
+    aap_api_validate_certs: false
+    lab_name: 'osac'
+    lab_configs: "/root/labs/{{ lab_name }}/config"
+    osac_operator:
+      image: 'ghcr.io/osac-project/osac-operator'
+      tag: 'sha-bba9d8c'
+
+  tags:
+    - 'aap'
+    - 'never'
+
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  tasks:
+    - name: 'Install Ansible Automation Platform Operator'
+      ansible.builtin.include_role:
+        name: 'ocp_olm'
+        tasks_from: 'subscription.yaml'
+      loop:
+        - operator_name: 'ansible-automation-platform-operator'
+          ns: "{{ aap_ns }}"
+          operator_group: 'ansible-aap-operatorgroup'
+          channel: 'stable-2.5-cluster-scoped'
+          source: 'redhat-operators'
+      tags: ['olm']
+
+    - name: "Check vmaas_validation"
+      ansible.builtin.include_tasks:
+        file: tasks/vmaas_validation.yaml
+        apply:
+          tags: aap
+
+    - name: "aap URL"
+      ansible.builtin.debug:
+        msg: "AAP URL: {{ osac_aap_url }}"
+      when: osac_aap_url is defined
+
+    - name: "aap token"
+      ansible.builtin.debug:
+        msg: "AAP Token: {{ osac_aap_token }}"
+      when: osac_aap_token is defined

@@ -1,0 +1,17 @@
+---
+apiVersion: agent-install.openshift.io/v1beta1
+kind: InfraEnv
+metadata:
+  name: test-cluster
+  namespace: test-cluster
+spec:
+  additionalNTPSources:
+    - 192.168.125.1
+  clusterRef:
+    name: test-cluster
+    namespace: test-cluster
+  agentLabels:
+    cluster-name: "test-cluster"
+  pullSecretRef:
+    name: pull-secret-test-cluster
+  sshAuthorizedKey: <redacted>
