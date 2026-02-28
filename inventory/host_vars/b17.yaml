@@ -1,14 +1,21 @@
 ---
+dnsmasq_dhcp_hosts:
+  - {hwaddr: '52:54:00:fc:54:f8', hostname: 'router-vm', ipaddr: '192.168.122.10'}
+
 haproxy_labs: []
 lab_host_aws: false
 
 lab_host_squid_networks:
   - 'fd00:0:0:1::/64'
 lab_host_networks:
-  - name: 'osac-demo'
-    cidr: '192.168.10.0/24'
-    gw: '192.168.10.1'
-    dhcp_range: '192.168.10.150,192.168.10.250'
+  - name: 'default'
+    cidr: '192.168.122.0/24'
+    gw: '192.168.122.1'
+    dhcp_range: '192.168.122.150,192.168.122.250'
+  - name: 'devbm'
+    cidr: '192.168.111.0/24'
+    gw: '192.168.111.1'
+    dhcp_range: '192.168.111.150,192.168.111.250'
 
 lab_host_ocp_versions:
   - {version: '4.20.15', state: 'present'}
