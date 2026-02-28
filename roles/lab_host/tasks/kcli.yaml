@@ -22,7 +22,7 @@
 
 - name: 'Install ksushy service'
   ansible.builtin.command:
-    cmd: 'kcli create sushy-service --ssl --port 9000 --bootonce'
+    cmd: 'kcli create sushy-service --port 9000 --bootonce'
     creates: '/usr/lib/systemd/system/ksushy.service'
   notify:
     - 'systemd daemon-reload'

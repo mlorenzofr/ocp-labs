@@ -13,47 +13,45 @@ lab_host_networks:
 lab_host_ocp_versions:
   - {version: '4.20.15', state: 'present'}
 
-lab_host_rh_release: 'RHEL-9.9.0-20260227.2'
+lab_host_rh_release: '9.7.0'
 lab_host_repos:
   - name: 'beaker-AppStream-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/AppStream/{{ ansible_machine }}/debug/tree"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/AppStream/{{ ansible_machine }}/debug/tree"
   - name: 'beaker-AppStream'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/AppStream/{{ ansible_machine }}/os"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/AppStream/{{ ansible_machine }}/os"
   - name: 'beaker-BaseOS-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/BaseOS/{{ ansible_machine }}/debug/tree"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/BaseOS/{{ ansible_machine }}/debug/tree"
   - name: 'beaker-BaseOS'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/BaseOS/{{ ansible_machine }}/os"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/BaseOS/{{ ansible_machine }}/os"
   - name: 'beaker-CRB-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/CRB/{{ ansible_machine }}/debug/tree"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/CRB/{{ ansible_machine }}/debug/tree"
   - name: 'beaker-CRB'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/CRB/{{ ansible_machine }}/os"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/CRB/{{ ansible_machine }}/os"
   - name: 'beaker-HighAvailability-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/HighAvailability/{{ ansible_machine }}/debug/tree"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/HighAvailability/{{ ansible_machine }}/debug/tree"
   - name: 'beaker-HighAvailability'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/HighAvailability/{{ ansible_machine }}/os"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/HighAvailability/{{ ansible_machine }}/os"
   - name: 'beaker-NFV-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/NFV/{{ ansible_machine }}/debug/tree"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/NFV/{{ ansible_machine }}/debug/tree"
   - name: 'beaker-NFV'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/NFV/{{ ansible_machine }}/os"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/NFV/{{ ansible_machine }}/os"
   - name: 'beaker-RT-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/RT/{{ ansible_machine }}/debug/tree"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/RT/{{ ansible_machine }}/debug/tree"
   - name: 'beaker-RT'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/RT/{{ ansible_machine }}/os"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/RT/{{ ansible_machine }}/os"
   - name: 'beaker-ResilientStorage-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/ResilientStorage/{{ ansible_machine }}/debug/tree"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/ResilientStorage/{{ ansible_machine }}/debug/tree"
   - name: 'beaker-ResilientStorage'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/ResilientStorage/{{ ansible_machine }}/os"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/ResilientStorage/{{ ansible_machine }}/os"
   - name: 'beaker-SAP-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/SAP/{{ ansible_machine }}/debug/tree"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/SAP/{{ ansible_machine }}/debug/tree"
   - name: 'beaker-SAP'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/SAP/{{ ansible_machine }}/os"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/SAP/{{ ansible_machine }}/os"
   - name: 'beaker-SAPHANA-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/SAPHANA/{{ ansible_machine }}/debug/tree"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/SAPHANA/{{ ansible_machine }}/debug/tree"
   - name: 'beaker-SAPHANA'
-    baseurl: "http://{{ rh_repo }}/rhel-9/composes/RHEL-9/{{ lab_host_rh_release }}/compose/SAPHANA/{{ ansible_machine }}/os"
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/SAPHANA/{{ ansible_machine }}/os"
   - name: 'beaker-harness'
     baseurl: "http://{{ beaker_repo }}/harness/RedHatEnterpriseLinux9/"
-  - name: 'beaker-tasks'
-    baseurl: "http://{{ beaker_repo }}/repos/20766885"
-    skip_if_unavailable: true
+    enabled: false
 ...

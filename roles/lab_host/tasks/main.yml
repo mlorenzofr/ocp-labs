@@ -9,7 +9,7 @@
     name: "{{ item.name }}"
     baseurl: "{{ item.baseurl }}"
     description: "{{ item.description | default(item.name) }}"
-    enabled: "{{ item.enable | default(true) }}"
+    enabled: "{{ item.enabled | default(true) | bool }}"
     gpgcheck: "{{ item.gpgcheck | default(false) }}"
     skip_if_unavailable: "{{ not (item.skip_if_unavailable | default(false) | bool) }}"
     state: 'present'
