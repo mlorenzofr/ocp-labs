@@ -15,6 +15,9 @@
     proto: 'tcp'
     setype: 'http_port_t'
     state: 'present'
+  ignore_errors: "{{ ansible_check_mode }}"
+  tags:
+    - selinux
 
 - name: 'Configure HAproxy for kubernetes'
   ansible.builtin.template:

@@ -16,76 +16,84 @@
     enabled: true
   when: ansible_distribution_major_version == 8
   listen: 'svc restart libvirtd'
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Restart virtqemud service'
   ansible.builtin.service:
     name: 'virtqemud'
     state: 'restarted'
     enabled: true
-  when: ansible_distribution_major_version == 9'
+  when: ansible_distribution_major_version == 9
   listen:
     - 'svc restart libvirtd'
     - 'svc restart virtqemud'
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Restart virtnetworkd service'
   ansible.builtin.service:
     name: 'virtnetworkd'
     state: 'restarted'
     enabled: true
-  when: ansible_distribution_major_version == 9'
+  when: ansible_distribution_major_version == 9
   listen:
     - 'svc restart libvirtd'
     - 'svc restart virtnetworkd'
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Restart virtnodedevd service'
   ansible.builtin.service:
     name: 'virtnodedevd'
     state: 'restarted'
     enabled: true
-  when: ansible_distribution_major_version == 9'
+  when: ansible_distribution_major_version == 9
   listen:
     - 'svc restart libvirtd'
     - 'svc restart virtnodedevd'
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Restart virtnwfilterd service'
   ansible.builtin.service:
     name: 'virtnwfilterd'
     state: 'restarted'
     enabled: true
-  when: ansible_distribution_major_version == 9'
+  when: ansible_distribution_major_version == 9
   listen:
     - 'svc restart libvirtd'
     - 'svc restart virtnwfilterd'
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Restart virtsecretd service'
   ansible.builtin.service:
     name: 'virtsecretd'
     state: 'restarted'
     enabled: true
-  when: ansible_distribution_major_version == 9'
+  when: ansible_distribution_major_version == 9
   listen:
     - 'svc restart libvirtd'
     - 'svc restart virtsecretd'
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Restart virtinterfaced service'
   ansible.builtin.service:
     name: 'virtinterfaced'
     state: 'restarted'
     enabled: true
-  when: ansible_distribution_major_version == 9'
+  when: ansible_distribution_major_version == 9
   listen:
     - 'svc restart libvirtd'
     - 'svc restart virtinterfaced'
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Restart virtstoraged service'
   ansible.builtin.service:
     name: 'virtstoraged'
     state: 'restarted'
     enabled: true
-  when: ansible_distribution_major_version == 9'
+  when: ansible_distribution_major_version == 9
   listen:
     - 'svc restart libvirtd'
     - 'svc restart virtstoraged'
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Restart chronyd service'
   ansible.builtin.service:
@@ -93,6 +101,7 @@
     state: 'restarted'
     enabled: true
   listen: 'svc restart chronyd'
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Restart squid service'
   ansible.builtin.service:

@@ -1,1 +1,74 @@
 ---
+dnsmasq_dhcp_hosts:
+  - {hwaddr: '52:54:00:9c:93:36', hostname: 'pinnedis-registry', ipaddr: '192.168.129.200'}
+  - {hwaddr: '52:54:00:38:8d:f9', hostname: 'ostree-node-1', ipaddr: '192.168.125.254'}
+  - {hwaddr: '52:54:00:9e:95:23', hostname: 'javed-rhel9', ipaddr: '192.168.125.149'}
+
+lab_host_rh_release: '9.5.0'
+lab_host_repos:
+  - name: 'beaker-AppStream-debuginfo'
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/AppStream/{{ ansible_machine }}/debug/tree"
+  - name: 'beaker-AppStream'
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/AppStream/{{ ansible_machine }}/os"
+  - name: 'beaker-BaseOS-debuginfo'
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/BaseOS/{{ ansible_machine }}/debug/tree"
+  - name: 'beaker-BaseOS'
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/BaseOS/{{ ansible_machine }}/os"
+  - name: 'beaker-CRB-debuginfo'
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/CRB/{{ ansible_machine }}/debug/tree"
+  - name: 'beaker-CRB'
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/CRB/{{ ansible_machine }}/os"
+  - name: 'beaker-HighAvailability-debuginfo'
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/HighAvailability/{{ ansible_machine }}/debug/tree"
+  - name: 'beaker-HighAvailability'
+    baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/HighAvailability/{{ ansible_machine }}/os"
+
+lab_host_networks:
+  - name: 'lab-network'
+    cidr: '192.168.125.0/24'
+    gw: '192.168.125.1'
+    dhcp_range: '192.168.125.120,192.168.125.250'
+  - name: 'appliance-network'
+    cidr: '192.168.127.0/24'
+    domain: 'appliance.appliance.lab'
+    dhcp_lease: '10m'
+    dhcp_range: '192.168.127.100,192.168.127.250'
+    gw: '192.168.127.1'
+  - name: 'dan-network'
+    cidr: '192.168.128.0/24'
+  - name: 'pinnedis-network'
+    cidr: '192.168.129.0/24'
+    domain: 'pinnedis.local.lab'
+    gw: '192.168.129.1'
+    dhcp_range: '192.168.129.100,192.168.129.250'
+  - name: 'assisted-net'
+    cidr: '192.168.130.0/24'
+    gw: '192.168.130.1'
+  - name: 'ovishlit-net'
+    cidr: '192.168.131.0/24'
+    gw: '192.168.131.1'
+    dhcp_range: '192.168.131.150,192.168.131.250'
+# - name: 'cnv-network'
+#   cidr: 'fd00:0:0:1::/64'
+#   domain: 'cnv.local.lab'
+#   dhcp_range: '::300,::fff'
+#   dns: '[fd00:0:0:1::1]'
+#   iface: 'cnv-ipv6'
+#   ipv6: true
+#   ntp: '[::1]'
+
+haproxy_labs:
+  - {'name': 'appliance', 'domain': 'lab', 'backends': ['192.168.127.6']}
+  - {'name': 'stdslim', 'backends': ['192.168.125.59']}
+  - name: 'ztvp'
+    backends: ['192.168.125.103']
+    api: True
+    api_ips: ['192.168.125.102']
+  - name: 'ztvp-spoke-1'
+    backends: ['192.168.125.75']
+    api: True
+    api_ips: ['192.168.125.75']
+  # - name: 'cnv'
+  #   backends: ['[fd00:0:0:1::11]']
+  #   api: True
+  #   api_ips: ['[fd00:0:0:1::10]']

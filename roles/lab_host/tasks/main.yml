@@ -11,7 +11,7 @@
     description: "{{ item.description | default(item.name) }}"
     enabled: "{{ item.enable | default(true) }}"
     gpgcheck: "{{ item.gpgcheck | default(false) }}"
-    skip_if_unavailable: "{{ item.skip_if_unavailable | default(true) }}"
+    skip_if_unavailable: "{{ not (item.skip_if_unavailable | default(false) | bool) }}"
     state: 'present'
   loop: "{{ lab_host_repos }}"
   tags:
