@@ -1,5 +1,5 @@
 ---
-lab_host_packages:
+lab_host_packages_dist:
   - 'bash-completion'
   - 'chrony'
   - 'cpio'
@@ -13,7 +13,6 @@ lab_host_packages:
   - 'nmap'
   - 'nmstate'
   - 'policycoreutils-python-utils'
-  # - 'python3-cherrypy'
   - 'qemu-kvm'
   - 'rsync'
   - 'skopeo'
@@ -27,43 +26,6 @@ lab_host_packages:
 lab_host_pip_packages:
   - 'strato-skipper==2.0.2'
   - 'kubernetes'
-lab_host_repos:
-  - name: 'beaker-AppStream-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/AppStream/{{ ansible_machine }}/debug/tree"
-  - name: 'beaker-AppStream'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/AppStream/{{ ansible_machine }}/os"
-  - name: 'beaker-BaseOS-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/BaseOS/{{ ansible_machine }}/debug/tree"
-  - name: 'beaker-BaseOS'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/BaseOS/{{ ansible_machine }}/os"
-  - name: 'beaker-CRB-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/CRB/{{ ansible_machine }}/debug/tree"
-  - name: 'beaker-CRB'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/CRB/{{ ansible_machine }}/os"
-  - name: 'beaker-HighAvailability-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/HighAvailability/{{ ansible_machine }}/debug/tree"
-  - name: 'beaker-HighAvailability'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/HighAvailability/{{ ansible_machine }}/os"
-  - name: 'beaker-NFV-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/NFV/{{ ansible_machine }}/debug/tree"
-  - name: 'beaker-NFV'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/NFV/{{ ansible_machine }}/os"
-  - name: 'beaker-ResilientStorage-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/ResilientStorage/{{ ansible_machine }}/debug/tree"
-  - name: 'beaker-ResilientStorage'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/ResilientStorage/{{ ansible_machine }}/os"
-  - name: 'beaker-RT-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/RT/{{ ansible_machine }}/debug/tree"
-  - name: 'beaker-RT'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/RT/{{ ansible_machine }}/os"
-  - name: 'beaker-SAP-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/SAP/{{ ansible_machine }}/debug/tree"
-  - name: 'beaker-SAP'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/SAP/{{ ansible_machine }}/os"
-  - name: 'beaker-SAPHANA-debuginfo'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/SAPHANA/{{ ansible_machine }}/debug/tree"
-  - name: 'beaker-SAPHANA'
-    baseurl: "http://{{ rh_repo }}/rhel-8/composes/RHEL-8/{{ rh_release }}/compose/SAPHANA/{{ ansible_machine }}/os"
 
 lab_host_scripts:
   - 'extract-ignition.sh'

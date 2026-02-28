@@ -21,7 +21,7 @@
 
 - name: 'Install required packages'
   ansible.builtin.package:
-    name: "{{ lab_host_packages }}"
+    name: "{{ lab_host_packages_dist + lab_host_packages }}"
     state: 'present'
   ignore_errors: "{{ ansible_check_mode }}"
   tags:

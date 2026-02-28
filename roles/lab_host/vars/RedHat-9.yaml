@@ -1,6 +1,5 @@
 ---
-# rh_release: '9.5.0'
-lab_host_packages:
+lab_host_packages_dist:
   - 'bash-completion'
   - 'bind-utils'
   - 'chrony'
