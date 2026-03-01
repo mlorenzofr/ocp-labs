@@ -2,9 +2,17 @@
 dnsmasq_dhcp_hosts:
   - {hwaddr: '52:54:00:fc:54:f8', hostname: 'router-vm', ipaddr: '192.168.122.10'}
 
-haproxy_labs: []
-lab_host_aws: false
+haproxy_labs:
+  - name: 'osac'
+    backends: ['192.168.111.101']
+    api: True
+    api_ips: ['192.168.111.100']
+  - name: 'vmaas-cluster'
+    backends: ['192.168.111.103']
+    api: True
+    api_ips: ['192.168.111.102']
 
+lab_host_aws: false
 libvirt_image_dir: '/var/lib/libvirt/images'
 lab_node_disk_pool: 'default'
 lab_network_name: 'devbm'
