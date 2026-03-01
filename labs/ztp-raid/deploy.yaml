@@ -35,10 +35,8 @@
     - 'postinst'
     - 'ztp'
   vars:
-    lab_network_name: 'lab-network'
     lab_mac_base: 'be:be:ca:fe:02:'
     lab_node_network_base: '192.168.125.'
-    lab_node_disk_pool: 'ocp'
     lab_install: true
 
     lab_name: 'zraid'
