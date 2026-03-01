@@ -16,7 +16,6 @@
     lab_node_role: 'node'
     lab_path: '/home/ocp-labs'
     lab_pull_secret_install: '{"auths":{"":{"auth":"dXNlcjpwYXNz"}}}'
-    libvirt_image_dir: '/home/libvirt-ocp'
 
     lab_name: 'appliance'
     lab_hosts: []

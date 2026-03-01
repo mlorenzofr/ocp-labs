@@ -24,7 +24,6 @@
     lab_node_network: "{{ lab_node_network_base }}0/24"
     lab_node_network_base: '192.168.125.'
     lab_node_role: 'node'
-    libvirt_image_dir: '/home/libvirt-ocp'
     install_extra_manifests: []
     lab_hosts:
       - {'id': '31'}

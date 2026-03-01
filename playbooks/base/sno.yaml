@@ -21,7 +21,6 @@
     lab_node_role: 'node'
     lab_hosts:
       - {'id': "{{ sno_ip }}", 'iface':'enp1s0'}
-    libvirt_image_dir: '/home/libvirt-ocp'
     sno_ip: 31  # Last IP address octet
 
   environment:

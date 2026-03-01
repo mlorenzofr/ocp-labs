@@ -21,7 +21,6 @@
     lab_redfish_ip: "{{ lab_node_network_base }}1"
     lab_node_disk_data: 1
     lab_node_network_base: '192.168.125.'
-    libvirt_image_dir: '/home/libvirt-ocp'
     lab_hosts:
       - {'id': '21'}
       - {'id': '22'}

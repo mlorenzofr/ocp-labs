@@ -56,7 +56,6 @@
       - {'id': '13'}
       - {'id': '14'}
       - {'id': '15'}
-    libvirt_image_dir: '/home/libvirt-ocp'
     ocp_lvms_source: 'cs-redhat-operator-index-v4-18'
     ocp_lvms_cluster_default_device: 'vda'
     extra_manifests:
@@ -101,7 +100,6 @@
   vars:
     lab_name: 'appliance'
     lab_path: '/home/ocp-labs'
-    libvirt_image_dir: '/home/libvirt-ocp'
   tags:
     - 'registry'
     - 'postinst'
@@ -137,7 +135,6 @@
       - {'id': '13'}
       - {'id': '14'}
       - {'id': '15'}
-    libvirt_image_dir: '/home/libvirt-ocp'
     appliance_upgrade_dir: "{{ lab_path }}/{{ lab_name }}/upgrade"
   tags:
     - 'upgrade-iso'

@@ -5,6 +5,10 @@ dnsmasq_dhcp_hosts:
 haproxy_labs: []
 lab_host_aws: false
 
+libvirt_image_dir: '/var/lib/libvirt/images'
+lab_node_disk_pool: 'default'
+lab_network_name: 'devbm'
+
 lab_host_squid_networks:
   - 'fd00:0:0:1::/64'
 lab_host_networks:

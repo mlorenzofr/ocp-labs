@@ -23,7 +23,6 @@
       - {'id': '22'}
       - {'id': '23'}
       - {'id': '24', role: 'worker'}
-    libvirt_image_dir: '/home/libvirt-ocp'
 
   roles:
     - 'lab'

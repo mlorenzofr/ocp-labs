@@ -4,6 +4,8 @@ dnsmasq_dhcp_hosts:
   - {hwaddr: '52:54:00:38:8d:f9', hostname: 'ostree-node-1', ipaddr: '192.168.125.254'}
   - {hwaddr: '52:54:00:9e:95:23', hostname: 'javed-rhel9', ipaddr: '192.168.125.149'}
 
+libvirt_image_dir: '/home/libvirt-ocp'
+
 lab_host_rh_release: '9.5.0'
 lab_host_repos:
   - name: 'beaker-AppStream-debuginfo'
