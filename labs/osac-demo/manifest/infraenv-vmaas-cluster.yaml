@@ -1,0 +1,17 @@
+---
+apiVersion: agent-install.openshift.io/v1beta1
+kind: InfraEnv
+metadata:
+  name: vmaas-cluster
+  namespace: vmaas-cluster
+spec:
+  additionalNTPSources:
+    - 192.168.111.1
+  clusterRef:
+    name: vmaas-cluster
+    namespace: vmaas-cluster
+  agentLabels:
+    cluster-name: "vmaas-cluster"
+  pullSecretRef:
+    name: pull-secret-vmaas-cluster
+  sshAuthorizedKey: <redacted>

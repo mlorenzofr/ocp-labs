@@ -1,0 +1,6 @@
+<network>
+  <name>devpr</name>
+  <forward mode='bridge'/>
+  <bridge name='devpr'/>
+  <virtualport type='openvswitch'/>
+</network>

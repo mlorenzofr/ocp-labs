@@ -1,0 +1,58 @@
+---
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: osac
+rendezvousIP: 192.168.111.10
+hosts:
+  - hostname: osac-node-1
+    interfaces:
+      - name: eth0
+        macAddress: 52:54:00:ff:00:10
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: 52:54:00:ff:00:10
+          ipv4:
+            enabled: True
+            dhcp: True
+          ipv6:
+            enabled: False
+    rootDeviceHints:
+      deviceName: "/dev/vda"
+  - hostname: osac-node-2
+    interfaces:
+      - name: eth0
+        macAddress: 52:54:00:ff:00:11
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: 52:54:00:ff:00:11
+          ipv4:
+            enabled: True
+            dhcp: True
+          ipv6:
+            enabled: False
+    rootDeviceHints:
+      deviceName: "/dev/vda"
+  - hostname: osac-node-3
+    interfaces:
+      - name: eth0
+        macAddress: 52:54:00:ff:00:12
+    networkConfig:
+      interfaces:
+        - name: eth0
+          type: ethernet
+          state: up
+          mac-address: 52:54:00:ff:00:12
+          ipv4:
+            enabled: True
+            dhcp: True
+          ipv6:
+            enabled: False
+    rootDeviceHints:
+      deviceName: "/dev/vda"

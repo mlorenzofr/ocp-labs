@@ -1,0 +1,25 @@
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  name: ocs-storagecluster
+  namespace: openshift-storage
+spec:
+  managedResources:
+    cephBlockPools:
+      defaultVirtualizationStorageClass: true
+  resourceProfile: lean
+  storageDeviceSets:
+  - count: 1
+    dataPVCTemplate:
+      metadata: {}
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 512Gi
+        storageClassName: lvms-vg1
+        volumeMode: Block
+    name: ocs-deviceset-lvms-vg1
+    portable: true
+    replica: 3

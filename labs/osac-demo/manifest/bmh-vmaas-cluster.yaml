@@ -1,0 +1,88 @@
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: vmaas-master-1
+  namespace: vmaas-cluster
+  labels:
+    infraenvs.agent-install.openshift.io: vmaas-cluster
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: vmaas-master-1
+    bmac.agent-install.openshift.io/role: "master"
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: 52:54:00:ff:01:21
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.111.1:9000/redfish/v1/Systems/local/vmaas-master-1
+    credentialsName: vmaas-master-1-bmc-secret
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: vmaas-master-2
+  namespace: vmaas-cluster
+  labels:
+    infraenvs.agent-install.openshift.io: vmaas-cluster
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: vmaas-master-2
+    bmac.agent-install.openshift.io/role: "master"
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: 52:54:00:ff:01:22
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.111.1:9000/redfish/v1/Systems/local/vmaas-master-2
+    credentialsName: vmaas-master-2-bmc-secret
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: vmaas-master-3
+  namespace: vmaas-cluster
+  labels:
+    infraenvs.agent-install.openshift.io: vmaas-cluster
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: vmaas-master-3
+    bmac.agent-install.openshift.io/role: "master"
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: 52:54:00:ff:01:23
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.111.1:9000/redfish/v1/Systems/local/vmaas-master-3
+    credentialsName: vmaas-master-3-bmc-secret
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: vmaas-worker-1
+  namespace: vmaas-cluster
+  labels:
+    infraenvs.agent-install.openshift.io: vmaas-cluster
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: vmaas-worker-1
+    bmac.agent-install.openshift.io/role: "worker"
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: 52:54:00:ff:01:24
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.111.1:9000/redfish/v1/Systems/local/vmaas-worker-1
+    credentialsName: vmaas-worker-1-bmc-secret

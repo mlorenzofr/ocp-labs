@@ -1,6 +1,7 @@
 ---
 dnsmasq_dhcp_hosts:
   - {hwaddr: '52:54:00:fc:54:f8', hostname: 'router-vm', ipaddr: '192.168.122.10'}
+  - {hwaddr: '52:54:00:b3:91:6f', hostname: 'test-vm', ipaddr: '192.168.122.11'}
 
 haproxy_labs:
   - name: 'osac'
