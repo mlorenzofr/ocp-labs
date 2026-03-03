@@ -4,19 +4,18 @@
     api_version: cluster.open-cluster-management.io/v1
     kind: ManagedCluster
     label_selectors:
-      - "ovcloud.open-cluster-management.io/vmaas=true"
+      - "sovcloud.open-cluster-management.io/vmaas=true"
   register: __vmaas_clusters
 
 - name: "No VMaaS clusters"
   ansible.builtin.fail:
-    msg: "No ManagedCluster resources with the label 'ovcloud.open-cluster-management.io/vmaas=true' found."
+    msg: "No ManagedCluster resources with the label 'sovcloud.open-cluster-management.io/vmaas=true' found."
   ignore_errors: true
   when: __vmaas_clusters.resources | length == 0
 
 - name: "Set vmaas_clusters fact"
   ansible.builtin.set_fact:
     vmaas_clusters: "{{ __vmaas_clusters.resources | map(attribute='metadata.name') | list }}"
-    # vmaas_clusters: ["test-cluster"]
 
 - name: "Check Ansible Automation Platform license"
   ansible.builtin.stat:

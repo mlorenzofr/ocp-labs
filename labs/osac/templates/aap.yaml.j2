@@ -3,7 +3,7 @@ apiVersion: aap.ansible.com/v1alpha1
 kind: AnsibleAutomationPlatform
 metadata:
   name: {{ aap_name | default('osac-aap') }}
-  namespace: {{ aap_ns }}
+  namespace: {{ aap_ns | default('ansible-aap') }}
 spec:
   controller:
     disabled: {{ aap_controller | default(false) }}

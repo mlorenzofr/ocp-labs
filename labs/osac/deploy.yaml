@@ -97,10 +97,11 @@
     lab_configs: "/root/labs/{{ lab_name }}/config"
     osac_operator:
       image: 'ghcr.io/osac-project/osac-operator'
-      tag: 'sha-bba9d8c'
+      tag: 'sha-cf3ef87'
 
   tags:
     - 'aap'
+    - 'osac'
     - 'never'
 
   environment:

@@ -1,30 +1,71 @@
 # osac lab
 
-This lab installs a Openshift cluster and a spoke cluster to test OSAC deployment.
+This lab installs a OpenShift cluster and a spoke cluster (SNO) to test OSAC deployment tasks.
 
 ## Requirements
 
 None.
 
+### Inventory
+
+* resources (total)
+  * nodes: 4 (VMs)
+  * vCPUs: 48
+  * Memory: 108 GB
+  * OS disk: 781 GB
+
+### Hub cluster
+
+* resources (each):
+  * nodes: 3 (compact cluster)
+  * vCPUs: 12 (x3)
+  * Memory: 28 GB (x3)
+  * OS disk: 120 GB (x3)
+  * Data disk: 100 GB (x3)
+
+* services:
+  * Advanced Cluster Management (ACM)
+  * Assisted-Service
+  * Open Sovereign AI Cloud (OSAC)
+  * Ansible Automation Platform (AAP)
+
+### Spoke cluster
+
+* resources:
+  * nodes: 1 (SNO)
+  * vCPUs: 12 GB
+  * Memory: 24 GB
+  * OS disk: 120 GB
+  * Data disk: 1 GB
+
 ## Steps
 
 1. Deploy:
+
 ```shell
 ap labs/osac/deploy.yaml
 ```
+
 2. Export spoke cluster configuration
+
 ```shell
 ap labs/osac/deploy.yaml --tags spoke-config
 ```
+
 3. Import the spoke cluster (create a `ManagedCluster`)
+
 ```shell
 ap labs/osac/deploy.yaml --tags import-cluster
 ```
+
 4. Label the `ManagedCluster`
+
 ```shell
 oc label managedcluster/test-cluster sovcloud.open-cluster-management.io/vmaas=true
 ```
+
 5. Install AAP & OSAC Operator
+
 ```shell
 ap labs/osac/deploy.yaml --tags aap
 ```
@@ -32,6 +73,7 @@ ap labs/osac/deploy.yaml --tags aap
 ## Validation
 
 1. Check if the Openshift cluster is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/osac/deploy/auth/kubeconfig
 
@@ -45,11 +87,13 @@ $ oc get clusterversion
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.20.8    True        False         6h16m   Cluster version is 4.20.8
 ```
+
 2. Review the `ansible-aap` namespace. We should have:
     * `secret/config-as-code-ig`
     * `secret/config-as-code-manifest-ig`
     * `secret/vmaas-cluster-kubeconfig`
     * `route.route.openshift.io/osac-aap-controller`
+
 ```shell
 $ oc get all,secrets -n ansible-aap
 
@@ -162,10 +206,12 @@ secret/osac-aap-resource-server                     Opaque              2      6
 secret/redhat-operators-pull-secret                 Opaque              1      70m
 secret/vmaas-cluster-kubeconfig                     Opaque              1      70m
 ```
+
 3. Review the `osac-operator-system` namespace. We should have:
     * `secret/osac-config`
     * `secret/vmaas-cluster-kubeconfig`
     * `pod/osac-operator-controller-manager-585cfcfbd9-8g8n7`
+
 ```shell
 $ oc get all,secrets -n osac-operator-system
 
@@ -186,13 +232,22 @@ NAME                              TYPE     DATA   AGE
 secret/osac-config                Opaque   4      175m
 secret/vmaas-cluster-kubeconfig   Opaque   1      175m
 ```
+
 4. Check if volume `vmaas-cluster-kubeconfig` is present in the `deployment.apps/osac-operator-controller-manager`:
+
 ```shell
-$ oc get deployment.apps/osac-operator-controller-manager -n osac-operator-system -o yaml
+oc get deployment.apps/osac-operator-controller-manager -n osac-operator-system -o yaml
 ```
 
+5. In the [OpenShift Web UI](https://console-openshift-console.apps.osac.local.lab), in the left menu, go to `Governance`. Verify that the ACM policies have been applied.
+
 ## Links
+
+* [OpenShift Web UI](https://console-openshift-console.apps.osac.local.lab/)
+* [Ansible Automation Platform Web UI](https://osac-aap-ansible-aap.apps.osac.local.lab)
+
 * [osac-operator](https://github.com/osac-project/osac-operator)
+* [osac-operator versions](https://github.com/osac-project/osac-operator/pkgs/container/osac-operator/versions)
 * [osac-aap](https://github.com/osac-project/osac-aap)
 * [osac-app config-as-code options](https://github.com/osac-project/osac-aap/blob/4f1ba397a8b6c9ef6fa8abe504baafceec8009db/collections/ansible_collections/osac/config_as_code/playbooks/vars/config.yml)
 * [osac-app config-as-code README](https://github.com/osac-project/osac-aap/blob/8a97da6fe75750391e56a83692dc7a8bdb16b905/collections/ansible_collections/osac/config_as_code/README.md)

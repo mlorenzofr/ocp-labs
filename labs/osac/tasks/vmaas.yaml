@@ -1,4 +1,65 @@
 ---
+- name: "Create ACM Addons for VMaaS cluster"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('ansible.builtin.template', '../templates/acm-addons.yaml.j2') | from_yaml }}"
+  vars:
+    acm_addons:
+      - "config-policy-controller"
+      - "governance-policy-framework"
+      - "cert-policy-controller"
+      - "application-manager"
+    cluster_ns: "{{ vmaas_clusters[0] }}"
+  loop: "{{ acm_addons }}"
+  loop_control:
+    loop_var: addon
+
+- name: ACM policy for VMaaS
+  block:
+
+    - name: Create Namespace for ACM Policies
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('ansible.builtin.file', '../files/vmaas/00-namespace.yaml') | from_yaml }}"
+
+    - name: Create ACM Policy for VMaaS
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('ansible.builtin.template', '../files/vmaas/10-policy.yaml.j2') | from_yaml }}"
+
+    - name: Create ACM PlacementRule for VMaaS
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('ansible.builtin.file', '../files/vmaas/20-placementrule.yaml') | from_yaml }}"
+
+    - name: Create ACM PlacementBinding for VMaaS
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('ansible.builtin.file', '../files/vmaas/30-placementbinding.yaml') | from_yaml }}"
+
+- name: ACM policy for NMState
+  block:
+
+    - name: Create Namespace for ACM Policies
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('ansible.builtin.file', '../files/nmstate/00-namespace.yaml') | from_yaml }}"
+
+    - name: Create ACM Policy for NMState
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('ansible.builtin.template', '../files/nmstate/10-policy.yaml.j2') | from_yaml }}"
+
+    - name: Create ACM PlacementRule for NMState
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('ansible.builtin.file', '../files/nmstate/20-placementrule.yaml') | from_yaml }}"
+
+    - name: Create ACM PlacementBinding for NMState
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('ansible.builtin.file', '../files/nmstate/30-placementbinding.yaml') | from_yaml }}"
+
 - name: "Fetch the kubeconfig for the VMaaS cluster"
   kubernetes.core.k8s_info:
     api_version: v1
@@ -16,10 +77,10 @@
   vars:
     aap_name: "osac-aap"
     aap_ns: "ansible-aap"
-    aap_controller_name: "{{ aap_name }}-controller"
+    aap_controller_name: "{{ aap_name }}"
     aap_token_description: "OSAC Operator Token"
     aap_token_overwrite: false
-    aap_api_path: "/api/v2"
+    aap_api_path: "/api/controller/v2"
     aap_api_user: "admin"
     aap_api_validate_certs: false
   block:
@@ -54,6 +115,37 @@
       retries: 10
       delay: 5
       until: __r_create_aap_config is success
+
+    # Required by OSAC although is empty, it must be present
+    # vm and cluster share the same secret
+    - name: "Create cluster-fulfillment-ig secret"
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: "cluster-fulfillment-ig"
+            namespace: "{{ aap_ns }}"
+          type: Opaque
+
+    - name: "Create osac-sa Service Account in AAP namespace"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('ansible.builtin.template', '../templates/aap-osac-sa.yaml.j2') | from_yaml }}"
+      register: __r_create_aap_osac_sa
+      retries: 10
+      delay: 5
+      until: __r_create_aap_osac_sa is success
+
+    - name: "Create osac-sa ClusterRoleBinding in AAP namespace"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('ansible.builtin.template', '../templates/aap-osac-clusterrolebinding.yaml.j2') | from_yaml }}"
+      register: __r_create_aap_osac_clusterrolebinding
+      retries: 10
+      delay: 5
+      until: __r_create_aap_osac_clusterrolebinding is success
 
     - name: "Create AnsibleAutomationPlatform resource"
       kubernetes.core.k8s:
@@ -92,18 +184,10 @@
         - __aap_admin_password_secret.resources[0].data.password is defined
       no_log: true
 
-    - name: "Debug AAP admin password secret"
-      ansible.builtin.debug:
-        msg: "AAP admin password secret: {{ __aap_admin_password_secret }}"
-
     - name: "Set AAP admin password fact"
       ansible.builtin.set_fact:
         __aap_admin_password: "{{ __aap_admin_password_secret.resources[0].data.password | b64decode }}"
       no_log: true
-
-    - name: "Debug AAP admin password"
-      ansible.builtin.debug:
-        msg: "AAP admin password: {{ __aap_admin_password }}"
 
     - name: "Query AAP API for Admin User ID"
       ansible.builtin.uri:
@@ -218,7 +302,6 @@
       until: __r_create_aap_bootstrap is success
 
 - name: Deploy OSAC
-  become: true
   vars:
     osac_operator_manifests: "{{ osac_operator.image }}:{{ osac_operator.tag }}-manifests"
   block:
@@ -269,17 +352,34 @@
     - name: "Mount the container filesystem"
       ansible.builtin.command:
         cmd: "podman image mount {{ osac_operator_manifests }}"
+      become: true
       changed_when: false
       register: __r_mount_path
+
+    - name: "Copy OSAC installation manifest to /tmp"
+      ansible.builtin.copy:
+        src: "{{ __r_mount_path.stdout.strip() }}/manifests/install.yaml"
+        dest: "/tmp/osac-install.yaml"
+        remote_src: true
+        mode: "0644"
+      become: true
+      changed_when: false
 
     - name: "Apply manifests from mounted container"
       kubernetes.core.k8s:
         state: present
-        src: "{{ __r_mount_path.stdout.strip() }}/manifests/install.yaml"
+        src: "/tmp/osac-install.yaml"
       register: __r_apply_manifests
       retries: 6
       delay: 5
       until: __r_apply_manifests is success
+
+    - name: "Remove OSAC installation manifest"
+      ansible.builtin.file:
+        path: "/tmp/osac-install.yaml"
+        state: 'absent'
+      become: true
+      changed_when: false
 
     - name: "Fetch OSAC Operator Deployment"
       kubernetes.core.k8s_info:
@@ -321,6 +421,7 @@
     - name: "Unmount the container filesystem"
       ansible.builtin.command:
         cmd: "podman image umount {{ osac_operator_manifests }}"
+      become: true
       changed_when: false
       when:
         - __r_mount_path is defined
