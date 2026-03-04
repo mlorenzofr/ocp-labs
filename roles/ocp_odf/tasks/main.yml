@@ -9,6 +9,9 @@
       monitoring: True
       operator_group: 'openshift-storage-operatorgroup'
       source: "{{ ocp_odf_source }}"
+      wait_for:
+        - 'odf-operator'
+        - 'odf-dependencies'
   tags: ['olm']
 
 - name: 'Waiting for odf-operator pods'
@@ -47,3 +50,46 @@
   ansible.builtin.include_tasks:
     file: 'noobaa.yaml'
   when: ocp_odf_noobaa
+
+- name: 'Get current console plugins enabled'
+  kubernetes.core.k8s_info:
+    api_version: 'operator.openshift.io/v1'
+    kind: Console
+    name: 'cluster'
+  register: '__ocp_odf_con_plugins'
+  when: ocp_odf_console_plugins
+
+- name: 'Intersect console plugins list with current plugins'
+  set_fact:
+    __ocp_odf_con_plugins_cmp: "{{ __ocp_odf_con_plugins.resources[0].spec.plugins | default([]) | intersect(ocp_odf_console_plugins_list) }}"
+  when:
+    - ocp_odf_console_plugins
+    - __ocp_odf_con_plugins is defined
+    - __ocp_odf_con_plugins.resources[0].spec.plugins is defined
+
+- name: 'Check if console plugins are enabled'
+  set_fact:
+    ocp_odf_console_plugins_are_enabled: true
+  when:
+    - ocp_odf_console_plugins
+    - __ocp_odf_con_plugins_cmp | length != ocp_odf_console_plugins_list | length
+
+- name: 'Prepare new console plugins list'
+  set_fact:
+    __ocp_odf_con_plugins: "{{ __ocp_odf_con_plugins.resources[0].spec.plugins | default([]) | union(ocp_odf_console_plugins_list) }}"
+  when:
+    - ocp_odf_console_plugins
+    - ocp_odf_console_plugins_are_enabled
+
+- name: 'Enable ODF Web UI plugins'
+  kubernetes.core.k8s:
+    state: patched
+    api_version: 'operator.openshift.io/v1'
+    kind: Console
+    name: 'cluster'
+    definition:
+      spec:
+        plugins: "{{ __ocp_odf_con_plugins }}"
+  when:
+    - ocp_odf_console_plugins
+    - ocp_odf_console_plugins_are_enabled

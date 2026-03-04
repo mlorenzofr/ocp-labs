@@ -29,11 +29,11 @@
   ignore_errors: "{{ ansible_check_mode }}"
   when: ocp_olm_apply
 
-- name: 'Waiting until the operator is installed'
+- name: 'Checking subscription status'
   kubernetes.core.k8s_info:
     api_version: 'operators.coreos.com/v1alpha1'
     kind: 'Subscription'
-    name: "{{ item.subscription_name | default(item.operator_name) }}"
+    name: "{{ __subscription_name }}"
     namespace: "{{ item.ns }}"
   register: __olm_subscription_status
   until:
@@ -43,3 +43,7 @@
   retries: 10
   delay: 30
   when: ocp_olm_apply and not ansible_check_mode
+  loop: "{{ item.wait_for | default([item.subscription_name | default(item.operator_name)]) }}"
+  loop_control:
+    label: 'Waiting for subscription {{ __subscription_name }}'
+    loop_var: __subscription_name

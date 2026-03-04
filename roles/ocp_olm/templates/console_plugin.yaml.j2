@@ -6,7 +6,7 @@ metadata:
 spec:
   displayName: '{{ item.display_name | default(item.name) }}'
   service:
-    name: '{{ item.name }}'
+    name: '{{ item.service_name | default(item.name) }}'
     namespace: '{{ item.ns }}'
     port: {{ item.port }}
     basePath: '{{ item.base_path | default('/') }}'

@@ -51,7 +51,7 @@
       metadata:
         name: "{{ item.name }}"
         labels:
-          {{ item.label }}: ''
+          "{{ item.label }}": ''
   loop: "{{ ocp_localstorage_nodes }}"
   ignore_errors: "{{ ansible_check_mode }}"
   when: ocp_localstorage_apply

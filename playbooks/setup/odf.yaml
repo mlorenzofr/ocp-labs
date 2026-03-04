@@ -12,19 +12,9 @@
   gather_facts: false
 
   vars:
-    lab_name: 'standard'
     lab_configs: "/root/labs/{{ lab_name }}/config"
     lab_install: true
-    lab_odf_storageclass: 'lvms-vg1'
-
-    ocp_odf_clusters:
-      - name: 'ocs1'
-        devicesets:
-          - name: 'deviceset1'
-            count: 1
-            storage: '180Gi'
-            storageclass: "{{ lab_odf_storageclass }}"
-            replica: 3
+    ocp_odf_clusters: "{{ ocp_odf_default_storagecluster }}"
 
   environment:
     KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"

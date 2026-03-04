@@ -1,3 +1,4 @@
 ---
 ansible_managed: "Ansible managed: DO NOT EDIT MANUALLY"
+lab_mac_base: '52:54:00:ff:ff:'
 ...

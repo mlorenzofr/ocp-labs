@@ -1,5 +1,10 @@
 ---
 ocp_odf_apply: "{{ ocp_apply | default(true) }}"
+ocp_odf_console_plugins: true
+ocp_odf_console_plugins_are_enabled: false
+ocp_odf_console_plugins_list:
+  - 'odf-console'
+  - 'odf-client-console'
 ocp_odf_ns: 'openshift-storage'
 ocp_odf_noobaa: False
 ocp_odf_noobaa_cpu: '0.1'
@@ -14,3 +19,18 @@ ocp_odf_storage: 'lvms'
 ocp_odf_storage_nodes: []
 ocp_odf_clusters: []
 ocp_odf_noobaa_backingstores: []
+
+ocp_odf_sc_resourceprofile: 'lean'
+ocp_odf_sc_size: '512Gi'
+ocp_odf_sc_storageclass: 'lvms-vg1'
+ocp_odf_sc_virtualization: false
+
+ocp_odf_default_storagecluster:
+  - name: 'ocs-storagecluster'
+    ns: "{{ ocp_odf_ns }}"
+    resource_profile: "{{ ocp_odf_sc_resourceprofile }}"
+    default_virtualization_sc: "{{ ocp_odf_sc_virtualization }}"
+    devicesets:
+      - name: "ocs-deviceset-{{ ocp_odf_sc_storageclass }}"
+        storage: "{{ ocp_odf_sc_size }}"
+        storageclass: "{{ ocp_odf_sc_storageclass }}"

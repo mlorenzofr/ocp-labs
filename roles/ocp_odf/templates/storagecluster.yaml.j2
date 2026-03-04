@@ -4,7 +4,16 @@ metadata:
   name: {{ item.name }}
   namespace: {{ ocp_odf_ns }}
 spec:
+{% if not item.managed_nodes | default(true) %}
   manageNodes: false
+{% endif %}
+{% if item.default_virtualization_sc | default(false) %}
+  managedResources:
+    cephBlockPools:
+      defaultVirtualizationStorageClass: true
+{% endif %}
+  resourceProfile: {{ item.resource_profile | default('balanced') }}
+{% if item.mds_limits | default(false) %}
   resources:
     mds:
       limits:
@@ -13,42 +22,30 @@ spec:
       requests:
         cpu: "{{ item.mds_cpu | default(3) }}"
         memory: "{{ item.mds_memory | default('8Gi') }}"
+{% endif %}
+{% if item.mon_data_path is defined %}
   monDataDirHostPath: {{ item.mon_data_path | default('/var/lib/rook') }}
+{% endif %}
   storageDeviceSets:
 {% for ds in item.devicesets %}
-    - count: {{ ds.count }}
+    - count: {{ ds.count | default(1) }}
+      config: {}
       dataPVCTemplate:
+        metadata: {}
         spec:
           accessModes:
             - ReadWriteOnce
           resources:
             requests:
-              storage: "{{ ds.storage }}"
+              storage: "{{ ds.storage | default('512Gi') }}"
           storageClassName: {{ ds.storageclass }}
           volumeMode: Block
+        status: {}
       name: {{ ds.name }}
-{% if ocp_odf_storage_nodes | length > 0 %}
-      placement:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: cluster.ocs.openshift.io/openshift-storage
-                    operator: In
-                    values:
-                      - ""
-{% else %}
       placement: {}
-{% endif %}
-{% if ocp_odf_on_masters %}
-      tolerations:
-        - key: node-role.kubernetes.io/master
-          operator: Equal
-          value: ""
-          effect: NoSchedule
-{% endif %}
-      portable: false
-      replica: {{ ds.replica }}
+      portable: {{ ds.portable | default(true) }}
+      preparePlacement: {}
+      replica: {{ ds.replica | default(3) }}
 {% if 'resources' in ds.keys() %}
       resources:
         limits:
@@ -57,5 +54,7 @@ spec:
         requests:
           cpu: "{{ ds.resources.cpu }}"
           memory: "{{ ds.resources.memory }}"
+{% else %}
+      resources: {}
 {% endif %}
 {% endfor %}

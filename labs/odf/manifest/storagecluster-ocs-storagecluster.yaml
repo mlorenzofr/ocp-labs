@@ -1,0 +1,27 @@
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  name: ocs-storagecluster
+  namespace: openshift-storage
+spec:
+  resourceProfile: lean
+  storageDeviceSets:
+    - count: 1
+      config: {}
+      dataPVCTemplate:
+        metadata: {}
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: "250Gi"
+          storageClassName: lvms-vg1
+          volumeMode: Block
+        status: {}
+      name: ocs-deviceset-lvms-vg1
+      placement: {}
+      portable: True
+      preparePlacement: {}
+      replica: 3
+      resources: {}
