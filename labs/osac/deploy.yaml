@@ -135,3 +135,30 @@
       ansible.builtin.debug:
         msg: "AAP Token: {{ osac_aap_token }}"
       when: osac_aap_token is defined
+
+- name: Prepare AAP archive server
+  hosts:
+    - 'lab'
+  gather_facts: false
+
+  vars:
+    lab_name: 'osac'
+    lab_configs: "/root/labs/{{ lab_name }}/config"
+    aap_archive_tmp_dir: "/tmp/aap-config-source"
+    aap_config_repo: "https://github.com/osac-project/osac-aap.git"
+    aap_config_version: "main"
+    aap_archive_image: "registry.redhat.io/ubi9/nginx-126@sha256:d68c1643e3a1184c38f87391fd1054724d8ed2e14324c090091d6c724dc1c335"
+    aap_archive_port: 4480
+    aap_archive_authfile: "/root/.config/containers/auth.json"
+    aap_archive_dest: "/root/labs/{{ lab_name }}/config/aap-config-archive.tar.gz"
+
+  tags:
+    - 'archive-server'
+    - 'never'
+
+  tasks:
+    - name: "Run AAP archive server tasks"
+      ansible.builtin.include_tasks:
+        file: tasks/archive_server.yaml
+        apply:
+          tags: archive-server
