@@ -4,43 +4,30 @@ This lab was created to make an OSAC demo. The environment has 2 OpenShift clust
 
 This lab has been deployed on machine **b17**.
 
-## Inventory
+## Services
 
-* resources (total)
-  * nodes: 7 (VMs)
-  * vCPUs: 124
-  * Memory: 300 GB
-  * OS disk: 2557 GB (2.5 TB)
-
-### Hub cluster
-
-* resources (each):
-  * nodes: 3 (compact cluster)
-  * vCPUs: 12 (x3)
-  * Memory: 28 GB (x3)
-  * OS disk: 120 GB (x3)
-  * Data disk: 100 GB (x3)
-
-* services:
+* Hub cluster
   * Advanced Cluster Management (ACM)
   * Assisted-Service
   * Open Sovereign AI Cloud (OSAC)
   * Ansible Automation Platform (AAP)
 
-### Spoke cluster
-
-* resources (each):
-  * nodes: 4 (3 masters + 1 worker)
-  * vCPUs: 24 GB (x3) / 16 GB (x1)
-  * Memory: 64 GB (x3) / 24 GB (x1)
-  * OS disk: 120 GB (x4)
-  * Data disk: 512 GB (x3)
-
-* services:
+* Spoke cluster
   * KubeVirt
   * Openshift Data Foundation (ODF)
 
 ## Requirements
+
+### Resources (per node)
+
+| | nodes | vCPUS | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| Hub cluster | 3 | 12 | 28 GB | 120 GB | 100 GB | 220 GB |
+| Spoke cluster (masters) | 3 | 24 | 64 GB | 120 GB | 512 GB | 632 GB |
+| Spoke cluster (workers) | 1 | 16 | 24 GB | 120 GB | 1 GB | 121 GB |
+| **Total** | **7** | **124** | **300 GB** | 840 GB | 1837 GB | **2677 GB** |
+
+### Software
 
 The machine hosting the lab must have **openvswitch** installed for the `devpr` and `testpr` libvirt networks.
 

@@ -9,13 +9,12 @@ Minimum requirements for ODF nodes:
 * 32 GiB of memory
 * An additional disk with 150 GB
 
-### Inventory
+### Resources (per node)
 
-* resources
-  * nodes: 3 (VMs)
-  * vCPUs: 36
-  * Memory: 144 GB
-  * OS disk: 1260 GB (1.2 TB)
+| | nodes | vCPUS | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| Hub cluster | 3 | 12 | 48 GB | 120 GB | 300 GB | 420 GB |
+| **Total** | **3** | **36** | **144 GB** | 360 GB | 900 GB | **1260 GB** |
 
 ## Steps
 

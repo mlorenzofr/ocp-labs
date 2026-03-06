@@ -2,41 +2,23 @@
 
 This lab installs a OpenShift cluster and a spoke cluster (SNO) to test OSAC deployment tasks.
 
-## Requirements
+## Services
 
-None.
-
-### Inventory
-
-* resources (total)
-  * nodes: 4 (VMs)
-  * vCPUs: 48
-  * Memory: 108 GB
-  * OS disk: 781 GB
-
-### Hub cluster
-
-* resources (each):
-  * nodes: 3 (compact cluster)
-  * vCPUs: 12 (x3)
-  * Memory: 28 GB (x3)
-  * OS disk: 120 GB (x3)
-  * Data disk: 100 GB (x3)
-
-* services:
+* Hub cluster
   * Advanced Cluster Management (ACM)
   * Assisted-Service
   * Open Sovereign AI Cloud (OSAC)
   * Ansible Automation Platform (AAP)
 
-### Spoke cluster
+## Requirements
 
-* resources:
-  * nodes: 1 (SNO)
-  * vCPUs: 12 GB
-  * Memory: 24 GB
-  * OS disk: 120 GB
-  * Data disk: 1 GB
+### Resources (per node)
+
+| | nodes | vCPUS | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| Hub cluster | 3 | 12 | 28 GB | 120 GB | 100 GB | 220 GB |
+| Spoke cluster | 1 | 12 | 24 GB | 120 GB | 1 GB | 121 GB |
+| **Total** | **4** | **48** | **108 GB** | 480 GB | 301 GB | **781 GB** |
 
 ## Steps
 
