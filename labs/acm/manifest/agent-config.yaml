@@ -5,7 +5,7 @@ metadata:
   name: acm
 rendezvousIP: 192.168.125.61
 hosts:
-  - hostname: acm-node-1
+  - hostname: acm-master-1
     interfaces:
       - name: eth0
         macAddress: be:be:ca:fe:03:61
@@ -22,7 +22,7 @@ hosts:
             enabled: False
     rootDeviceHints:
       deviceName: "/dev/vda"
-  - hostname: acm-node-2
+  - hostname: acm-master-2
     interfaces:
       - name: eth0
         macAddress: be:be:ca:fe:03:62
@@ -39,7 +39,7 @@ hosts:
             enabled: False
     rootDeviceHints:
       deviceName: "/dev/vda"
-  - hostname: acm-node-3
+  - hostname: acm-master-3
     interfaces:
       - name: eth0
         macAddress: be:be:ca:fe:03:63

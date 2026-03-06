@@ -1,0 +1,21 @@
+---
+apiVersion: metal3.io/v1alpha1
+kind: BareMetalHost
+metadata:
+  name: acm-sno-1
+  namespace: spoke-acm
+  labels:
+    infraenvs.agent-install.openshift.io: spoke-acm
+  annotations:
+    inspect.metal3.io: disabled
+    bmac.agent-install.openshift.io/hostname: acm-sno-1
+spec:
+  automatedCleaningMode: disabled
+  bootMACAddress: be:be:ca:fe:02:65
+  online: true
+  rootDeviceHints:
+    deviceName: /dev/vda
+  bmc:
+    disableCertificateVerification: True
+    address: redfish-virtualmedia://192.168.125.1:9000/redfish/v1/Systems/local/acm-sno-1
+    credentialsName: acm-sno-1-bmc-secret

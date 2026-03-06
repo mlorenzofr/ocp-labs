@@ -72,8 +72,8 @@
   vars:
     lab_name: 'osac'
     lab_path: '/root/labs'
-    cluster_name: 'test-cluster'
-    kubeconfig_path: "{{ lab_path }}/{{ lab_name }}/{{ cluster_name }}/auth/kubeconfig"
+    cluster: 'test-cluster'
+    kubeconfig: "{{ lab_path }}/{{ lab_name }}/{{ cluster }}/auth/kubeconfig"
   tags:
     - 'import-cluster'
     - 'never'

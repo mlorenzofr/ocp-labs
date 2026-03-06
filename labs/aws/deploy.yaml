@@ -39,11 +39,11 @@
   ansible.builtin.import_playbook: ../../playbooks/jobs/acm-import-cluster.yaml
   vars:
     lab_name: 'aws'
-    cluster_name: 'one-group-one-xnszc'
+    cluster: 'one-group-one-xnszc'
     cluster_set: 'group-one'
     cluster_labels:
       clusterGroup: 'group-one'
-    kubeconfig_path: '/root/labs/aws/one-group-one-xnszc/auth/kubeconfig'
+    kubeconfig: '/root/labs/aws/one-group-one-xnszc/auth/kubeconfig'
   tags:
     - 'never'
     - 'postinst'

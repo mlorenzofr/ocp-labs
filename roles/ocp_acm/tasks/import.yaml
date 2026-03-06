@@ -1,11 +1,46 @@
 ---
+- name: 'Create import directory'
+  ansible.builtin.file:
+    path: "{{ cwd }}"
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Fetch remote kubeconfig'
+  ansible.builtin.fetch:
+    dest: '/tmp/'
+    src: "{{ kubeconfig }}"
+    flat: true
+  when: kubeconfig_data is not defined
+
+- name: 'Get kubeconfig data'
+  ansible.builtin.set_fact:
+    kubeconfig_data: "{{ lookup('file', '/tmp/kubeconfig') }}"
+  when: kubeconfig_data is not defined
+
 - name: 'Create managedcluster manifest'
   ansible.builtin.template:
     src: 'managedcluster.yaml.j2'
-    dest: "{{ acm_cwd }}/managedcluster-{{ cluster }}.yaml"
+    dest: "{{ cwd }}/managedcluster-{{ cluster }}.yaml"
     owner: 'root'
     group: 'root'
     mode: '0600'
+
+- name: 'Add governance addons'
+  ansible.builtin.set_fact:
+    addons: "{{ addons | default(ocp_acm_default_addons) | union(ocp_acm_governance_addons) }}"
+  when: governance | default(false) | bool
+
+- name: 'Create managedclusteraddon manifests'
+  ansible.builtin.template:
+    src: 'managedclusteraddon.yaml.j2'
+    dest: "{{ cwd }}/managedclusteraddon-{{ cluster }}.yaml"
+    owner: 'root'
+    group: 'root'
+    mode: '0640'
+  vars:
+    addons: "{{ addons | default(ocp_acm_default_addons) }}"
 
 - name: 'Create import namespace'
   kubernetes.core.k8s:
@@ -29,11 +64,17 @@
       stringData:
         autoImportRetry: "5"
       data:
-        kubeconfig: "{{ kubeconfig | b64encode }}"
+        kubeconfig: "{{ kubeconfig_data | b64encode }}"
 
 - name: 'Apply managedcluster manifest'
   kubernetes.core.k8s:
     state: 'present'
-    src: "{{ acm_cwd }}/managedcluster-{{ cluster }}.yaml"
+    src: "{{ cwd }}/managedcluster-{{ cluster }}.yaml"
   ignore_errors: "{{ ansible_check_mode }}"
-...
+
+- name: 'Apply managedclusteraddon manifests'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ cwd }}/managedclusteraddon-{{ cluster }}.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: addons | length > 0

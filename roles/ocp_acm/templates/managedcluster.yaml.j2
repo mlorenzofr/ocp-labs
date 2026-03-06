@@ -2,7 +2,7 @@
 apiVersion: cluster.open-cluster-management.io/v1
 kind: ManagedCluster
 metadata:
-  name: '{{ cluster_name }}'
+  name: '{{ cluster }}'
   labels:
     cloud: '{{ cloud | default('auto-detect') }}'
     vendor: '{{ vendor | default('auto-detect') }}'

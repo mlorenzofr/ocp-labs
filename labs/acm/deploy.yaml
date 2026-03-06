@@ -14,6 +14,7 @@
   ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
   tags:
     - 'ocp'
+    - 'never'
   vars:
     lab_name: 'acm'
     lab_abi_ip: "{{ lab_node_network_base }}61"
@@ -27,17 +28,73 @@
       - {id: '63', role: 'master'}
     start_install: true
 
-- name: 'Import ACM setup playbook'
+- name: 'Install ACM on Hub cluster and add an extra node for testing'
   ansible.builtin.import_playbook: ../../playbooks/setup/acm.yaml
   tags:
-    - 'postinst'
+    - 'bmh-node'
+    - 'never'
   vars:
     lab_name: 'acm'
 
     ocp_assisted_service_infraenvs:
-      - name: 'spoke'
-        ns: 'hive-sno'
+      - name: "infra-{{ lab_name }}"
+        ns: "infra-{{ lab_name }}"
         ntp: ["{{ lab_node_network_base }}1"]
         redfish: "{{ lab_node_network_base }}1"
         inventory:
           - {name: "{{ lab_name }}-bmh-1", id: '64'}
+
+- name: 'Install ACM on Hub cluster and add a SNO cluster for testing'
+  ansible.builtin.import_playbook: ../../playbooks/setup/hive.yaml
+  tags:
+    - 'sno'
+    - 'spoke'
+    - 'never'
+  vars:
+    lab_name: 'acm'
+
+    ocp_assisted_service_op: 'acm'
+    ocp_assisted_service_infraenvs:
+      - name: "spoke-{{ lab_name }}"
+        ns: "spoke-{{ lab_name }}"
+        ntp: ["{{ lab_node_network_base }}1"]
+        redfish: "{{ lab_node_network_base }}1"
+        inventory:
+          - {name: "{{ lab_name }}-sno-1", id: '65'}
+
+    ocp_hive_clusters:
+      - name: "spoke-{{ lab_name }}"
+        ns: "spoke-{{ lab_name }}"
+        image: 'img4.20.8-x86-64-appsub'
+        service_network: '172.32.0.0/16'
+        host_network: "{{ lab_node_network_base }}0/24"
+        masters: 1
+        domain: 'local.lab'
+        api_vips: ["{{ lab_node_network_base }}65"]
+
+- name: 'Extract spoke cluster configuration'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/hive-config.yml
+  vars:
+    lab_name: 'acm'
+    lab_path: '/root/labs'
+    hive_cluster_name: "spoke-{{ lab_name }}"
+    hive_ns: "spoke-{{ lab_name }}"
+  tags:
+    - 'sno-config'
+    - 'spoke-config'
+    - 'never'
+
+- name: 'Import spoke cluster'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/acm-import-cluster.yaml
+  vars:
+    lab_name: 'acm'
+    lab_path: '/root/labs'
+    cluster: "spoke-{{ lab_name }}"
+    kubeconfig: "{{ lab_path }}/{{ lab_name }}/{{ cluster }}/auth/kubeconfig"
+    cluster_set: 'spoke'
+    governance: true
+  tags:
+    - 'import-cluster'
+    - 'sno-import'
+    - 'spoke-import'
+    - 'never'

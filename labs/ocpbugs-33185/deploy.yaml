@@ -42,8 +42,8 @@
   ansible.builtin.import_playbook: ../../playbooks/jobs/acm-import-cluster.yaml
   vars:
     lab_name: 'dgon'
-    cluster_name: 'dgonspk'
-    kubeconfig_path: '/root/labs/dgonspk/deploy/auth/kubeconfig'
+    cluster: 'dgonspk'
+    kubeconfig: '/root/labs/dgonspk/deploy/auth/kubeconfig'
   tags:
     - 'postinst'
     - 'acm'

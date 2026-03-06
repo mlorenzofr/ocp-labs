@@ -1,0 +1,32 @@
+---
+apiVersion: addon.open-cluster-management.io/v1alpha1
+kind: ManagedClusterAddOn
+metadata:
+  name: governance-policy-framework
+  namespace: spoke-acm
+spec:
+  installNamespace: open-cluster-management-agent-addon
+---
+apiVersion: addon.open-cluster-management.io/v1alpha1
+kind: ManagedClusterAddOn
+metadata:
+  name: application-manager
+  namespace: spoke-acm
+spec:
+  installNamespace: open-cluster-management-agent-addon
+---
+apiVersion: addon.open-cluster-management.io/v1alpha1
+kind: ManagedClusterAddOn
+metadata:
+  name: cert-policy-controller
+  namespace: spoke-acm
+spec:
+  installNamespace: open-cluster-management-agent-addon
+---
+apiVersion: addon.open-cluster-management.io/v1alpha1
+kind: ManagedClusterAddOn
+metadata:
+  name: config-policy-controller
+  namespace: spoke-acm
+spec:
+  installNamespace: open-cluster-management-agent-addon

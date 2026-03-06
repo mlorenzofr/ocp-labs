@@ -1,0 +1,10 @@
+{% for addon in addons | sort %}
+---
+apiVersion: addon.open-cluster-management.io/v1alpha1
+kind: ManagedClusterAddOn
+metadata:
+  name: {{ addon }}
+  namespace: {{ cluster }}
+spec:
+  installNamespace: open-cluster-management-agent-addon
+{% endfor %}

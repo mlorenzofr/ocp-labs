@@ -1,9 +1,9 @@
-# acm lab
+# acm-session lab
 
 This lab prepares an ACM environment for educational purposes.
 
 The environment provides:
-- An Openshift _compact_ cluster with 3 nodes for ACM (_hub cluster_)
+- An OpenShift _compact_ cluster with 3 nodes for ACM (_hub cluster_)
 - 3 virtual machines for the 1st _spoke cluster_. (Hive cluster)
 - An SNO cluster as 2nd _spoke cluster_, to be imported by the _hub cluster_.
 
@@ -16,6 +16,7 @@ None.
 ## Steps
 
 1. Execute the playbook `deploy.yaml`:
+
 ```shell
 ap labs/acm/deploy.yaml
 ```
@@ -23,6 +24,7 @@ ap labs/acm/deploy.yaml
 ## Validation
 
 1. Check if the Openshift cluster is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/acm/deploy/auth/kubeconfig
 

@@ -79,8 +79,8 @@
   ansible.builtin.import_playbook: ../../playbooks/jobs/acm-import-cluster.yaml
   vars:
     lab_name: 'multiarch'
-    cluster_name: 'spoke-multiarch'
-    kubeconfig_path: '/root/labs/multiarch/spoke-multiarch/auth/kubeconfig'
+    cluster: 'spoke-multiarch'
+    kubeconfig: '/root/labs/multiarch/spoke-multiarch/auth/kubeconfig'
   tags:
     - 'postinst'
     - 'import-cluster'

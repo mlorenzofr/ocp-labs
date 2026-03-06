@@ -81,8 +81,8 @@
   vars:
     lab_name: 'osac'
     lab_path: '/root/labs'
-    cluster_name: 'vmaas-cluster'
-    kubeconfig_path: "{{ lab_path }}/{{ lab_name }}/{{ cluster_name }}/auth/kubeconfig"
+    cluster: 'vmaas-cluster'
+    kubeconfig: "{{ lab_path }}/{{ lab_name }}/{{ cluster }}/auth/kubeconfig"
   tags:
     - 'import-cluster'
     - 'never'

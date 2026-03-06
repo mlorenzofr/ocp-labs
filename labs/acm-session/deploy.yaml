@@ -116,8 +116,8 @@
   ansible.builtin.import_playbook: ../../playbooks/jobs/acm-import-cluster.yaml
   vars:
     lab_name: 'acm'
-    cluster_name: 'acm-spoke-2'
-    kubeconfig_path: '/root/labs/acm-spoke-2/deploy/auth/kubeconfig'
+    cluster: 'acm-spoke-2'
+    kubeconfig: '/root/labs/acm-spoke-2/deploy/auth/kubeconfig'
   tags:
     - 'import-cluster'
     - 'import-acm-spoke-2'

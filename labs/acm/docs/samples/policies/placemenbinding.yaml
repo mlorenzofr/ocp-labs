@@ -1,0 +1,13 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: placementbinding-example
+  namespace: open-cluster-management
+placementRef:
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+  name: placementrule-example
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-create-namespace

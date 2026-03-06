@@ -7,3 +7,9 @@ ocp_acm_path: "{{ lab_configs | default('/tmp') }}"
 ocp_acm_pullsecret: "{{ ocp_pullsecret_b64 }}"
 ocp_acm_siteconfig: False
 ocp_acm_source: 'redhat-operators'
+ocp_acm_default_addons: []
+ocp_acm_governance_addons:
+  - 'config-policy-controller'
+  - 'governance-policy-framework'
+  - 'cert-policy-controller'
+  - 'application-manager'
