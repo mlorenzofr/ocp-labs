@@ -4,6 +4,9 @@ HISTFILESIZE=
 HISTTIMEFORMAT='%F %T '
 HISTFILE=~/.bash_history_ansible
 
+# necessary for the gpg pinentry to work with ansible
+export GPG_TTY="$(tty)"
+
 function _ansible_inventory {
   ansible-inventory --list 2>/dev/null | jq -r "keys | .[]" > /tmp/.inventory
   ansible-inventory --list 2>/dev/null | jq -r ".[].hosts | .[]?" >> /tmp/.inventory
