@@ -76,9 +76,41 @@
     kubeconfig: "{{ lab_path }}/{{ lab_name }}/{{ cluster }}/auth/kubeconfig"
   tags:
     - 'import-cluster'
+    - 'spoke-import'
     - 'never'
 
-- name: Configure Ansible Automation Platform
+- name: 'Configure test-cluster'
+  hosts:
+    - 'lab'
+  gather_facts: false
+
+  tags:
+    - 'spoke-setup'
+    - 'never'
+
+  vars:
+    lab_name: 'osac'
+    lab_path: '/root/labs'
+    lab_configs: "{{ lab_path }}/{{ lab_name }}/{{ cluster }}/config"
+    cluster: 'test-cluster'
+
+  environment:
+    KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/{{ cluster }}/auth/kubeconfig"
+
+  roles:
+    - role: 'ocp_lvms'
+
+  tasks:
+    - name: 'Create tenant-sample namespace (required by OSAC tests)'
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: 'tenant-sample'
+
+- name: 'Configure Ansible Automation Platform'
   hosts:
     - 'lab'
   gather_facts: false
@@ -93,13 +125,16 @@
     aap_api_path: "/api/v2"
     aap_api_user: "admin"
     aap_api_validate_certs: false
-    aap_archive_port: 4480
-    aap_archive_host: "192.168.125.1"
+    # aap_archive_port: 4480
+    # aap_archive_host: "192.168.125.1"
+    k8s_retries: 6
+    k8s_delay: 5
     lab_name: 'osac'
     lab_configs: "/root/labs/{{ lab_name }}/config"
     osac_operator:
       image: 'ghcr.io/osac-project/osac-operator'
       tag: 'sha-cf3ef87'
+    osac_aap_insecure_skip_verify: true
 
   tags:
     - 'aap'
@@ -164,3 +199,40 @@
         file: tasks/archive_server.yaml
         apply:
           tags: archive-server
+
+- name: 'Launch OSAC tests'
+  hosts:
+    - 'lab'
+  gather_facts: false
+
+  vars:
+    lab_name: 'osac'
+    lab_path: '/root/labs'
+    lab_configs: "{{ lab_path }}/{{ lab_name }}/config"
+    lab_local_path: "/ansible/labs/{{ lab_name }}/"
+
+  tags:
+    - 'osac-tests'
+    - 'never'
+
+  environment:
+    KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  tasks:
+    - name: 'Copy OSAC test manifests'
+      ansible.builtin.copy:
+        src: "{{ item.src }}"
+        dest: "{{ lab_configs }}/{{ item.dest }}"
+        mode: '0640'
+      loop:
+        - {src: "{{ lab_local_path }}/manifest/tenant.yaml", dest: 'tenant.yaml'}
+        - {src: "{{ lab_local_path }}/manifest/computeinstance.yaml", dest: 'computeinstance.yaml'}
+
+    - name: 'Apply OSAC test manifests'
+      kubernetes.core.k8s:
+        state: present
+        src: "{{ lab_configs }}/{{ item }}"
+      ignore_errors: "{{ ansible_check_mode }}"
+      loop:
+        - 'tenant.yaml'
+        - 'computeinstance.yaml'

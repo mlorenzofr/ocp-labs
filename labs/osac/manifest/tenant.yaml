@@ -1,0 +1,8 @@
+apiVersion: osac.openshift.io/v1alpha1
+kind: Tenant
+metadata:
+  labels:
+    app.kubernetes.io/name: osac-operator
+  name: tenant-sample
+  namespace: osac-operator-system
+spec: {}

@@ -17,8 +17,8 @@ This lab installs a OpenShift cluster and a spoke cluster (SNO) to test OSAC dep
 | | nodes | vCPUS | Memory | OS Disk | Data Disk | Total Disk |
 | :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
 | Hub cluster | 3 | 12 | 28 GB | 120 GB | 100 GB | 220 GB |
-| Spoke cluster | 1 | 12 | 24 GB | 120 GB | 1 GB | 121 GB |
-| **Total** | **4** | **48** | **108 GB** | 480 GB | 301 GB | **781 GB** |
+| Spoke cluster | 1 | 24 | 32 GB | 120 GB | 150 GB | 270 GB |
+| **Total** | **4** | **60** | **116 GB** | 480 GB | 450 GB | **930 GB** |
 
 ## Steps
 
@@ -34,22 +34,34 @@ ap labs/osac/deploy.yaml
 ap labs/osac/deploy.yaml --tags spoke-config
 ```
 
-3. Import the spoke cluster (create a `ManagedCluster`)
+3. For OSAC tests, we will need LVMS and the `tenant-sample` namespace on the spoke cluster. We can configure them with:
 
 ```shell
-ap labs/osac/deploy.yaml --tags import-cluster
+ap labs/osac/deploy.yaml --tags spoke-setup
 ```
 
-4. Label the `ManagedCluster`
+4. Import the spoke cluster (create a `ManagedCluster`)
+
+```shell
+ap labs/osac/deploy.yaml --tags spoke-import
+```
+
+5. Label the `ManagedCluster`
 
 ```shell
 oc label managedcluster/test-cluster sovcloud.open-cluster-management.io/vmaas=true
 ```
 
-5. Install AAP & OSAC Operator
+6. Install AAP & OSAC Operator
 
 ```shell
 ap labs/osac/deploy.yaml --tags aap
+```
+
+7. Create a `ComputeInstance` so that OSAC could provision a VM in the _Spoke_ cluster
+
+```shell
+ap labs/osac/deploy.yaml --tags osac-tests
 ```
 
 ## Validation
@@ -222,6 +234,29 @@ oc get deployment.apps/osac-operator-controller-manager -n osac-operator-system 
 ```
 
 5. In the [OpenShift Web UI](https://console-openshift-console.apps.osac.local.lab), in the left menu, go to `Governance`. Verify that the ACM policies have been applied.
+
+6. In the _Hub_ cluster, verify that the `Tenant` and `ComputeInstance` resources exist and are in a Ready state
+
+```shell
+$ oc get tenant,computeinstance -A
+NAMESPACE              NAME                                     TENANT NAMESPACE   PHASE
+osac-operator-system   tenant.osac.openshift.io/tenant-sample   tenant-sample      Ready
+
+NAMESPACE              NAME                                                       TEMPLATE                     CORES   MEMORY   RUNSTRATEGY   PHASE     IP
+osac-operator-system   computeinstance.osac.openshift.io/computeinstance-sample   osac.templates.ocp_virt_vm   2       4        Always        Running
+```
+
+7. In the _Spoke_ cluster, check if the `VirtualMachine` has been created:
+
+```shell
+$ export KUBECONFIG=/root/labs/osac/test-cluster/auth/kubeconfig
+
+$ oc get vm -A
+NAMESPACE       NAME                     AGE     STATUS    READY
+tenant-sample   computeinstance-sample   4m54s   Running   True
+```
+
+8. In the [Ansible Automation Platform Web UI](https://osac-aap-ansible-aap.apps.osac.local.lab), go to `Jobs` and verify that they are all running correctly.
 
 ## Links
 

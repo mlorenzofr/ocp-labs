@@ -5,5 +5,7 @@ metadata:
   namespace: {{ aap_ns | default('ansible-aap') }}
 type: Opaque
 stringData:
+{% if disconnected | default(false) %}
   AAP_PROJECT_ARCHIVE_URI: "http://{{ aap_archive_host }}:{{ aap_archive_port }}/aap-config-archive.tar.gz"
+{% endif %}
   REMOTE_CLUSTER_KUBECONFIG_SECRET_NAME: "{{ aap_kubeconfig_secret_name | default('vmaas-cluster-kubeconfig') }}"

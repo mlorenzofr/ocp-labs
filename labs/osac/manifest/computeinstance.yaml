@@ -1,0 +1,19 @@
+apiVersion: osac.openshift.io/v1alpha1
+kind: ComputeInstance
+metadata:
+  labels:
+    app.kubernetes.io/name: osac-operator
+  annotations:
+    osac.openshift.io/tenant: tenant-sample
+  name: computeinstance-sample
+  namespace: osac-operator-system
+spec:
+  bootDisk:
+    sizeGiB: 20
+  cores: 2
+  image:
+    sourceRef: quay.io/containerdisks/fedora:latest
+    sourceType: registry
+  memoryGiB: 4
+  runStrategy: Always
+  templateID: osac.templates.ocp_virt_vm

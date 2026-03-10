@@ -13,6 +13,10 @@
   loop: "{{ acm_addons }}"
   loop_control:
     loop_var: addon
+  register: r_acm_addons_vmaas
+  retries: "{{ k8s_retries }}"
+  delay: "{{ k8s_delay }}"
+  until: r_acm_addons_vmaas is success
 
 - name: ACM policy for VMaaS
   block:
@@ -21,21 +25,37 @@
       kubernetes.core.k8s:
         state: present
         definition: "{{ lookup('ansible.builtin.file', '../files/vmaas/00-namespace.yaml') | from_yaml }}"
+      register: r_namespace_acm_vmaas
+      retries: "{{ k8s_retries }}"
+      delay: "{{ k8s_delay }}"
+      until: r_namespace_acm_vmaas is success
 
     - name: Create ACM Policy for VMaaS
       kubernetes.core.k8s:
         state: present
         definition: "{{ lookup('ansible.builtin.template', '../files/vmaas/10-policy.yaml.j2') | from_yaml }}"
+      register: r_acm_policy_vmaas
+      retries: "{{ k8s_retries }}"
+      delay: "{{ k8s_delay }}"
+      until: r_acm_policy_vmaas is success
 
     - name: Create ACM PlacementRule for VMaaS
       kubernetes.core.k8s:
         state: present
         definition: "{{ lookup('ansible.builtin.file', '../files/vmaas/20-placementrule.yaml') | from_yaml }}"
+      register: r_acm_placementrule_vmaas
+      retries: "{{ k8s_retries }}"
+      delay: "{{ k8s_delay }}"
+      until: r_acm_placementrule_vmaas is success
 
     - name: Create ACM PlacementBinding for VMaaS
       kubernetes.core.k8s:
         state: present
         definition: "{{ lookup('ansible.builtin.file', '../files/vmaas/30-placementbinding.yaml') | from_yaml }}"
+      register: r_acm_placementbinding_vmaas
+      retries: "{{ k8s_retries }}"
+      delay: "{{ k8s_delay }}"
+      until: r_acm_placementbinding_vmaas is success
 
 - name: ACM policy for NMState
   block:
@@ -44,21 +64,37 @@
       kubernetes.core.k8s:
         state: present
         definition: "{{ lookup('ansible.builtin.file', '../files/nmstate/00-namespace.yaml') | from_yaml }}"
+      register: r_namespace_acm_nmstate
+      retries: "{{ k8s_retries }}"
+      delay: "{{ k8s_delay }}"
+      until: r_namespace_acm_nmstate is success
 
     - name: Create ACM Policy for NMState
       kubernetes.core.k8s:
         state: present
         definition: "{{ lookup('ansible.builtin.template', '../files/nmstate/10-policy.yaml.j2') | from_yaml }}"
+      register: r_acm_policy_nmstate
+      retries: "{{ k8s_retries }}"
+      delay: "{{ k8s_delay }}"
+      until: r_acm_policy_nmstate is success
 
     - name: Create ACM PlacementRule for NMState
       kubernetes.core.k8s:
         state: present
         definition: "{{ lookup('ansible.builtin.file', '../files/nmstate/20-placementrule.yaml') | from_yaml }}"
+      register: r_acm_placementrule_nmstate
+      retries: "{{ k8s_retries }}"
+      delay: "{{ k8s_delay }}"
+      until: r_acm_placementrule_nmstate is success
 
     - name: Create ACM PlacementBinding for NMState
       kubernetes.core.k8s:
         state: present
         definition: "{{ lookup('ansible.builtin.file', '../files/nmstate/30-placementbinding.yaml') | from_yaml }}"
+      register: r_acm_placementbinding_nmstate
+      retries: "{{ k8s_retries }}"
+      delay: "{{ k8s_delay }}"
+      until: r_acm_placementbinding_nmstate is success
 
 - name: "Fetch the kubeconfig for the VMaaS cluster"
   kubernetes.core.k8s_info:
@@ -77,10 +113,10 @@
   vars:
     aap_name: "osac-aap"
     aap_ns: "ansible-aap"
-    aap_controller_name: "{{ aap_name }}"
+    aap_controller_name: "{{ aap_name }}-controller"
     aap_token_description: "OSAC Operator Token"
     aap_token_overwrite: false
-    aap_api_path: "/api/controller/v2"
+    aap_api_path: "/api/v2"
     aap_api_user: "admin"
     aap_api_validate_certs: false
   block:
@@ -93,6 +129,10 @@
           kind: Namespace
           metadata:
             name: "{{ aap_ns }}"
+      register: r_aap_namespace
+      retries: "{{ k8s_retries }}"
+      delay: "{{ k8s_delay }}"
+      until: r_aap_namespace is success
 
     - name: "Create kubeconfig secret for the VMaaS cluster (aap namespace)"
       kubernetes.core.k8s:
@@ -106,6 +146,10 @@
           type: Opaque
           data:
             kubeconfig: "{{ __vmaas_cluster_kubeconfig.resources[0].data.kubeconfig }}"
+      register: r_kubeconfig_secret_aap
+      retries: "{{ k8s_retries }}"
+      delay: "{{ k8s_delay }}"
+      until: r_kubeconfig_secret_aap is success
 
     - name: "Create AAP config secret for Config as Code"
       kubernetes.core.k8s:
@@ -128,6 +172,10 @@
             name: "cluster-fulfillment-ig"
             namespace: "{{ aap_ns }}"
           type: Opaque
+      register: r_cluster_fulfillment_secret
+      retries: "{{ k8s_retries }}"
+      delay: "{{ k8s_delay }}"
+      until: r_cluster_fulfillment_secret is success
 
     - name: "Create osac-sa Service Account in AAP namespace"
       kubernetes.core.k8s:
@@ -138,14 +186,23 @@
       delay: 5
       until: __r_create_aap_osac_sa is success
 
-    - name: "Create osac-sa ClusterRoleBinding in AAP namespace"
+    - name: "Create osac ClusterRole"
       kubernetes.core.k8s:
         state: present
-        definition: "{{ lookup('ansible.builtin.template', '../templates/aap-osac-clusterrolebinding.yaml.j2') | from_yaml }}"
-      register: __r_create_aap_osac_clusterrolebinding
+        definition: "{{ lookup('ansible.builtin.template', '../templates/aap-osac-clusterrole.yaml.j2') | from_yaml }}"
+      register: __r_create_aap_osac_clusterrole
       retries: 10
       delay: 5
-      until: __r_create_aap_osac_clusterrolebinding is success
+      until: __r_create_aap_osac_clusterrole is success
+
+    - name: "Create osac-rolebinding RoleBinding in AAP namespace"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('ansible.builtin.template', '../templates/aap-osac-rolebinding.yaml.j2') | from_yaml }}"
+      register: __r_create_aap_osac_rolebinding
+      retries: 10
+      delay: 5
+      until: __r_create_aap_osac_rolebinding is success
 
     - name: "Create AnsibleAutomationPlatform resource"
       kubernetes.core.k8s:
@@ -291,6 +348,10 @@
           type: Opaque
           data:
             "license.zip": "{{ __aap_b64_license.content }}"
+      register: r_config_as_code_secret
+      retries: "{{ k8s_retries }}"
+      delay: "{{ k8s_delay }}"
+      until: r_config_as_code_secret is success
 
     - name: "Create aap-bootstrap job"
       kubernetes.core.k8s:
@@ -300,6 +361,33 @@
       retries: 10
       delay: 5
       until: __r_create_aap_bootstrap is success
+
+    # Remove the schedule osac-publish-templates if it exists.
+    # We don't use it in the enclave environment.
+    - name: "Query AAP API for the schedule osac-publish-templates"
+      ansible.builtin.uri:
+        url: "{{ osac_aap_url }}/api/controller/v2/schedules/?name=osac-publish-templates"
+        method: GET
+        user: "{{ aap_api_user }}"
+        password: "{{ __aap_admin_password }}"
+        force_basic_auth: true
+        validate_certs: "{{ aap_api_validate_certs }}"
+        return_content: true
+      register: __aap_query_publish_template
+
+    - name: "Delete the schedule osac-publish-templates if found"
+      ansible.builtin.uri:
+        url: "{{ osac_aap_url }}/api/controller/v2/schedules/{{ item.id }}/"
+        method: DELETE
+        user: "{{ aap_api_user }}"
+        password: "{{ __aap_admin_password }}"
+        force_basic_auth: true
+        validate_certs: "{{ aap_api_validate_certs }}"
+        status_code: 204
+      loop: "{{ __aap_query_publish_template.json.results }}"
+      when: __aap_query_publish_template.json.count > 0
+      loop_control:
+        label: "Deleting schedule ID: {{ item.id }} (Name: {{ item.name }})"
 
 - name: Deploy OSAC
   vars:
@@ -314,6 +402,10 @@
           kind: Namespace
           metadata:
             name: "{{ osac_operator_ns | default('osac-operator-system') }}"
+      register: r_osac_namespace
+      retries: "{{ k8s_retries }}"
+      delay: "{{ k8s_delay }}"
+      until: r_osac_namespace is success
 
     # If the AAP token is NOT defined, and it happens if the token was previously
     # created on an earlier run, we avoid creating the osac config secret
@@ -339,6 +431,10 @@
           type: Opaque
           data:
             kubeconfig: "{{ __vmaas_cluster_kubeconfig.resources[0].data.kubeconfig }}"
+      register: r_kubeconfig_secret_osac
+      retries: "{{ k8s_retries }}"
+      delay: "{{ k8s_delay }}"
+      until: r_kubeconfig_secret_osac is success
 
     - name: "Pull OSAC operator container image"
       containers.podman.podman_image:
@@ -370,8 +466,8 @@
         state: present
         src: "/tmp/osac-install.yaml"
       register: __r_apply_manifests
-      retries: 6
-      delay: 5
+      retries: "{{ k8s_retries }}"
+      delay: "{{ k8s_delay }}"
       until: __r_apply_manifests is success
 
     - name: "Remove OSAC installation manifest"
@@ -415,6 +511,10 @@
                   - name: "vmaas-cluster-kubeconfig"
                     secret:
                       secretName: "{{ osac_kubeconfig_secret_name | default('vmaas-cluster-kubeconfig') }}"
+      register: r_patch_osac_deployment
+      retries: "{{ k8s_retries }}"
+      delay: "{{ k8s_delay }}"
+      until: r_patch_osac_deployment is success
       when: __osac_deploy.resources | length > 0
 
   always:
