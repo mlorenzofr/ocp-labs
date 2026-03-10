@@ -27,9 +27,13 @@
     group: 'root'
     mode: '0600'
 
+- name: 'Add default addons'
+  ansible.builtin.set_fact:
+    addons: "{{ addons | default(ocp_acm_default_addons) }}"
+  
 - name: 'Add governance addons'
   ansible.builtin.set_fact:
-    addons: "{{ addons | default(ocp_acm_default_addons) | union(ocp_acm_governance_addons) }}"
+    addons: "{{ addons | union(ocp_acm_governance_addons) }}"
   when: governance | default(false) | bool
 
 - name: 'Create managedclusteraddon manifests'
@@ -39,9 +43,7 @@
     owner: 'root'
     group: 'root'
     mode: '0640'
-  vars:
-    addons: "{{ addons | default(ocp_acm_default_addons) }}"
-
+  
 - name: 'Create import namespace'
   kubernetes.core.k8s:
     name: "{{ cluster }}"
