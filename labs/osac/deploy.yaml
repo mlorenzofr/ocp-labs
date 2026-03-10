@@ -44,7 +44,7 @@
         ntp: ["{{ lab_node_network_base }}1"]
         redfish: "{{ lab_node_network_base }}1"
         inventory:
-          - {'name': "{{ lab_name }}-bmh-1", 'id': '64'}
+          - {'name': "{{ lab_name }}-bmh-1", 'id': '64', 'disk_data': 150, 'memory': 32000, 'cpus': 24,}
 
     ocp_hive_clusters:
       - name: 'test-cluster'
@@ -93,6 +93,8 @@
     aap_api_path: "/api/v2"
     aap_api_user: "admin"
     aap_api_validate_certs: false
+    aap_archive_port: 4480
+    aap_archive_host: "192.168.125.1"
     lab_name: 'osac'
     lab_configs: "/root/labs/{{ lab_name }}/config"
     osac_operator:
