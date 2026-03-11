@@ -362,7 +362,7 @@
       delay: 5
       until: __r_create_aap_bootstrap is success
 
-    # Remove the schedule osac-publish-templates if it exists.
+    # Disable the schedule osac-publish-templates if it exists.
     # We don't use it in the enclave environment.
     - name: "Query AAP API for the schedule osac-publish-templates"
       ansible.builtin.uri:
@@ -375,19 +375,24 @@
         return_content: true
       register: __aap_query_publish_template
 
-    - name: "Delete the schedule osac-publish-templates if found"
+    - name: "Disable the schedule osac-publish-templates if enabled"
       ansible.builtin.uri:
         url: "{{ osac_aap_url }}/api/controller/v2/schedules/{{ item.id }}/"
-        method: DELETE
+        method: PATCH
         user: "{{ aap_api_user }}"
         password: "{{ __aap_admin_password }}"
         force_basic_auth: true
         validate_certs: "{{ aap_api_validate_certs }}"
-        status_code: 204
+        body_format: json
+        body:
+          enabled: false
+        status_code: 200
       loop: "{{ __aap_query_publish_template.json.results }}"
-      when: __aap_query_publish_template.json.count > 0
+      when:
+        - __aap_query_publish_template.json.count > 0
+        - item.enabled == true
       loop_control:
-        label: "Deleting schedule ID: {{ item.id }} (Name: {{ item.name }})"
+        label: "Disabling schedule ID: {{ item.id }} (Name: {{ item.name }})"
 
 - name: Deploy OSAC
   vars:

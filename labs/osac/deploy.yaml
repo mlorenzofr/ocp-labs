@@ -134,7 +134,8 @@
     aap_api_validate_certs: false
     aap_archive_port: 4480
     aap_archive_host: "192.168.125.1"
-    # disconnected: true
+    aap_archive_filename: 'aap-config-archive.zip'
+    disconnected: true
     k8s_retries: 6
     k8s_delay: 5
     lab_name: 'osac'
@@ -196,7 +197,9 @@
     aap_archive_image: "registry.redhat.io/ubi9/nginx-126@sha256:d68c1643e3a1184c38f87391fd1054724d8ed2e14324c090091d6c724dc1c335"
     aap_archive_port: 4480
     aap_archive_authfile: "/root/.config/containers/auth.json"
-    aap_archive_dest: "{{ lab_path }}/{{ lab_name }}/config/aap-config-archive.tar.gz"
+    aap_archive_dest: "{{ lab_path }}/{{ lab_name }}/config/{{ aap_archive_filename }}"
+    aap_archive_filename: 'aap-config-archive.zip'
+    aap_archive_format: 'zip'
 
   tags:
     - 'archive-server'
