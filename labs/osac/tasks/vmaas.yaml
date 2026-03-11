@@ -256,7 +256,7 @@
         validate_certs: "{{ aap_api_validate_certs }}"
         return_content: true
       register: __aap_user_response
-      retries: 30
+      retries: 60
       delay: 10
       until:
         - __aap_user_response.json is defined
@@ -435,6 +435,15 @@
       retries: "{{ k8s_retries }}"
       delay: "{{ k8s_delay }}"
       until: r_kubeconfig_secret_osac is success
+
+    - name: "Create osac-rolebinding RoleBinding in OSAC operator namespace"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('ansible.builtin.template', '../templates/osac-rolebinding.yaml.j2') | from_yaml }}"
+      register: __r_create_osac_rolebinding
+      retries: 10
+      delay: 5
+      until: __r_create_osac_rolebinding is success
 
     - name: "Pull OSAC operator container image"
       containers.podman.podman_image:

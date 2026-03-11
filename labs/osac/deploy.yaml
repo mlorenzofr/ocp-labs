@@ -100,6 +100,13 @@
   roles:
     - role: 'ocp_lvms'
 
+  pre_tasks:
+    - name: 'Create configuration directory'
+      ansible.builtin.file:
+        path: "{{ lab_configs }}"
+        state: directory
+        mode: '0750'
+
   tasks:
     - name: 'Create tenant-sample namespace (required by OSAC tests)'
       kubernetes.core.k8s:
