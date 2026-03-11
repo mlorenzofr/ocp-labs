@@ -22,7 +22,7 @@
 
     - name: "Create repository tarball file"
       ansible.builtin.archive:
-        path: "{{ aap_archive_tmp_dir }}"
+        path: "{{ aap_archive_tmp_dir }}/"
         dest: "{{ aap_archive_dest }}"
         format: gz
       ignore_errors: "{{ ansible_check_mode }}"

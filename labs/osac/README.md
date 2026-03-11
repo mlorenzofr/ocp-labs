@@ -54,14 +54,19 @@ oc label managedcluster/test-cluster sovcloud.open-cluster-management.io/vmaas=t
 
 6. Copy your AAP license to `/root/labs/osac/config/aap-license.zip`
 
+7. If you enable the archive source for AAP (`disconnect: true`), run this step.
 
-7. Install AAP & OSAC Operator
+```shell
+ap labs/osac/deploy.yaml --tags archive-server
+```
+
+8. Install AAP & OSAC Operator
 
 ```shell
 ap labs/osac/deploy.yaml --tags aap
 ```
 
-8. Create a `ComputeInstance` so that OSAC could provision a VM in the _Spoke_ cluster
+9. Create a `ComputeInstance` so that OSAC could provision a VM in the _Spoke_ cluster
 
 ```shell
 ap labs/osac/deploy.yaml --tags osac-tests
