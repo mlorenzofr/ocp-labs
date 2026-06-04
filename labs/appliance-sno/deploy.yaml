@@ -18,7 +18,6 @@
     lab_appliance_version: '4.16.8'
     lab_node_memory: 32000
     lab_master_replicas: 1
-    lab_worker_replicas: 0
     start_install: true
     lab_hosts:
       - {'id': '51'}

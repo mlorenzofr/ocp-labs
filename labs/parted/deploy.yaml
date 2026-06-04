@@ -17,7 +17,6 @@
   vars:
     lab_name: 'parted'
     lab_local_path: "/ansible/labs/{{ lab_name }}"
-    lab_worker_replicas: 0
     lab_node_memory: 22000
     lab_node_disk_sys: 130
     lab_custom_capability_set: 'None'

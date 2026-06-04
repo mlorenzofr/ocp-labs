@@ -17,7 +17,6 @@
   vars:
     lab_name: 'osac'
     lab_mac_base: 'be:be:ca:fe:05:'
-    lab_worker_replicas: 0
     lab_node_memory: 28000
     lab_node_disk_data: 100
     start_install: true

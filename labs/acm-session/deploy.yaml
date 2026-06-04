@@ -85,7 +85,6 @@
   vars:
     lab_name: 'acm-spoke-2'
     lab_node_cpus: 16
-    lab_node_memory: 24000
     start_install: true
     lab_node_disk_data: 10
     lab_hosts:

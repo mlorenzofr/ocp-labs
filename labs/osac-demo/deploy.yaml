@@ -18,7 +18,6 @@
     lab_name: 'osac'
     lab_node_network_base: '192.168.111.'
     lab_mac_base: '52:54:00:ff:00:'
-    lab_worker_replicas: 0
     lab_node_memory: 28000
     lab_node_disk_data: 100
     start_install: true

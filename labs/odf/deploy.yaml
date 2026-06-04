@@ -16,7 +16,6 @@
     - 'ocp'
   vars:
     lab_name: 'odf'
-    lab_worker_replicas: 0
     lab_node_memory: 48000
     lab_node_disk_data: 300
     start_install: true

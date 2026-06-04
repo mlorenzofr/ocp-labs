@@ -19,7 +19,6 @@
     lab_network_type: 'Calico'
     calico_version: 'v3.29.1'
     lab_mac_base: 'ca:11:c0:00:00:'
-    lab_worker_replicas: 0
     lab_node_memory: 22000
     lab_node_disk_data: 60
     lab_custom_capability_set: 'None'

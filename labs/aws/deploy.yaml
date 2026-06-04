@@ -19,7 +19,6 @@
     lab_name: 'aws'
     lab_cluster_name: 'ztvp'
     lab_aws_instance_type_master: 't3.2xlarge'
-    lab_worker_replicas: 0
     start_install: true
 
 - name: 'Extract spoke cluster configuration'
