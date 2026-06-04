@@ -1,6 +1,6 @@
 ---
 lab_abi: False
-lab_api_ips: ['192.168.125.10']
+lab_api_ips: []
 lab_appliance: False
 lab_appliance_arch: 'x86_64'
 lab_appliance_channel: 'stable'
@@ -10,6 +10,7 @@ lab_appliance_local_registry: false
 lab_appliance_manifests: []
 lab_appliance_operators: []
 lab_appliance_version: '4.18.4'
+lab_auto_addresses: true
 lab_aws_instance_type_master: 'm5.xlarge'
 lab_aws_instance_type_worker: 'm5.xlarge'
 lab_aws_region: 'us-east-1'
@@ -23,7 +24,7 @@ lab_domain: 'local.lab'
 lab_fips: False
 lab_gateway: ''
 lab_hide_secrets: True
-lab_ingress_ips: ['192.168.125.11']
+lab_ingress_ips: []
 lab_master_replicas: 3
 lab_network_name: 'lab-network'
 lab_network_type: 'OVNKubernetes'

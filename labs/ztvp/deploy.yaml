@@ -154,7 +154,7 @@
     lab_ingress_ips: ["{{ lab_node_network_base }}75"]
     lab_node_disk_data: 10
     lab_hosts:
-      - {id: '75', iface:'enp1s0'}
+      - {id: '75', iface: 'enp1s0'}
     lab_custom_capability_set: 'None'
     lab_custom_capabilities:
       - baremetal
@@ -200,7 +200,7 @@
     lab_ingress_ips: ["{{ lab_node_network_base }}76"]
     lab_node_disk_data: 10
     lab_hosts:
-      - {id: '76', iface:'enp1s0'}
+      - {id: '76', iface: 'enp1s0'}
     lab_custom_capability_set: 'None'
     lab_custom_capabilities:
       - baremetal

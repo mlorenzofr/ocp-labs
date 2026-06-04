@@ -12,11 +12,8 @@
 
   vars:
     lab_abi: True
-    lab_abi_ip: "{{ lab_node_network_base }}31"
-    lab_api_ips: ["{{ lab_node_network_base }}15"]
     lab_bootstrap_ip: "{{ lab_node_network_base }}254"
     lab_bootstrap_mac: "{{ lab_mac_base }}00"
-    lab_ingress_ips: ["{{ lab_node_network_base }}16"]
     lab_name: 'abi'
     lab_mac_base: 'be:be:ca:fe:03:'
     lab_worker_replicas: 0
@@ -25,10 +22,6 @@
     lab_node_network_base: '192.168.125.'
     lab_node_role: 'node'
     install_extra_manifests: []
-    lab_hosts:
-      - {'id': '31'}
-      - {'id': '32'}
-      - {'id': '33'}
 
   roles:
     - 'lab'

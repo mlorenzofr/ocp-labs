@@ -1,0 +1,213 @@
+---
+# Task to automatically calculate available MAC and IP addresses for lab VMs
+# based on current dnsmasq leases and configuration
+
+- name: 'Read dnsmasq leases file'
+  ansible.builtin.slurp:
+    src: '/var/lib/dnsmasq/dnsmasq.leases'
+  register: __dnsmasq_leases_raw
+  failed_when: false
+
+- name: 'Parse dnsmasq leases to extract used IP addresses'
+  ansible.builtin.set_fact:
+    __used_ips_from_leases: >-
+      {{
+        (__dnsmasq_leases_raw.content | b64decode).split('\n')
+        | select('match', '^\d+\s+\S+\s+\d+\.\d+\.\d+\.\d+')
+        | map('regex_replace', '^\d+\s+\S+\s+(\d+\.\d+\.\d+\.\d+)\s+.*$', '\1')
+        | list
+      }}
+  when: __dnsmasq_leases_raw.content is defined
+
+- name: 'Initialize used IPs if leases file is empty'
+  ansible.builtin.set_fact:
+    __used_ips_from_leases: []
+  when: __dnsmasq_leases_raw.content is not defined
+
+- name: 'Find all dnsmasq configuration files'
+  ansible.builtin.find:
+    paths: '/etc/dnsmasq.d/'
+    patterns: '*.conf'
+  register: __dnsmasq_conf_files
+
+- name: 'Read dnsmasq configuration files'
+  ansible.builtin.slurp:
+    src: "{{ item.path }}"
+  loop: "{{ __dnsmasq_conf_files.files }}"
+  register: __dnsmasq_confs_raw
+  loop_control:
+    label: "{{ item.path }}"
+
+- name: 'Extract reserved IPs from host-record and address entries'
+  ansible.builtin.set_fact:
+    __reserved_ips: >-
+      {{
+        __dnsmasq_confs_raw.results
+        | map(attribute='content')
+        | map('b64decode')
+        | join('\n')
+        | regex_findall('(?:host-record|address)=[^,]+,(\d+\.\d+\.\d+\.\d+)')
+        | list
+      }}
+
+- name: 'Extract IPs from dhcp-host entries'
+  ansible.builtin.set_fact:
+    __dhcp_host_ips: >-
+      {{
+        __dnsmasq_confs_raw.results
+        | map(attribute='content')
+        | map('b64decode')
+        | join('\n')
+        | regex_findall('dhcp-host=[^,]+,[^,]+,(\d+\.\d+\.\d+\.\d+)')
+        | list
+      }}
+
+- name: 'Combine all used IP addresses'
+  ansible.builtin.set_fact:
+    __all_used_ips: "{{ (__used_ips_from_leases + __reserved_ips + __dhcp_host_ips) | unique }}"
+
+- name: 'Extract last octet from used IPs in VM range (10-99)'
+  ansible.builtin.set_fact:
+    __used_vm_octets: >-
+      {{
+        __all_used_ips
+        | select('match', '^' ~ lab_node_network_base | regex_escape ~ '\d+$')
+        | map('regex_replace', '^.*\.(\d+)$', '\1')
+        | map('int')
+        | select('>=', 10)
+        | select('<=', 99)
+        | list
+      }}
+
+- name: 'Extract last octet from used IPs in API/Ingress range (100-254)'
+  ansible.builtin.set_fact:
+    __used_api_octets: >-
+      {{
+        __all_used_ips
+        | select('match', '^' ~ lab_node_network_base | regex_escape ~ '\d+$')
+        | map('regex_replace', '^.*\.(\d+)$', '\1')
+        | map('int')
+        | select('>=', 100)
+        | select('<=', 254)
+        | list
+      }}
+
+- name: 'Check if lab_hosts is manually defined'
+  ansible.builtin.set_fact:
+    __lab_hosts_manual: "{{ lab_hosts | default([]) }}"
+    __lab_hosts_has_ids: "{{ (lab_hosts | default([]) | selectattr('id', 'defined') | list | length) > 0 }}"
+
+- name: 'Calculate number of VMs needed when lab_hosts is empty'
+  ansible.builtin.set_fact:
+    __vm_count: "{{ lab_master_replicas | int + lab_worker_replicas | int }}"
+  when: not __lab_hosts_has_ids | bool
+
+- name: 'Use manual lab_hosts count when defined'
+  ansible.builtin.set_fact:
+    __vm_count: "{{ __lab_hosts_manual | length }}"
+  when: __lab_hosts_has_ids | bool
+
+- name: 'Extract manually specified IDs from lab_hosts'
+  ansible.builtin.set_fact:
+    __manual_ids: >-
+      {{
+        __lab_hosts_manual
+        | selectattr('id', 'defined')
+        | map(attribute='id')
+        | map('string')
+        | map('int')
+        | list
+      }}
+  when: __lab_hosts_has_ids | bool
+
+- name: 'Initialize manual IDs as empty when not defined'
+  ansible.builtin.set_fact:
+    __manual_ids: []
+  when: not __lab_hosts_has_ids | bool
+
+- name: 'Find next available VM IP octets (excluding manually defined IDs)'
+  ansible.builtin.set_fact:
+    __available_vm_octets: >-
+      {{
+        (range(10, 100) | difference(__used_vm_octets) | difference(__manual_ids) | list)[:__vm_count | int]
+      }}
+
+- name: 'Build lab_hosts with calculated IDs (preserve manual properties)'
+  ansible.builtin.set_fact:
+    lab_hosts: >-
+      {%- set result = [] -%}
+      {%- set ns = namespace(auto_id_index=0) -%}
+      {%- for i in range(__vm_count | int) -%}
+        {%- if __lab_hosts_manual | length > i -%}
+          {%- if __lab_hosts_manual[i].id is defined -%}
+            {#- Keep manually defined ID and all properties -#}
+            {%- set _ = result.append(__lab_hosts_manual[i]) -%}
+          {%- else -%}
+            {#- Add auto-calculated ID to manual properties -#}
+            {%- set host = __lab_hosts_manual[i] | combine({'id': __available_vm_octets[ns.auto_id_index] | string}) -%}
+            {%- set _ = result.append(host) -%}
+            {%- set ns.auto_id_index = ns.auto_id_index + 1 -%}
+          {%- endif -%}
+        {%- else -%}
+          {#- Create new host with only auto-calculated ID -#}
+          {%- set _ = result.append({'id': __available_vm_octets[ns.auto_id_index] | string}) -%}
+          {%- set ns.auto_id_index = ns.auto_id_index + 1 -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {{ result }}
+  when: __lab_hosts_manual | length == 0 or (__lab_hosts_manual | rejectattr('id', 'defined') | list | length) > 0
+
+- name: 'Set lab_abi_ip from first VM'
+  ansible.builtin.set_fact:
+    lab_abi_ip: "{{ lab_node_network_base }}{{ lab_hosts[0].id }}"
+  when:
+    - lab_hosts | length > 0
+    - lab_abi_ip is not defined
+
+- name: 'Determine if SNO (Single Node OpenShift)'
+  ansible.builtin.set_fact:
+    __is_sno: "{{ lab_master_replicas | int == 1 }}"
+
+- name: 'Set API and Ingress IPs for SNO'
+  ansible.builtin.set_fact:
+    lab_api_ips: ["{{ lab_abi_ip }}"]
+    lab_ingress_ips: ["{{ lab_abi_ip }}"]
+  when:
+    - __is_sno | bool
+    - lab_api_ips is not defined
+    - lab_ingress_ips is not defined
+
+- name: 'Find next available API/Ingress IP octets for non-SNO'
+  ansible.builtin.set_fact:
+    __available_api_octets: >-
+      {{
+        (range(100, 255) | difference(__used_api_octets) | list)[:2]
+      }}
+  when:
+    - not __is_sno | bool
+
+- name: 'Set API IP for non-SNO'
+  ansible.builtin.set_fact:
+    lab_api_ips: ["{{ lab_node_network_base }}{{ __available_api_octets[0] }}"]
+  when:
+    - not __is_sno | bool
+    - lab_api_ips | length == 0
+    - __available_api_octets | length >= 2
+
+- name: 'Set Ingress IP for non-SNO'
+  ansible.builtin.set_fact:
+    lab_ingress_ips: ["{{ lab_node_network_base }}{{ __available_api_octets[1] }}"]
+  when:
+    - not __is_sno | bool
+    - lab_ingress_ips | length == 0
+    - __available_api_octets | length >= 2
+
+- name: 'Display calculated addresses'
+  ansible.builtin.debug:
+    msg:
+      - "Lab type: {{ 'SNO' if __is_sno else 'Multi-node' }}"
+      - "VMs needed: {{ __vm_count }}"
+      - "lab_hosts: {{ lab_hosts }}"
+      - "lab_abi_ip: {{ lab_abi_ip }}"
+      - "lab_api_ips: {{ lab_api_ips }}"
+      - "lab_ingress_ips: {{ lab_ingress_ips }}"

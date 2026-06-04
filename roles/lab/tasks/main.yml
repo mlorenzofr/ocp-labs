@@ -1,4 +1,12 @@
 ---
+- name: 'Calculate available addresses'
+  ansible.builtin.include_tasks:
+    file: calculate_addresses.yaml
+    apply:
+      tags: ['calculate']
+  when: lab_auto_addresses | bool
+  tags: ['calculate']
+
 - name: 'Create labs root directory'
   ansible.builtin.file:
     path: "{{ lab_path }}"
