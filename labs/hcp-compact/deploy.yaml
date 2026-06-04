@@ -24,9 +24,9 @@
     lab_node_memory: 32000
     lab_node_disk_data: 60
     lab_hosts:
-      - {id: '61', role: 'master'}
-      - {id: '62', role: 'master'}
-      - {id: '63', role: 'master'}
+      - {'role': 'master'}
+      - {'role': 'master'}
+      - {'role': 'master'}
     start_install: true
   tags:
     - 'ocp'

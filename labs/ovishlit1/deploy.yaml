@@ -19,15 +19,12 @@
     lab_mac_base: '00:be:ee:11:11:'
     lab_node_network_base: '192.168.131.'
     lab_network_name: 'ovishlit-net'
-    lab_abi_ip: "{{ lab_node_network_base }}11"
-    lab_api_ips: ["{{ lab_node_network_base }}100"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}101"]
     lab_node_memory: 28000
     lab_node_disk_data: 60
     lab_hosts:
-      - {id: '11', role: 'master'}
-      - {id: '12', role: 'master'}
-      - {id: '13', role: 'master'}
+      - {'role': 'master'}
+      - {'role': 'master'}
+      - {'role': 'master'}
     start_install: true
 
 - name: 'Import mce setup playbook'

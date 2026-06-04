@@ -25,15 +25,12 @@
     - 'acm-hub-1'
   vars:
     lab_name: 'acm-hub-1'
-    lab_abi_ip: "{{ lab_node_network_base }}71"
-    lab_api_ips: ["{{ lab_node_network_base }}102"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}103"]
     lab_node_memory: 28000
     lab_node_disk_data: 60
     lab_hosts:
-      - {id: '71', role: 'master'}
-      - {id: '72', role: 'master'}
-      - {id: '73', role: 'master'}
+      - {'role': 'master'}
+      - {'role': 'master'}
+      - {'role': 'master'}
     start_install: true
 
 - name: 'Install ACM on hub cluster'

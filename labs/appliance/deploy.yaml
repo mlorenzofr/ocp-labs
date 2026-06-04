@@ -24,15 +24,6 @@
     lab_network_name: 'appliance'
     lab_node_network_base: '192.168.127.'
     lab_mac_base: 'fe:ed:00:00:00:'
-    lab_abi_ip: "{{ lab_node_network_base }}11"
-    lab_api_ips: ["{{ lab_node_network_base }}5"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}6"]
     start_install: true
-    lab_hosts:
-      - {'id': '11'}
-      - {'id': '12'}
-      - {'id': '13'}
-      - {'id': '14'}
-      - {'id': '15'}
   tags:
     - 'ocp'

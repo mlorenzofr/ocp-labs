@@ -14,11 +14,8 @@
   vars:
     start_install: true
     lab_name: 'dgonspk'
-    lab_abi_ip: "{{ lab_node_network_base }}41"
-    lab_api_ips: ["{{ lab_node_network_base }}41"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}41"]
     lab_hosts:
-      - {'id': '41', 'iface':'enp1s0'}
+      - {'iface': 'enp1s0'}
   tags:
     - 'sno'
 

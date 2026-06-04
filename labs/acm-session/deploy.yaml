@@ -26,15 +26,12 @@
     - 'ocp'
   vars:
     lab_name: 'acm'
-    lab_abi_ip: "{{ lab_node_network_base }}61"
-    lab_api_ips: ["{{ lab_node_network_base }}105"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}106"]
     lab_node_memory: 28000
     lab_node_disk_data: 60
     lab_hosts:
-      - {id: '61', role: 'master'}
-      - {id: '62', role: 'master'}
-      - {id: '63', role: 'master'}
+      - {'role': 'master'}
+      - {'role': 'master'}
+      - {'role': 'master'}
     start_install: true
 
 - name: 'Prepare manifests'
@@ -90,12 +87,9 @@
     lab_node_cpus: 16
     lab_node_memory: 24000
     start_install: true
-    lab_abi_ip: "{{ lab_node_network_base }}67"
-    lab_api_ips: ["{{ lab_node_network_base }}67"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}67"]
     lab_node_disk_data: 10
     lab_hosts:
-      - {id: '67', iface: 'enp1s0'}
+      - {'iface': 'enp1s0'}
     lab_custom_capability_set: 'None'
     lab_custom_capabilities:
       - baremetal

@@ -9,13 +9,10 @@
   tags:
     - 'ocp'
   vars:
-    lab_abi_ip: "{{ lab_node_network_base }}21"
-    lab_api_ips: ["{{ lab_node_network_base }}10"]
     lab_bootstrap_ip: "[::100]"
     lab_dns_servers: ["{{ lab_node_network_base }}1"]
     lab_ntp_sources: ["{{ lab_node_network_base }}1"]
     lab_gateway: "{{ lab_node_network_base }}1"
-    lab_ingress_ips: ["{{ lab_node_network_base }}11"]
     lab_name: 'cnv'
     lab_mac_base: 'be:be:ca:fe:06:'
     lab_worker_replicas: 3
@@ -29,13 +26,6 @@
     lab_service_network: 'fd02::/112'
     lab_proxy_http: "http://[{{ lab_node_network_base }}1]:3128"
     lab_network_name: 'cnv-ipv6'
-    lab_hosts:
-      - {id: '21'}
-      - {id: '22'}
-      - {id: '23'}
-      - {id: '24'}
-      - {id: '25'}
-      - {id: '26'}
     start_install: true
 
 - name: 'Setup Openshift Data Foundation (ODF)'

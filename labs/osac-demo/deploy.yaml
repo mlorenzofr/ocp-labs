@@ -18,16 +18,9 @@
     lab_name: 'osac'
     lab_node_network_base: '192.168.111.'
     lab_mac_base: '52:54:00:ff:00:'
-    lab_abi_ip: "{{ lab_node_network_base }}10"
-    lab_api_ips: ["{{ lab_node_network_base }}100"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}101"]
     lab_worker_replicas: 0
     lab_node_memory: 28000
     lab_node_disk_data: 100
-    lab_hosts:
-      - {id: '10'}
-      - {id: '11'}
-      - {id: '12'}
     start_install: true
 
 - name: 'Import hive setup playbook'

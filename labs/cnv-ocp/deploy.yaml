@@ -16,16 +16,13 @@
     - 'ocp'
   vars:
     lab_name: 'cnvn'
-    lab_abi_ip: "{{ lab_node_network_base }}41"
-    lab_api_ips: ["{{ lab_node_network_base }}108"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}109"]
     lab_node_cpus: 24
     lab_node_memory: 56000
     lab_node_disk_data: 300
     lab_hosts:
-      - {id: '41', role: 'master'}
-      - {id: '42', role: 'master'}
-      - {id: '43', role: 'master'}
+      - {'role': 'master'}
+      - {'role': 'master'}
+      - {'role': 'master'}
     start_install: true
 
 - name: 'Setup Openshift Data Foundation (ODF)'

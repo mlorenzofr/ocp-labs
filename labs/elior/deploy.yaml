@@ -9,8 +9,6 @@
     lab_node_disk_data: 60
     lab_mac_base: 'ee:11:00:00:aa:'
     lab_node_network_base: '192.168.140.'
-    lab_api_ips: ["{{ lab_node_network_base }}10"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}11"]
     lab_network_name: 'elior-net'
     start_install: true
 

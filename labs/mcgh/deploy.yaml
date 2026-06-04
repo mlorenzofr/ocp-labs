@@ -53,13 +53,6 @@
     lab_name: 'mcgh'
     lab_node_disk_data: 60
     start_install: true
-    lab_abi_ip: "{{ lab_node_network_base }}72"
-    lab_api_ips: ["{{ lab_node_network_base }}70"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}71"]
-    lab_hosts:
-      - {id: '72'}
-      - {id: '73'}
-      - {id: '74'}
   tags:
     - 'ocp'
     - 'global-cluster'
@@ -72,11 +65,8 @@
     lab_node_memory: 49152
     lab_node_disk_data: 250
     start_install: true
-    lab_abi_ip: "{{ lab_node_network_base }}75"
-    lab_api_ips: ["{{ lab_node_network_base }}75"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}75"]
     lab_hosts:
-      - {id: '75', iface: 'enp1s0'}
+      - {'iface': 'enp1s0'}
   tags:
     - 'ocp'
     - 'acm-cluster1'
@@ -89,11 +79,8 @@
     lab_node_memory: 49152
     lab_node_disk_data: 250
     start_install: true
-    lab_abi_ip: "{{ lab_node_network_base }}76"
-    lab_api_ips: ["{{ lab_node_network_base }}76"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}76"]
     lab_hosts:
-      - {id: '76', iface: 'enp1s0'}
+      - {'iface': 'enp1s0'}
   tags:
     - 'ocp'
     - 'acm-cluster2'
@@ -103,11 +90,8 @@
   vars:
     lab_name: 'spoke1'
     start_install: true
-    lab_abi_ip: "{{ lab_node_network_base }}77"
-    lab_api_ips: ["{{ lab_node_network_base }}77"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}77"]
     lab_hosts:
-      - {id: '77', iface: 'enp1s0'}
+      - {'iface': 'enp1s0'}
   tags:
     - 'ocp'
     - 'spoke-cluster1'
@@ -117,11 +101,8 @@
   vars:
     lab_name: 'spoke2'
     start_install: true
-    lab_abi_ip: "{{ lab_node_network_base }}78"
-    lab_api_ips: ["{{ lab_node_network_base }}78"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}78"]
     lab_hosts:
-      - {id: '78', iface: 'enp1s0'}
+      - {'iface': 'enp1s0'}
   tags:
     - 'ocp'
     - 'spoke-cluster2'

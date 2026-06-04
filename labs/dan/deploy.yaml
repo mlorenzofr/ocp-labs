@@ -18,17 +18,10 @@
     lab_name: 'dan'
     lab_node_network_base: '192.168.128.'
     lab_network_name: 'dan-network'
-    lab_abi_ip: "{{ lab_node_network_base }}21"
-    lab_api_ips: ["{{ lab_node_network_base }}10"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}11"]
     lab_mac_base: 'da:00:00:00:00:'
     lab_worker_replicas: 0
     lab_node_memory: 25000
     lab_node_disk_data: 60
-    lab_hosts:
-      - {id: '21'}
-      - {id: '22'}
-      - {id: '23'}
     start_install: true
 
 - name: 'Create MCE manifests'

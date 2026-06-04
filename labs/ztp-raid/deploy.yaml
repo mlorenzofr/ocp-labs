@@ -16,15 +16,12 @@
     - 'ocp'
   vars:
     lab_name: 'zraid'
-    lab_abi_ip: "{{ lab_node_network_base }}61"
-    lab_api_ips: ["{{ lab_node_network_base }}100"]
-    lab_ingress_ips: ["{{ lab_node_network_base }}101"]
     lab_node_memory: 28000
     lab_node_disk_data: 60
     lab_hosts:
-      - {id: '61', role: 'master'}
-      - {id: '62', role: 'master'}
-      - {id: '63', role: 'master'}
+      - {'role': 'master'}
+      - {'role': 'master'}
+      - {'role': 'master'}
     start_install: true
 
 - name: 'Prepare ZTP'
