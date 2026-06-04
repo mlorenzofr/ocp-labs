@@ -19,10 +19,11 @@ lab_custom_capabilities: []
 lab_custom_capability_set: ''
 lab_custom_manifests: []
 lab_dns_servers: []
-lab_gateway: ''
-lab_ingress_ips: ['192.168.125.11']
 lab_domain: 'local.lab'
 lab_fips: False
+lab_gateway: ''
+lab_hide_secrets: True
+lab_ingress_ips: ['192.168.125.11']
 lab_master_replicas: 3
 lab_network_name: 'lab-network'
 lab_network_type: 'OVNKubernetes'

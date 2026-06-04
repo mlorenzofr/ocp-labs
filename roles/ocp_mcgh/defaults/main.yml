@@ -2,6 +2,7 @@
 ocp_mcgh_availability: 'High'
 ocp_mcgh_apply: "{{ ocp_apply | default(true) }}"
 ocp_mcgh_channel: ''
+ocp_mcgh_hide_secrets: True
 ocp_mcgh_metrics: 'true'
 ocp_mcgh_ns: 'multicluster-global-hub'
 ocp_mcgh_path: "{{ lab_configs | default('/tmp') }}"

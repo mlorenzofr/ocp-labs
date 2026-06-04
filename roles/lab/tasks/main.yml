@@ -26,6 +26,7 @@
     dest: "{{ lab_path }}/{{ lab_name }}/config/install-config.yaml"
     mode: '0644'
   ignore_errors: "{{ ansible_check_mode }}"
+  no_log: "{{ lab_hide_secrets | bool }}"
 
 - name: 'Include baremetal tasks'
   ansible.builtin.include_tasks: baremetal.yaml

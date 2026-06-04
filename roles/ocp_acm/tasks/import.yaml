@@ -67,6 +67,7 @@
         autoImportRetry: "5"
       data:
         kubeconfig: "{{ kubeconfig_data | b64encode }}"
+  no_log: "{{ ocp_acm_hide_secrets | bool }}"
 
 - name: 'Apply managedcluster manifest'
   kubernetes.core.k8s:

@@ -27,6 +27,7 @@
         namespace: "{{ item.ns }}"
       data:
         .dockerconfigjson: "{{ item.pullsecret | default(ocp_hcp_pullsecret) }}"
+  no_log: "{{ ocp_hcp_hide_secrets | bool }}"
 
 - name: 'Create HostedCluster ssh AuthorizedKey'
   kubernetes.core.k8s:
@@ -39,6 +40,7 @@
         namespace: "{{ item.ns }}"
       stringData:
         id_rsa.pub: "'{{ item.ssh_key | default(ocp_hcp_ssh_key) }}'"
+  no_log: "{{ ocp_hcp_hide_secrets | bool }}"
 
 - name: 'Prepare HostedCluster manifest'
   ansible.builtin.template:

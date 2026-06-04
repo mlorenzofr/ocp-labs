@@ -2,6 +2,7 @@
 ocp_acm_apply: "{{ ocp_apply | default(true) }}"
 ocp_acm_channel: ''
 acm_cwd: '/tmp'
+ocp_acm_hide_secrets: True
 ocp_acm_ns: 'open-cluster-management'
 ocp_acm_path: "{{ lab_configs | default('/tmp') }}"
 ocp_acm_pullsecret: "{{ ocp_pullsecret_b64 }}"

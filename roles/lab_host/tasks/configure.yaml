@@ -30,6 +30,7 @@
     owner: 'root'
     group: 'root'
     mode: '0644'
+  no_log: "{{ lab_host_hide_secrets | bool }}"
 
 - name: 'Configure chronyd'
   ansible.builtin.template:
@@ -68,6 +69,7 @@
     - { option: 'aws_secret_access_key', value: "{{ lab_aws_secret_access_key }}" }
     - { option: 'region', value: "{{ lab_aws_region | default('us-east-1') }}" }
     - { option: 'output', value: "{{ lab_aws_output | default('json') }}" }
+  no_log: "{{ lab_host_hide_secrets | bool }}"
   when:
     - lab_host_aws
     - lab_aws_access_key_id is defined

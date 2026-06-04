@@ -19,6 +19,7 @@
       stringData:
         .dockerconfigjson: "'{{ item.pullsecret | default(ocp_assisted_service_pullsecret) }}'"
   ignore_errors: "{{ ansible_check_mode }}"
+  no_log: "{{ ocp_assisted_service_hide_secrets | bool }}"
   when: item.pullsecret | default(ocp_assisted_service_pullsecret) is search('^\{')
 
 - name: 'Create pull-secret (base64)'
@@ -34,6 +35,7 @@
       data:
         .dockerconfigjson: "{{ item.pullsecret | default(ocp_assisted_service_pullsecret) }}"
   ignore_errors: "{{ ansible_check_mode }}"
+  no_log: "{{ ocp_assisted_service_hide_secrets | bool }}"
   when: item.pullsecret | default(ocp_assisted_service_pullsecret) is not search('^\{')
 
 - name: 'Create InfraEnv manifest'

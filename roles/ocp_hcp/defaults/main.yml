@@ -1,6 +1,7 @@
 ---
 ocp_hcp_apply: "{{ ocp_apply | default(true) }}"
 ocp_hcp_clusters: []
+ocp_hcp_hide_secrets: True
 ocp_hcp_kubeapi_name: 'hypershift'
 ocp_hcp_lab_name: "{{ lab_name }}"
 ocp_hcp_path: "{{ lab_configs | default('/tmp') }}"

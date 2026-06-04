@@ -23,6 +23,7 @@
         namespace: "{{ ocp_mcgh_ns }}"
       data:
         .dockerconfigjson: "{{ ocp_mcgh_pullsecret }}"
+  no_log: "{{ ocp_mcgh_hide_secrets | bool }}"
   tags: ['secrets']
 
 - name: 'Create multiclusterglobalhub manifest'
