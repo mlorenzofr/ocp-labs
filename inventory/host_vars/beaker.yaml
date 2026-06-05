@@ -68,9 +68,9 @@ haproxy_labs:
     api: True
     api_ips: ['192.168.125.102']
   - name: 'ztvp2'
-    backends: ['192.168.125.113']
+    backends: ['192.168.125.101']
     api: True
-    api_ips: ['192.168.125.112']
+    api_ips: ['192.168.125.100']
   - name: 'ztvp-spoke-1'
     backends: ['192.168.125.75']
     api: True
