@@ -1,7 +1,6 @@
 ---
 dnsmasq_dhcp_hosts:
   - {hwaddr: '52:54:00:9c:93:36', hostname: 'pinnedis-registry', ipaddr: '192.168.129.200'}
-  - {hwaddr: '52:54:00:38:8d:f9', hostname: 'ostree-node-1', ipaddr: '192.168.125.254'}
   - {hwaddr: '52:54:00:9e:95:23', hostname: 'javed-rhel9', ipaddr: '192.168.125.149'}
 
 libvirt_image_dir: '/home/libvirt-ocp'
