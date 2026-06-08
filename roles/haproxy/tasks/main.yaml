@@ -19,6 +19,21 @@
   tags:
     - selinux
 
+- name: 'Discover labs from dnsmasq configuration'
+  ansible.builtin.include_tasks:
+    file: discover_labs.yaml
+    apply:
+       tags:
+         - 'haproxy'
+  when: haproxy_auto_discover_labs | bool
+  tags:
+    - 'haproxy'
+
+- name: 'Use haproxy_labs if auto-discovery is disabled'
+  ansible.builtin.set_fact:
+    haproxy_labs_final: "{{ haproxy_labs }}"
+  when: not (haproxy_auto_discover_labs | bool)
+
 - name: 'Configure HAproxy for kubernetes'
   ansible.builtin.template:
     src: 'haproxy-k8s.cfg.j2'

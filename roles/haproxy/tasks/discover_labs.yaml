@@ -1,0 +1,86 @@
+---
+- name: 'Find dnsmasq configuration files'
+  ansible.builtin.find:
+    paths: '/etc/dnsmasq.d'
+    patterns: '*.conf'
+  register: __haproxy_dnsmasq_files
+  check_mode: false
+  ignore_errors: true
+
+- name: 'Initialize discovered labs list'
+  ansible.builtin.set_fact:
+    __haproxy_discovered_labs: []
+
+- name: 'Read and parse dnsmasq configuration files'
+  when:
+    - __haproxy_dnsmasq_files is defined
+    - __haproxy_dnsmasq_files.matched is defined
+    - __haproxy_dnsmasq_files.matched > 0
+  block:
+    - name: 'Parse lab information from dnsmasq configs'
+      ansible.builtin.shell:
+        cmd: |
+          set -e -o pipefail
+          api_line=$(grep -E '^host-record=api\.' "{{ item.path }}" || true)
+          ingress_line=$(grep -E '^address=/apps\.' "{{ item.path }}" || true)
+
+          if [ -z "$api_line" ] || [ -z "$ingress_line" ]; then
+            exit 0
+          fi
+
+          # Extract: api.<lab>.<domain>,<ip>
+          lab_name=$(echo "$api_line" | sed -n 's/^host-record=api\.\([^.]*\)\..*$/\1/p')
+          lab_domain=$(echo "$api_line" | sed -n 's/^host-record=api\.[^.]*\.\([^,]*\),.*$/\1/p')
+          api_ip=$(echo "$api_line" | sed -n 's/^.*,\(.*\)$/\1/p')
+
+          # Extract: apps.<lab>.<domain>/<ip>
+          ingress_ip=$(echo "$ingress_line" | sed -n 's/^.*\/\(.*\)$/\1/p')
+
+          if [ -n "$lab_name" ] && [ -n "$lab_domain" ] && [ -n "$api_ip" ] && [ -n "$ingress_ip" ]; then
+            echo "name=$lab_name"
+            echo "domain=$lab_domain"
+            echo "api_ip=$api_ip"
+            echo "ingress_ip=$ingress_ip"
+          fi
+        executable: /bin/bash
+      loop: "{{ __haproxy_dnsmasq_files.files }}"
+      loop_control:
+        label: "{{ item.path }}"
+      register: __haproxy_parsed_labs
+      check_mode: false
+      changed_when: false
+      ignore_errors: true
+
+    - name: 'Build discovered labs list'
+      ansible.builtin.set_fact:
+        __haproxy_discovered_labs: "{{ __haproxy_discovered_labs + [__lab_info] }}"
+      when:
+        - item.stdout is defined
+        - item.stdout | length > 0
+        - "'name=' in item.stdout"
+      vars:
+        __lab_name: "{{ item.stdout | regex_search('name=(.+)', '\\1') | first }}"
+        __lab_domain: "{{ item.stdout | regex_search('domain=(.+)', '\\1') | first }}"
+        __lab_api_ip: "{{ item.stdout | regex_search('api_ip=(.+)', '\\1') | first }}"
+        __lab_ingress_ip: "{{ item.stdout | regex_search('ingress_ip=(.+)', '\\1') | first }}"
+        __lab_info:
+          name: "{{ __lab_name }}"
+          domain: "{{ __lab_domain }}"
+          backends: ["{{ __lab_ingress_ip }}"]
+          api: true
+          api_ips: ["{{ __lab_api_ip }}"]
+      loop: "{{ __haproxy_parsed_labs.results }}"
+      loop_control:
+        label: "{{ item['item'].path | regex_search('^/etc/dnsmasq.d/(.+)\\.conf$', '\\1') | first }}"
+
+- name: 'Get manually configured lab names'
+  ansible.builtin.set_fact:
+    __haproxy_manual_lab_names: "{{ haproxy_labs | map(attribute='name') | list }}"
+
+- name: 'Filter discovered labs to exclude manually configured ones'
+  ansible.builtin.set_fact:
+    __haproxy_auto_labs: "{{ __haproxy_discovered_labs | rejectattr('name', 'in', __haproxy_manual_lab_names) | list }}"
+
+- name: 'Merge discovered labs with configured labs'
+  ansible.builtin.set_fact:
+    haproxy_labs_final: "{{ haproxy_labs + __haproxy_auto_labs }}"

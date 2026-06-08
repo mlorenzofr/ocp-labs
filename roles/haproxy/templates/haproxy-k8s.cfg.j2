@@ -39,7 +39,7 @@ frontend apis-6443
     mode tcp
     tcp-request inspect-delay 5s
     tcp-request content accept if { req_ssl_hello_type 1 }
-{% for lab in haproxy_labs %}
+{% for lab in haproxy_labs_final %}
 {% if lab.api | default(False) %}
     acl ACL_{{ lab.name }} req_ssl_sni -i api.{{ lab.name }}.{{ lab.domain | default('local.lab') }}
     use_backend {{ lab.name }}_api_6443 if ACL_{{ lab.name }}
@@ -50,7 +50,7 @@ frontend apis-6443
 frontend routers-http-80
     bind :80
     mode http
-{% for lab in haproxy_labs %}
+{% for lab in haproxy_labs_final %}
 {% if lab.ocp | default(True) %}
     acl ACL_{{ lab.name }} hdr(host) -m reg -i ^[^\.]+\.apps\.{{ lab.name }}\.{{ lab.domain | default('local.lab') | replace('.', '\.') }}
     use_backend {{ lab.name }}_route_80 if ACL_{{ lab.name }}
@@ -67,7 +67,7 @@ frontend routers-https-443
     mode tcp
     tcp-request inspect-delay 5s
     tcp-request content accept if { req_ssl_hello_type 1 }
-{% for lab in haproxy_labs %}
+{% for lab in haproxy_labs_final %}
 {% if lab.ocp | default(True) %}
     acl ACL_{{ lab.name }} req_ssl_sni -m reg -i ^[^\.]+\.apps\.{{ lab.name }}\.{{ lab.domain | default('local.lab') | replace('.', '\.') }}
     use_backend {{ lab.name }}_ingress_443 if ACL_{{ lab.name }}
@@ -78,7 +78,7 @@ frontend routers-https-443
 {% endfor %}
 {% endif %}
 {% endfor %}
-{% for lab in haproxy_labs %}
+{% for lab in haproxy_labs_final %}
 
 {% if lab.ocp | default(True) %}
 backend {{ lab.name }}_route_80
