@@ -1,19 +1,23 @@
 # HCP-compact lab
+
 In this lab the goal is install **Hypershift** on a _compact_ Openshift control plane.  
 The management control plane and the hosted control planes will share the same nodes.  
 Two _spoke clusters_ (`HostedCluster`) will be created.
 
 ## Requirements
+
 We need to use big nodes because the resources growth with the number of _spoke clusters_.  
 Each _spoke cluster_ uses about 4 Gib of memory each _hub_ node.  
 
 ## Steps
+
 1. Execute the playbook `hcp-compact.yaml`:
 ```shell
 ap labs/hcp-compact/hcp-compact.yaml
 ```
 
 ## Validation
+
 1. Check if the _hub cluster_ is running:
 ```shell
 $ export KUBECONFIG=/root/labs/hcp/deploy/auth/kubeconfig
@@ -28,6 +32,7 @@ $ oc get clusterversion
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.15.4    True        False         69m     Cluster version is 4.15.4
 ```
+
 2. Check if _spoke clusters_ are running:
 ```shell
 $ oc get managedcluster
@@ -45,6 +50,7 @@ NAME   VERSION   KUBECONFIG              PROGRESS    AVAILABLE   PROGRESSING   M
 hcp2   4.14.13   hcp2-admin-kubeconfig   Completed   True        False         The hosted control plane is available
 
 ```
+
 3. Check if we have 3 etcd pods, and they are running in different nodes:
 ```shell
 $ oc get pods -n hcp1-hcp1 -o wide | grep etcd
@@ -57,6 +63,7 @@ etcd-0                                                3/3     Running   0       
 etcd-1                                                3/3     Running   0          40m   10.134.0.117   hcp-master-2   <none>           <none>
 etcd-2                                                3/3     Running   0          40m   10.133.0.118   hcp-master-1   <none>           <none>
 ```
+
 4. Check if the cluster **hcp1** works:
 ```shell
 $ export KUBECONFIG=/root/labs/hcp/hcp1/auth/kubeconfig
@@ -93,6 +100,7 @@ operator-lifecycle-manager-packageserver   4.14.8    True        False         F
 service-ca                                 4.14.8    True        False         False      28m
 storage                                    4.14.8    True        False         False      40m
 ```
+
 5. Check if the cluster **hcp2** works:
 ```shell
 $ export KUBECONFIG=/root/labs/hcp/hcp2/auth/kubeconfig

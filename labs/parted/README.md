@@ -1,16 +1,20 @@
 # parted lab
+
 This lab installs a compact Openshift cluster, partitioning the installation disk. We will have a partition reserved for data.
 
 ## Requirements
+
 None.
 
 ## Steps
+
 1. Deploy:
 ```shell
 ap labs/parted/deploy.yaml
 ```
 
 ## Validation
+
 1. Check if the Openshift cluster is running:
 ```shell
 $ export KUBECONFIG=/root/labs/parted/deploy/auth/kubeconfig
@@ -53,5 +57,6 @@ vdb    252:16   0     1G  0 disk
 ```
 
 ## Links
+
 * [Configuring partitions for worker nodes in OCP 4](https://access.redhat.com/solutions/5993151)
 * [Document Ignition partitioning via MachineConfig](https://github.com/openshift/os/issues/384)

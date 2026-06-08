@@ -1,18 +1,22 @@
 # hcp lab
+
 In this lab the goal is install **Hypershift** on a _compact_ Openshift control plane.  
 The management control plane and the hosted control planes will share the same nodes.  
 
 ## Requirements
+
 We need to use big nodes because the resources growth with the number of _spoke clusters_.  
 Each _spoke cluster_ uses about 4 Gib of memory each _hub_ node.  
 
 ## Steps
+
 1. Execute the playbook `deploy.yaml`:
 ```shell
 ap labs/hcp/deploy.yaml
 ```
 
 ## Validation
+
 1. Check if the _hub cluster_ is running:
 ```shell
 $ export KUBECONFIG=/root/labs/hcp/deploy/auth/kubeconfig
@@ -27,6 +31,7 @@ $ oc get clusterversion
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.18.4    True        False         54m     Cluster version is 4.18.4
 ```
+
 2. Check if _spoke clusters_ are running:
 ```shell
 $ oc get managedcluster
@@ -42,6 +47,7 @@ $ oc get nodepool -n spoke
 NAME               CLUSTER   DESIRED NODES   CURRENT NODES   AUTOSCALING   AUTOREPAIR   VERSION   UPDATINGVERSION   UPDATINGCONFIG   MESSAGE
 nodepool-spoke-1   spoke     1               1               False         False        4.18.4    False             False
 ```
+
 3. Check if the cluster **spoke** works:
 ```shell
 $ export KUBECONFIG=/root/labs/hcp/spoke/auth/kubeconfig

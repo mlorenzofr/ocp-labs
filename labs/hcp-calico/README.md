@@ -1,7 +1,9 @@
 # hcp-calico lab
+
 In this lab the goal is install an _Hosted cluster_ with Calico as SDN.
 
 ## caveats
+
 Currently, this lab is not working.  
 Using SDN `OVNKubernetes`, this deployment works fine.  
 The _local-cluster_ `ManagedCluster` is not being imported and that blocks the MCE operator.
@@ -27,15 +29,18 @@ $ oc get multiclusterengine/engine -o yaml
 ```
 
 ## Requirements
+
 None.
 
 ## Steps
+
 1. Deploy:
 ```shell
 ap labs/hcp-calico/deploy.yaml
 ```
 
 ## Validation
+
 1. Check if the _hub cluster_ is running:
 ```shell
 $ export KUBECONFIG=/root/labs/hcp-calico/deploy/auth/kubeconfig
@@ -50,11 +55,13 @@ $ oc get clusterversion
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.16.9    True        False         77s     Cluster version is 4.16.9
 ```
+
 2. Validate in the network configuration if the Network Type is set to Calico:
 ```shell
 $ oc get network.config/cluster -o jsonpath='{.status.networkType}{"\n"}'
 Calico
 ```
+
 3. Check if _spoke cluster_ is running:
 ```shell
 $ oc get managedcluster
@@ -66,6 +73,7 @@ $ oc get hostedcluster -n hcp1
 NAME   VERSION   KUBECONFIG              PROGRESS    AVAILABLE   PROGRESSING   MESSAGE
 hcp1   4.17.0    hcp1-admin-kubeconfig   Completed   True        False         The hosted control plane is available
 ```
+
 4. Check if the cluster **hcp1** works:
 ```shell
 $ export KUBECONFIG=/root/labs/hcp-calico/hcp1/auth/kubeconfig
@@ -102,6 +110,7 @@ operator-lifecycle-manager-packageserver   4.17.0    True        False         F
 service-ca                                 4.17.0    True        False         False      15m
 storage                                    4.17.0    True        False         False      26m
 ```
+
 5. On the _spoke cluster_, review the Network Type:
 ```shell
 $ oc get network.config/cluster -o jsonpath='{.status.networkType}{"\n"}'
@@ -109,4 +118,5 @@ Calico
 ```
 
 ## Links
+
 * [Certified OpenShift CNI Plug-ins](https://access.redhat.com/articles/5436171)

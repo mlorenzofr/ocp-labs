@@ -1,16 +1,20 @@
 # std-sno lab
+
 This lab creates a Single Node Openshift (**SNO**) environment.
 
 ## Requirements
+
 None.
 
 ## Steps
+
 1. Deploy:
 ```shell
 ap labs/std-sno/deploy.yaml
 ```
 
 ## Validation
+
 1. Check if the Openshift cluster is running:
 ```shell
 $ export KUBECONFIG=/root/labs/std-sno/deploy/auth/kubeconfig

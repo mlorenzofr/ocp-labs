@@ -1,19 +1,23 @@
 # lmproxy lab
+
 In this lab the goal is install an Openshift Cluster in an offline environment with a proxy.
 
 ## Requirements
 
 ## Steps
+
 1. Block Internet access from the lab network. This way we can be sure that the proxy is used.
 ```shell
 iptables -I LIBVIRT_FWO 1 -s 192.168.129.0/24 ! -d 192.168.129.0/24 -j REJECT
 ```
+
 2. Execute the playbook `deploy.yaml`:
 ```shell
 ap labs/lmproxy/deploy.yaml --tags ocp
 ```
 
 ## Validation
+
 1. Check if the cluster is running:
 ```shell
 $ export KUBECONFIG=~/labs/lmproxy/deploy/auth/kubeconfig

@@ -1,8 +1,11 @@
 # ocp_mcgh
+
 This role installs and configures **MultiCluster Global Hub** (**MCGH**) on an Openshift cluster.
 
 ## Requirements
+
 This role requires the following roles (automatically injected):
+
 * **ocp_olm**, to install the mcgh operator.
 * **ocp_lvms**, for persistent storage.
 * **ocp_baremetal**, for managing baremetal nodes.
@@ -10,6 +13,7 @@ This role requires the following roles (automatically injected):
 * **ocp_acm**, used as the _assisted-service_ deploy method.
 
 ## Role Variables
+
 * `ocp_mcgh_availability`. _String_. HA configuration for app subscriptions (`Basic`|`High`).
 * `ocp_mcgh_apply`. _Bool_. Set wether the role should apply manifests or simply create them.
 * `ocp_mcgh_channel`. _String_. Operator subscription channel.
@@ -23,7 +27,9 @@ This role requires the following roles (automatically injected):
 * `ocp_mcgh_version`. _String_. Operator subscription version.
 
 ## Example Playbook
+
 ```yaml
+
 - hosts: servers
 
   roles:
@@ -31,7 +37,9 @@ This role requires the following roles (automatically injected):
 ```
 
 ## License
+
 MIT / BSD
 
 ## Author Information
+
  - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2024-)

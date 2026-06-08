@@ -20,6 +20,7 @@ None.
 ### Basic Usage with Auto-Discovery
 
 ```yaml
+
 - hosts: servers
   roles:
     - haproxy
@@ -30,6 +31,7 @@ This will automatically discover all labs from `/etc/dnsmasq.d/*.conf`.
 ### Manual Configuration Only
 
 ```yaml
+
 - hosts: servers
   vars:
     haproxy_auto_discover_labs: false
@@ -43,6 +45,7 @@ This will automatically discover all labs from `/etc/dnsmasq.d/*.conf`.
 ### Mixed Auto-Discovery and Manual Configuration
 
 ```yaml
+
 - hosts: servers
   vars:
     haproxy_labs:
@@ -60,6 +63,7 @@ This will automatically discover all labs from `/etc/dnsmasq.d/*.conf`.
 When using the `lab` role to deploy OpenShift clusters, it automatically creates dnsmasq configuration files that this role can discover:
 
 ```yaml
+
 - name: 'Deploy new lab and update HAProxy'
   hosts: lab_servers
   roles:
@@ -83,6 +87,7 @@ The role can automatically discover OpenShift labs from dnsmasq configuration fi
 2. Extracts lab information from dnsmasq entries:
    * **API endpoint**: `host-record=api.<lab-name>.<domain>,<api-ip>`
    * **Ingress endpoint**: `address=/apps.<lab-name>.<domain>/<ingress-ip>`
+
 3. Automatically configures HAProxy backends for discovered labs
 4. Merges auto-discovered labs with manually configured ones (manual configuration takes precedence)
 

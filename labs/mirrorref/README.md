@@ -1,15 +1,19 @@
 # mirrorref lab
+
 In this lab, we install an Openshift Cluster with ACM and internal registry.  
 In subsequent steps, we will mirror the Openshift release to the internal registry and deploy a spoke cluster using it.  
 
 ## Requirements
+
 None.
 
 ## Steps
+
 1. Install the Openlshift cluster `deploy.yaml`:
 ```shell
 ap labs/mirrorref/deploy.yaml --tags ocp
 ```
+
 2. Enable the Openshift image registry:
 ```shell
 ap labs/mirrorref/deploy.yaml --tags postinst
@@ -17,6 +21,7 @@ ap labs/mirrorref/deploy.yaml --tags postinst
 <details>
 
 <summary>
+
 3. Mirror the Openshift release:
 </summary>
 
@@ -25,11 +30,13 @@ ap labs/mirrorref/deploy.yaml --tags postinst
 $ export REGISTRY_AUTH_FILE=/root/pull-secret.json
 $ podman login --tls-verify=false -u kubeadmin -p $(oc whoami -t) default-route-openshift-image-registry.apps.mirrorref.local.lab
 ```
+
 2. Create a new namespace
 ```shell
 $ oc create ns openshift-release-dev
 $ oc create ns edge-infrastructure
 ```
+
 3. Mirror the release and assisted-service images to the internal registry:
 ```shell
 $ oc adm release mirror --from=quay.io/openshift-release-dev/ocp-release:4.18.4-x86_64 --to=default-route-openshift-image-registry.apps.mirrorref.local.lab/openshift-release-dev/ocp-release --to-release-image=default-route-openshift-image-registry.apps.mirrorref.local.lab/openshift-release-dev/ocp-release:4.18.4-x86_64 --insecure=true -a /root/pull-secret.json
@@ -47,6 +54,7 @@ ap labs/mirrorref/deploy.yaml --tags hive
 ```
 
 ## Validation
+
 1. Check if the Openshift cluster is running:
 ```shell
 $ export KUBECONFIG=/root/labs/mirrorref/deploy/auth/kubeconfig
@@ -61,6 +69,7 @@ $ oc get clusterversion
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.18.4    True        False         5d14h   Cluster version is 4.18.4
 ```
+
 2. Validate that the _openshift-image-registry_ is running:
 ```shell
 $ oc get pods -n openshift-image-registry
@@ -79,6 +88,7 @@ $ oc get route -n openshift-image-registry
 NAME            HOST/PORT                                                         PATH   SERVICES         PORT    TERMINATION   WILDCARD
 default-route   default-route-openshift-image-registry.apps.mirrorref.local.lab          image-registry   <all>   reencrypt     None
 ```
+
 3. Check if the _spoke_ cluster works:
 ```shell
 $ export KUBECONFIG=/root/labs/hive/spoke/auth/kubeconfig
@@ -130,5 +140,6 @@ storage                                    4.18.6    True        False         F
 ```
 
 ## Links
+
 * [Using the Per-Cluster Mirror Registry Feature in Assisted Service](https://github.com/openshift/assisted-service/blob/master/docs/user-guide/mirror_registry_guide.md)
 * [Saas + on premise registry](https://github.com/openshift/assisted-service/blob/master/docs/user-guide/cloud-with-mirror.md)

@@ -1,8 +1,10 @@
 # hive-okd lab
+
 In this lab the goal is install an Openshift Cluster with an OKD _spoke cluster_ inside.  
 The _spoke_ cluster will be a **standalone** cluster, not a `HostedCluster` like the case of HCP (_Hypershift_).  
 
 ## Requirements
+
 The image used in the `assisted-service` must be an OKD/SCOS version, otherwise the installation fails.
 The following **okd-scos** versions are validated:
 
@@ -13,12 +15,14 @@ The following **okd-scos** versions are validated:
 | 4.13    | [413.92.202308210212-0](https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.13/4.13.10/rhcos-4.13.10-x86_64-live.x86_64.iso) | quay.io/okd/scos-release:4.13.0-0.okd-scos-2023-10-19-111256 | :white_check_mark: |
 
 ## Steps
+
 1. Execute the playbook `deploy.yaml`:
 ```shell
 ap labs/hive-okd/deploy.yaml
 ```
 
 ## Validation
+
 1. Check if the _hub cluster_ is running:
 ```shell
 $ export KUBECONFIG=/root/labs/okd/deploy/auth/kubeconfig
@@ -33,6 +37,7 @@ $ oc get clusterversion
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.15.4    True        False         129m    Cluster version is 4.15.4
 ```
+
 2. Check if OKD _standalone cluster_ is provisioned:
 ```shell
 $ oc get bmh -n hive-sno
@@ -43,6 +48,7 @@ $ oc get clusterdeployment -n hive-sno
 NAME   INFRAID                                PLATFORM          REGION   VERSION                               CLUSTERTYPE   PROVISIONSTATUS   POWERSTATE   AGE
 sno    fbc67676-11b7-4f7c-b6d1-ec501fb98b57   agent-baremetal            4.15.0-0.okd-scos-2024-01-18-223523                 Provisioned       Running      39m
 ```
+
 3. Check if the OKD cluster works:
 ```shell
 $ export KUBECONFIG=/root/labs/okd/sno/auth/kubeconfig
@@ -93,9 +99,10 @@ storage                                    4.15.0-0.okd-scos-2024-01-18-223523  
 ```
 
 ## Links
+
 * [OKD release images](https://quay.io/repository/openshift/okd?tab=tags)
 * [SCOS release images](https://quay.io/repository/okd/scos-release?tab=tags)
 * [RHCOS release images](https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/)
 * [Preview OKD/SCOS images](https://origin-release.ci.openshift.org/releasestream/4-scos-next)
-* [How do I use ACM and Assisted Service to install OKD-SCOS? ](https://access.redhat.com/solutions/7047028)
+* [How do I use ACM and Assisted Service to install OKD-SCOS?](https://access.redhat.com/solutions/7047028)
 * [Building CentOS Stream CoreOS](https://github.com/openshift/os/blob/master/docs/development-scos.md)

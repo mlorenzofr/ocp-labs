@@ -1,10 +1,13 @@
 # KIND
+
 Install and configure [KIND](https://kind.sigs.k8s.io/) on a system.
 
 ## Requirements
+
 None.
 
 ## Role Variables
+
 * `kind_cfg_dir`. _String_. Path to a directory to store the cluster configuration files.
 * `kind_clusters`. _List_. List of kind clusters to create.
 * `kind_group`. _String_. Group owner of kind files.
@@ -13,7 +16,9 @@ None.
 * `kind_version`. _String_. Kind version.
 
 ## Example Playbook
+
 ```yaml
+
 - hosts: servers
 
   vars:
@@ -28,7 +33,9 @@ None.
 ```
 
 ## License
+
 MIT / BSD
 
 ## Author Information
+
  - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2025-)

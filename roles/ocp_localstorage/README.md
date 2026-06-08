@@ -44,6 +44,7 @@ None.
 ## Example Playbook
 
 ```yaml
+
 - hosts: servers
 
   vars:

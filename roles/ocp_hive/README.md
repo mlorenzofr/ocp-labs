@@ -1,15 +1,19 @@
 # ocp_hive
+
 This role installs (optional) and configures **Hive** operator.  
 Hive is usually installed with **MCE**/**ACM** and the main task in this role is to configure it.  
 If we want, it is also possible to install the operator using this role.  
 
 ## Requirements
+
 This role requires the following roles:
+
 * **ocp_olm**, to install the hive operator.
 * **ocp_assisted_service**, for managing infrastructure resources.
 * **dnsmasq**, to create DNS records for the Hive clusters.
 
 ## Role Variables
+
 * `ocp_hive_apply`. _Bool_. Set wether the role should apply manifests or simply create them.
 * `ocp_hive_channel`. _String_. Operator subscription channel.
 * `ocp_hive_clusters`. _List_. List of hive clusters.
@@ -23,6 +27,7 @@ This role requires the following roles:
 * `ocp_hive_ssh_key`. _String_. Default value for _sshAuthorizedKey_ for hive clusters.
 
 ### Variables for `ocp_hive_clusters` elements
+
 * `cluster_network`. _String_. CIDR for cluster network.
 * `domain`. _String_. Base domain for the cluster.
 * `host_network`. _String_. CIDR of node host network.
@@ -38,13 +43,16 @@ This role requires the following roles:
 * `workers`. _Number_. Number of worker nodes on the cluster.
 
 ### Variables for `ocp_hive_clusterimagesets` elements
+
 * `name`. _String_. `ClusterImageSet` name.
 * `image`. _String_. Registry address to pull the image.
 * `visible`. _Bool_. Set whether the image should be visible or not.
 * `channel`. _String_. 
 
 ## Example Playbook
+
 ```yaml
+
 - hosts: servers
 
   vars:
@@ -71,7 +79,9 @@ This role requires the following roles:
 ```
 
 ## License
+
 MIT / BSD
 
 ## Author Information
+
  - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2024-)

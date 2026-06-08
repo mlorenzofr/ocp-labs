@@ -36,6 +36,7 @@ This role requires the **ocp_olm** role.
 ## Example Playbook
 
 ```yaml
+
 - hosts: servers
 
   vars:

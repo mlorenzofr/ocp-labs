@@ -1,9 +1,11 @@
 # ocp_gitops
+
 This role installs and configures gitops operator on an Openshift cluster.
 
 ## Requirements
 
 ## Role Variables
+
 * `ocp_gitops_apply`. _Bool_. Set wether the role should apply the manifests or simply create them.
 * `ocp_gitops_bmc_password`. _String_. Default BMC password for ZTP secrets.
 * `ocp_gitops_bmc_username`. _String_. Default BMC user for ZTP secrets.
@@ -18,6 +20,7 @@ This role installs and configures gitops operator on an Openshift cluster.
 * `ocp_gitops_source`. _String_. Name of the catalog source name for installing the gitops-operator.
 
 ### Variables for `ocp_gitops_secrets` elements
+
 * `ns`. _String_. Namespace.
 * `pull_secret_name`. _String_. Name of the pull-secret secret.
 * `pull_secret`. _String_. Pull secret (base64 encoded).
@@ -27,7 +30,9 @@ This role installs and configures gitops operator on an Openshift cluster.
     * `bmc_password`. _String_. BMC node password.
 
 ## Example Playbook
+
 ```yaml
+
 - hosts: servers
 
   roles:
@@ -35,7 +40,9 @@ This role installs and configures gitops operator on an Openshift cluster.
 ```
 
 ## License
+
 MIT / BSD
 
 ## Author Information
+
  - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2025-)

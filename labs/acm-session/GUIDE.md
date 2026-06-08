@@ -21,6 +21,7 @@ cd ~/labs/acm/config
 The Web UI for our OpenShift cluster is available [here](https://console-openshift-console.apps.acm.local.lab/)  
 It is also possible to work using `oc` or `kubectl` from your computer using the OpenShift API.  
 For it to function correctly, these DNS addresses must be resolved:
+
 - `console-openshift-console.apps.acm.local.lab`
 - `oauth-openshift.apps.acm.local.lab`
 - `api.acm.local.lab`
@@ -103,6 +104,7 @@ We've finished installing ACM, but the assisted service isn't working yet. This 
 
 Let's review the `agent-service-config.yaml` file.  
 In this file we can see 3 storage definitions:
+
 - **databaseStorage**. This will be the storage for the PostgreSQL database that uses `assisted-service`.
 - **filesystemStorage**. This space will store logs and other user data from the `assisted-service`.
 - **imageStorage**. This will be the storage that the `assisted-image-service` will use to save CoreOS images.
@@ -175,6 +177,7 @@ $ oc edit deployment -n multicluster-engine infrastructure-operator
 ```
 ```yaml
 env:
+
 - name: SERVICE_IMAGE
   value: quay.io/mlorenzofr/assisted-service@sha256:09be37e70f8a83e8ecdcbd55f1fb9cb04acd2535a65e005c776f76cbecb76aa0
 ```
@@ -196,6 +199,7 @@ With `assisted-service` up and running, it's time to create a spoke cluster from
 In terms of resources, we already have 4 VMs created in our lab. The VMs are currently powered off. When we create the resources in our OpenShift cluster, the VMs will automatically power on and be provisioned to install a new cluster.
 
 To create this cluster we will use the following kinds of resources:
+
 - `BareMetalHost`. It is the logical representation of a physical machine. It is related to an _Infraenv_.
 - `InfraEnv`. Defines an infrastructure and its properties. Contains references to a _ClusterDeployment_ and its _AgentClusterInstall_.
 - `AgentClusterInstall`. This contains the _ClusterDeployment_ installation properties.
@@ -203,7 +207,6 @@ To create this cluster we will use the following kinds of resources:
 
 > [!WARNING]
 > These objects use secrets to store personal credentials. These secrets have been provisioned beforehand in our cluster.
-
 > [!WARNING]
 > By default, the Openshift only searches for `BareMetalHosts` in the `openshift-machine-api` namespace. This is already configured in our environment, but if setting up this scenario from scratch, the cluster provisioning configuration would need to be patched.
 > `oc patch provisioning/provisioning-configuration -p '{"spec":{"watchAllNamespaces":true}}' --type merge`
@@ -302,10 +305,12 @@ $ oc extract -n spoke secret/spoke-acm-admin-kubeconfig --to=~/labs/acm/spoke-1 
 In our environment we have an active SNO cluster that we can import into our hub cluster.
 
 The steps to follow are the following:
+
 1. Create a namespace with the same name as the cluster we are going to import.
 ```shell
 oc create ns acm-spoke-2
 ```
+
 2. Create a secret called `auto-import-secret` using the kubeconfig of the cluster to be imported.
 ```yaml
 apiVersion: v1
@@ -320,6 +325,7 @@ stringData:
    ...
 type: Opaque
 ```
+
 3. Apply the `ManagedCluster` manifest.
 ```shell
 oc apply -f managedcluster-acm-spoke-2.yaml

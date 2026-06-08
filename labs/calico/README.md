@@ -1,17 +1,21 @@
 # calico lab
+
 This lab deploys an Openshift cluster with Calico as SDN.  
 The cluster is installed using the **ABI** (agent based installer) method.
 
 ## Requirements
+
 None.
 
 ## Steps
+
 1. Deploy:
 ```shell
 ap labs/calico/deploy.yaml
 ```
 
 ## Validation
+
 1. Check if the Openshift cluster is running:
 ```shell
 $ export KUBECONFIG=/root/labs/calico/deploy/auth/kubeconfig
@@ -26,11 +30,13 @@ $ oc get clusterversion
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.16.9    True        False         4m4s    Cluster version is 4.16.9
 ```
+
 2. Validate in the network configuration if the Network Type is set to Calico:
 ```shell
 $ oc get network.config/cluster -o jsonpath='{.status.networkType}{"\n"}'
 Calico
 ```
+
 3. Get the status of Calico components:
 ```shell
 $ oc get tigerastatuses
@@ -41,6 +47,7 @@ ippools     True        False         False      30m
 ```
 
 ## Links
+
 * [Certified OpenShift CNI Plug-ins](https://access.redhat.com/articles/5436171)
 * [Install an OpenShift 4 cluster with Calico](https://docs.tigera.io/calico/latest/getting-started/kubernetes/openshift/installation)
 * [Calico CTL image repository](https://quay.io/repository/calico/ctl)

@@ -1,17 +1,22 @@
 # appliance lab
+
 In this lab we create an environment using the appliance tool.
 
 ## Requirements
+
 None.
 
 ## Steps
+
 1. Create a new appliance image with:
 ```shell
 ap labs/appliance/deploy.yaml
 ```
+
 2. Validate
 
 ## Validation
+
 1. Check if the cluster is running:
 ```shell
 $ export KUBECONFIG=/home/ocp-labs/appliance/deploy/auth/kubeconfig
@@ -30,5 +35,6 @@ version   4.18.2    True        False         17m     Cluster version is 4.18.2
 ```
 
 ## Links
+
 * [OpenShift Appliance User Guide](https://github.com/openshift/appliance/blob/master/docs/user-guide.md)
 * [Appliance Config](https://github.com/openshift/appliance/blob/master/docs/appliance-config.md)

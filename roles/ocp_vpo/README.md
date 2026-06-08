@@ -1,9 +1,11 @@
 # ocp_vpo
+
 This role installs the Validated Patterns Operator (VPO) on an Openshift cluster.
 
 ## Requirements
 
 ## Role Variables
+
 * `ocp_vpo_apply`. _Bool_. Set wether the role should apply the manifests or simply create them.
 * `ocp_vpo_channel`. _String_. Operator subscription channel.
 * `ocp_vpo_ns`. _String_. Namespace for the operator.
@@ -13,7 +15,9 @@ This role installs the Validated Patterns Operator (VPO) on an Openshift cluster
 * `ocp_vpo_version`. _String_. Install the specific version set in this variable.
 
 ## Example Playbook
+
 ```yaml
+
 - hosts: servers
 
   roles:
@@ -21,7 +25,9 @@ This role installs the Validated Patterns Operator (VPO) on an Openshift cluster
 ```
 
 ## License
+
 MIT / BSD
 
 ## Author Information
+
  - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2025-)

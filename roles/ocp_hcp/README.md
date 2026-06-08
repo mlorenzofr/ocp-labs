@@ -1,13 +1,17 @@
 # ocp_hcp
+
 This role installs (optional) and configures **Hosted Clusters** (AKA **Hypershift)**.
 
 ## Requirements
+
 This role requires the following roles:
+
 * **ocp_assisted_service**, for managing infrastructure resources.
 * **ocp_metallb**, to enable communication between clusters.
 * **dnsmasq**, to create DNS records for the Hosted Clusters.
 
 ## Role Variables
+
 * `ocp_hcp_apply`. _Bool_. Set wether the role should apply manifests or simply create them.
 * `ocp_hcp_clusters`. _List_. List of `Hosted Clusters` and their configuration.
 * `ocp_hcp_kubeapi_ips`. _List_. List of IP addresses available for the kubeapi `LoadBalancer`.
@@ -18,6 +22,7 @@ This role requires the following roles:
 * `ocp_hcp_ssh_key`. _String_. Default value for _sshAuthorizedKey_ on `hostedclusters`.
 
 ### Variables for `ocp_hcp_clusters` elements
+
 * `name`. _String_. Cluster name.
 * `ns`. _String_. Cluster namespace.
 * `ctl_availability`. _String_. Controller Availability Policy. It could be `SingleReplica`or `HighlyAvailable`.
@@ -36,7 +41,9 @@ This role requires the following roles:
 * `lb`. _String_. Hub cluster IP address. Required for management.
 
 ## Example Playbook
+
 ```yaml
+
 - hosts: servers
 
   vars:
@@ -70,7 +77,9 @@ This role requires the following roles:
 ```
 
 ## License
+
 MIT / BSD
 
 ## Author Information
+
  - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2024-)

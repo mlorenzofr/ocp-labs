@@ -5,6 +5,7 @@ This task automatically calculates available MAC and IP addresses for lab VMs ba
 ## How It Works
 
 The task analyzes:
+
 1. **Active leases** from `/var/lib/dnsmasq/dnsmasq.leases`
 2. **Reserved IPs** from `/etc/dnsmasq.d/*.conf` files (host-record, address, dhcp-host entries)
 
@@ -22,6 +23,7 @@ The feature is enabled by default (`lab_auto_addresses: true` in `roles/lab/defa
 Simply specify the number of VMs needed:
 
 ```yaml
+
 - name: 'Import ABI playbook'
   ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
   vars:
@@ -68,11 +70,13 @@ vars:
 ### Single Node OpenShift (SNO)
 
 For SNO deployments (`lab_master_replicas: 1`):
+
 - `lab_api_ips` and `lab_ingress_ips` will be set to the same IP as `lab_abi_ip`
 
 ### Multi-Node Clusters
 
 For non-SNO deployments:
+
 - `lab_api_ips` and `lab_ingress_ips` will be assigned 2 available IPs from the range `192.168.x.100-254`
 
 ## Example Output

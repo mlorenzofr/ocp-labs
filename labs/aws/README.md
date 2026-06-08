@@ -43,4 +43,5 @@ open-cluster-management   aws-group-one   1      0         0       <redacted>   
 ```
 
 ## Links
+
 - [Hive ClusterPool](https://github.com/openshift/hive/blob/master/docs/clusterpools.md)

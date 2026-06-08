@@ -61,6 +61,7 @@ To simplify configuration, it is possible to create an `Storagecluster` using a 
 ## Example Playbook
 
 ```yaml
+
 - hosts: servers
 
   vars:

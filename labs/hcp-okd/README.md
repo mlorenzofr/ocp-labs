@@ -1,8 +1,10 @@
 # hcp-okd lab
+
 In this lab the goal is install an Openshift Cluster with an OKD _spoke cluster_ (`HostedCluster`) inside.  
 We will use **Hypershift** to do it.
 
 ## Requirements
+
 Not all combinations of OKD and Fedora Core OS work well.  
 This lab has been tested with these software versions:
 |  OCP     | Fedora Core OS     | OKD                        | status             | comment                                                                                        |
@@ -13,12 +15,14 @@ This lab has been tested with these software versions:
 |  **4.15.4**  | **38** (20231027.3.2)  | **4.13.0** (2023-10-28-065448) | :x:                | okd cluster installs but ingress controller does not work                                      |
 
 ## Steps
+
 1. Execute the playbook `deploy.yaml`:
 ```shell
 ap labs/hcp-okd/deploy.yaml
 ```
 
 ## Validation
+
 1. Check if the _hub cluster_ is running:
 ```shell
 $ export KUBECONFIG=/root/labs/okd/deploy/auth/kubeconfig
@@ -34,6 +38,7 @@ $ oc get clusterversion
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.15.4    True        False         15h     Cluster version is 4.15.4
 ```
+
 2. Check if OKD _spoke cluster_ is running:
 ```shell
 $ oc get hostedcluster -n spoke
@@ -86,6 +91,7 @@ packageserver-6f685747-vdjqs                          2/2     Running   0       
 redhat-marketplace-catalog-7b87d5749f-5n6r4           1/1     Running   0          74m
 redhat-operators-catalog-5b4c9cfd9f-wlbvj             1/1     Running   0          74m
 ```
+
 3. Check if the OKD cluster works:
 ```shell
 $ export KUBECONFIG=/root/labs/okd/spoke/auth/kubeconfig
@@ -124,5 +130,6 @@ storage                                    4.12.0-0.okd-2023-03-18-084815   True
 ```
 
 ## Links
+
 * [OKD release images](https://quay.io/repository/openshift/okd?tab=tags)
 * [CoreOS Fedora builds](https://builds.coreos.fedoraproject.org/browser?stream=stable&arch=x86_64)

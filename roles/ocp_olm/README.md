@@ -30,11 +30,12 @@ None.
 
 ### Variables for `ConsolePlugin` elements
 
-_TODO_
+**TODO**
 
 ## Example Playbook
 
 ```yaml
+
 - hosts: servers
 
   tasks:

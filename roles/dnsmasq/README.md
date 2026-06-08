@@ -1,10 +1,13 @@
 # dnsmasq
+
 Install and configure dnsmasq on a RHEL/Fedora systems.
 
 ## Requirements
+
 None.
 
 ## Role Variables
+
 * `dnsmasq_addresses`. _List_. List of `address` entries for wildcard host resolution.
 * `dnsmasq_bind_dynamic`. _Bool_. Enable/disable dynamic interface binding.
 * `dnsmasq_bogus_priv`. _Bool_. If enabled, never forward addresses in the non-routed address spaces.
@@ -44,7 +47,9 @@ None.
 * `dnsmasq_user`. _String_. UID used to run the dnsmasq process.
 
 ## Example Playbook
+
 ```yaml
+
 - hosts: servers
 
   vars:
@@ -75,6 +80,7 @@ None.
 
 External roles can include or import this role to add their own dnsmasq configuration snippets:
 ```yaml
+
 - name: 'Create dnsmasq snippet'
   ansible.builtin.include_role:
     name: 'dnsmasq'
@@ -86,7 +92,9 @@ External roles can include or import this role to add their own dnsmasq configur
 ```
 
 ## License
+
 MIT / BSD
 
 ## Author Information
+
  - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2025-)

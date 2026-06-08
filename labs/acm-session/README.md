@@ -3,6 +3,7 @@
 This lab prepares an ACM environment for educational purposes.
 
 The environment provides:
+
 - An OpenShift _compact_ cluster with 3 nodes for ACM (_hub cluster_)
 - 3 virtual machines for the 1st _spoke cluster_. (Hive cluster)
 - An SNO cluster as 2nd _spoke cluster_, to be imported by the _hub cluster_.

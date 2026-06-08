@@ -15,5 +15,3 @@ chcon --verbose --type svirt_home_t /home/libvirt-ocp/ostree.ign
 ## Validation
 
 ## Links
-
-* []()

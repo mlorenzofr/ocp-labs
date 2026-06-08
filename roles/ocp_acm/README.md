@@ -37,6 +37,7 @@ None.
 ### Playbook
 
 ```yaml
+
 - hosts: servers
 
   vars:
@@ -49,6 +50,7 @@ None.
 ### Importing a cluster
 
 ```yaml
+
 - name: 'Import external cluster'
   ansible.builtin.import_role:
     name: 'ocp_acm'

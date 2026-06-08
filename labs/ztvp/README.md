@@ -1,17 +1,21 @@
 # ztvp lab
+
 This lab installs a compact Openshift cluster and configures default storage.  
 This environment will be used as a base scenario for the deployment of _Validated Patterns_.
 
 ## Requirements
+
 None.
 
 ## Steps
+
 1. Deploy:
 ```shell
 ap labs/ztvp/deploy.yaml
 ```
 
 ## Validation
+
 1. Check if the Openshift cluster is running:
 ```shell
 $ export KUBECONFIG=~/labs/ztvp/deploy/auth/kubeconfig
@@ -26,6 +30,7 @@ $ oc get clusterversion
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.18.16   True        False         109s    Cluster version is 4.18.16
 ```
+
 2. Check if the cluster has a default `StorageClass`:
 ```shell
 $ oc get sc
@@ -34,6 +39,7 @@ lvms-vg1 (default)   topolvm.io    Delete          WaitForFirstConsumer   true  
 ```
 
 ## Links
+
 * [Validated Patterns](https://validatedpatterns.io/)
 * [Validated Patters at GitHub](https://github.com/validatedpatterns)
 * [Deploying the Multicloud GitOps pattern](https://validatedpatterns.io/patterns/multicloud-gitops/mcg-getting-started/)

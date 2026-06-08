@@ -12,6 +12,7 @@ None.
 ```shell
 ap labs/acm-day2/deploy.yaml
 ```
+
 2. Import the spoke cluster as `ManagedCluster`
 3. Save the spoke kubeconfig
 ```shell

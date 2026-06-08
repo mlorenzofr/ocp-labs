@@ -1,4 +1,5 @@
 # alternative dev-scripts lab
+
 In this lab, the goal is create an environment for **assisted-service** development.  
 The work is based in the previous [dev-scripts experience](https://github.com/openshift-metal3/dev-scripts/blob/master/assisted_deployment.sh).  
 The idea is to have an Openshift cluster where we will install the assisted-installer and hive operators manually.  
@@ -7,14 +8,17 @@ Unfortunately, this lab is not fully functional and we switched to a new solutio
 ## Requirements
 
 ## Steps
+
 1. Execute the playbook `deploy.yaml` with tag `ocp`:
 ```shell
 ap labs/elior/deploy.yaml --tags ocp
 ```
+
 2. Execute the playbook `deploy.yaml` with `postinst`tag:
 ```shell
 ap labs/elior/deploy.yaml --tags postinst
 ```
+
 3. Manual steps:
 ```shell
 oc apply -f lvmcluster-mce-data.yaml
@@ -25,10 +29,12 @@ oc apply -f assisted-service-operator.yaml
 oc apply -f agent-service-config.yaml
 oc apply -f agentinstalladmission-rbac.yaml
 # Here the problems begin
+
 oc apply -f infra/01-env-sno.yaml
 ```
 
 ## Validation
+
 1. Check if the _hub cluster_ is running:
 ```shell
 $ export KUBECONFIG=/root/labs/elior/deploy/auth/kubeconfig
@@ -43,10 +49,12 @@ $ oc get clusterversion
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.15.4    True        False         129m    Cluster version is 4.15.4
 ```
+
 2. Check assisted-installer operator:
 ```shell
 oc get pods -n assisted-installer
 ```
+
 2. Check if OKD _standalone cluster_ is provisioned:
 ```shell
 $ oc get bmh -n hive-sno
@@ -57,6 +65,7 @@ $ oc get clusterdeployment -n hive-sno
 NAME   INFRAID                                PLATFORM          REGION   VERSION                               CLUSTERTYPE   PROVISIONSTATUS   POWERSTATE   AGE
 sno    fbc67676-11b7-4f7c-b6d1-ec501fb98b57   agent-baremetal            4.15.0-0.okd-scos-2024-01-18-223523                 Provisioned       Running      39m
 ```
+
 3. Check if the OKD cluster works:
 ```shell
 $ export KUBECONFIG=/root/labs/elior/sno/auth/kubeconfig
@@ -107,6 +116,7 @@ storage                                    4.15.0-0.okd-scos-2024-01-18-223523  
 ```
 
 ## Known problems
+
 There are problems with `assisted-installer` and `hive` operators.  
 RBAC policies are not included or some CRD's are missing from the installation.  
 In the case of `hive` some problems were resolved using the version `1.2.4355-e5f809f`.  
@@ -122,6 +132,7 @@ E0703 08:57:08.593533       1 reflector.go:147] k8s.io/client-go/informers/facto
 ```
 
 ## Links
+
 * [Feature: Per cluster mirror configuration](https://issues.redhat.com/browse/MGMT-18013)
 * [Configuring Additional Image Registries for the Workload Cluster](https://github.com/openshift-assisted/cluster-api-agent/blob/master/docs/image_registry.md)
 * [Mirror Registry Configuration](Configuring Additional Image Registries for the Workload Cluster)

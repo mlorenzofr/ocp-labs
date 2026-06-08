@@ -1,21 +1,28 @@
 # OCPBUGS-33185 lab
+
 This lab is used to triage the issue [MGMT-17923](https://issues.redhat.com/browse/MGMT-17923).
 
 ## Requirements
+
 Software versions required:
+
 * Openshift **4.13.41**
 * ACM **2.9
 
 ## Steps
+
 ### Hub cluster
+
 1. Install a _compact_ Openshift cluster with:
 ```shell
 ap labs/mgmt-17923/deploy.yaml --tags ocp
 ```
+
 2. Install ACM.
 ```shell
 ap labs/mgmt-17923/deploy.yaml --tags acm
 ```
+
 3. Modify the definition of BMHs to share the same secret between them
 4. Apply the set up manifests:
 ```shell
@@ -27,18 +34,23 @@ oc apply -f agent-service-config.yaml
 oc apply -f infra/01-env-infra1.yaml
 oc apply -f infra/02-bmh-infra1.yaml
 ```
+
 5. Delete a host using the **RHACM** web console.
+
 * `Infrastructure`
- * `Host Inventory`
-  * Select the host menu and push `Remove Host`
+* `Host Inventory`
+* Select the host menu and push `Remove Host`
+
 6. Validate
 7. Add the missing secret again
 ```shell
 oc apply -f infra/03-secret.yaml
 ```
+
 8. Validate
 
 ## Validation
+
 1. Check if the cluster is running:
 ```shell
 $ export KUBECONFIG=/root/labs/skrenger/deploy/auth/kubeconfig
@@ -53,12 +65,14 @@ $ oc get clusterversion
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.13.41   True        False         16h     Cluster version is 4.13.41
 ```
+
 2. Verify the ACM installation:
 ```shell
 $ oc get csv -n open-cluster-management
 NAMESPACE                              NAME                                  DISPLAY                                      VERSION   REPLACES                              PHASE
 open-cluster-management                advanced-cluster-management.v2.9.4   Advanced Cluster Management for Kubernetes   2.9.4     advanced-cluster-management.v2.9.3   Succeeded
 ```
+
 3. Check the baremetal hosts, we should have 2 hosts provisioned:
 ```shell
 $ oc get bmh -A
@@ -69,6 +83,7 @@ openshift-machine-api   skrenger-node-1     unmanaged     skrenger-rc7gk-master-
 openshift-machine-api   skrenger-node-2     unmanaged     skrenger-rc7gk-master-1   true             88m
 openshift-machine-api   skrenger-node-3     unmanaged     skrenger-rc7gk-master-2   true             88m
 ```
+
 4. Validate that we have only 1 secret in the inventory namespace:
 ```shell
 $ oc get secrets -n hardware-inventory
@@ -82,6 +97,7 @@ deployer-token-cmxbc           kubernetes.io/service-account-token   4      10m
 pull-secret-infra1             kubernetes.io/dockerconfigjson        1      10m
 skrenger-worker-1-bmc-secret   Opaque                                2      4m12s
 ```
+
 5. After the BMH removal step. Check if the shared secret has been removed:
 ```shell
 $ oc get secrets -n hardware-inventory
@@ -94,12 +110,14 @@ deployer-dockercfg-5hh9l   kubernetes.io/dockercfg               1      15m
 deployer-token-cmxbc       kubernetes.io/service-account-token   4      15m
 pull-secret-infra1         kubernetes.io/dockerconfigjson        1      15m
 ```
+
 6. Get the status of BMHs:
 ```shell
 $ oc get bmh -n hardware-inventory skrenger-worker-1
 NAME                STATE         CONSUMER   ONLINE   ERROR                AGE
 skrenger-worker-1   provisioned              true     registration error   10m
 ```
+
 7. Check the BMH status:
 ```shell
 $ oc get bmh -n hardware-inventory skrenger-worker-1 -o json | jq -r '.status | .errorCount, .errorMessage, .errorType, .goodCredentials'
@@ -114,8 +132,10 @@ registration error
   "credentialsVersion": "81996"
 }
 ```
+
 8. Repeat steps **6** and **7** after recreating the secret.
 
 ## Links
+
 * [BareMetalHost shows "registration error" despite Secret being available](https://issues.redhat.com/browse/MGMT-17923)
 * [Openshift Console for this lab](https://console-openshift-console.apps.skrenger.local.lab/)

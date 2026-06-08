@@ -3,28 +3,34 @@
 ## Requirements
 
 ## Steps
+
 1. Execute the playbook `deploy.yaml`:
 ```shell
 ap labs/cnv-ocp/deploy.yaml
 ```
+
 2. Create the virtual machines for the spoke cluster:
 ```shell
 for i in {1..3}; do oc apply -f vms/cnvn-spoke-${i}.yaml; done
 ```
+
 3. Prepare the **fakefish** image.
 4. Deploy **fakefish** in the hub cluster as it's explained in the [documentation](https://github.com/openshift-metal3/fakefish/blob/main/user-docs/running-fakefish-on-ocp-for-kubevirt.md).
 ```shell
 ap labs/cnv-ocp/deploy.yaml --tags fakefish
 ```
+
 5. With the virtual machines stopped, apply the cluster manifest.
 > [!WARNING]
 > After create a new `BaremetalHost`, bound to the `InfraEnv`, review if the PVC with the discovery ISO has been created. If it's not present, remove the `BaremetalHost` and retry.
+
 6. The cluster installation begins.
 > [!WARNING]
 > The NTP validation takes some time to be validated
 > The discovery ISO doesn't work after writing the image to disk. It may require stop the VM and change the boot order or remove the CD-ROM manually.
 
 ## Validation
+
 1. Check if the cluster is running:
 ```shell
 $ export KUBECONFIG=~/labs/cnvn/deploy/auth/kubeconfig
@@ -39,6 +45,7 @@ $ oc get clusterversion
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.18.16   True        False         19h     Cluster version is 4.18.16
 ```
+
 2. Check `StorageClasses` and `PersistenVolumeClaims`:
 ```shell
 $ oc get sc
@@ -59,6 +66,7 @@ openshift-storage     deviceset1-0-data-0vhg2x                      Bound    pvc
 openshift-storage     deviceset1-1-data-04kt9l                      Bound    pvc-d35bd68e-4aee-4ae4-bfc6-a1c343645e86   180Gi      RWO            lvms-vg1        <unset>                 19h
 openshift-storage     deviceset1-2-data-0d7s9b                      Bound    pvc-e4f6f4f4-5770-4293-9e69-180c4a2a7ecf   180Gi      RWO            lvms-vg1        <unset>                 19h
 ```
+
 3. Check if the _Multicluster Engine_ is installed and running:
 ```shell
 $ oc get csv -n multicluster-engine
@@ -73,6 +81,7 @@ $ oc get pods -n multicluster-engine -l app=assisted-service
 NAME                               READY   STATUS    RESTARTS   AGE
 assisted-service-d4f9885c7-rfl55   2/2     Running   0          19h
 ```
+
 4. Check the `VirtualMachines`:
 ```shell
 $ oc get virtualmachine -A
@@ -81,6 +90,7 @@ default     cnvn-spoke-1   29m     Running   True
 default     cnvn-spoke-2   7m11s   Running   True
 default     cnvn-spoke-3   3m47s   Running   True
 ```
+
 5. Check resources related with the cluster deployment:
 ```shell
 $ oc get infraenv,clusterdeployment,bmh -n spoke
@@ -93,6 +103,7 @@ clusterdeployment.hive.openshift.io/spoke   cecb2a18-d5a3-478f-9f7b-d86ce13c143e
 NAME                                   STATE         CONSUMER   ONLINE   ERROR   AGE
 baremetalhost.metal3.io/cnvn-spoke-1   provisioned              true             4d22h
 ```
+
 6. Check if the _spoke_ cluster works:
 ```
 $ export KUBECONFIG=~/labs/cnvn/spoke/auth/kubeconfig-32707
@@ -144,4 +155,5 @@ storage                                    4.18.16   True        False         F
 ```
 
 ## Links
+
 * [Running FakeFish on OCP for KubeVirt Endpoints](https://github.com/openshift-metal3/fakefish/blob/main/user-docs/running-fakefish-on-ocp-for-kubevirt.md)

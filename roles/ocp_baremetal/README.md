@@ -1,10 +1,13 @@
 # ocp_baremetal
+
 This role installs and configures a baremetal platform on an Openshift cluster.
 
 ## Requirements
+
 This role requires the **dnsmasq** role to create DNS records for `BaremetalHosts`.
 
 ## Role Variables
+
 * `ocp_baremetal_apply`. _Bool_. Set wether the role should apply manifests or simply create them.
 * `ocp_baremetal_bmc_password`. _String_. Default BMC password for `BareMetalHosts`.
 * `ocp_baremetal_bmc_username`. _String_. Default BMC user for `BareMetalHosts`.
@@ -16,13 +19,16 @@ This role requires the **dnsmasq** role to create DNS records for `BaremetalHost
 * `ocp_baremetal_node_memory`. _Number_. Memory size, in MB, assigned in each node.
 
 ### Variables for `ocp_baremetal_infras` elements
+
 * `name`. _String_. `InfraEnv` name.
 * `ns`. _String_. Namespace.
 * `redfish`. _String_. Redfish IP address.
 * `inventory`. _List_. List of machines and their settings.
 
 ## Example Playbook
+
 ```yaml
+
 - hosts: servers
 
   vars:
@@ -40,7 +46,9 @@ This role requires the **dnsmasq** role to create DNS records for `BaremetalHost
 ```
 
 ## License
+
 MIT / BSD
 
 ## Author Information
+
  - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2024-)

@@ -1,6 +1,7 @@
 # pinned-image-set lab
 
 ## Requirements
+
 This lab uses its own network. Create it with:
 ```shell
 kcli create network -c 192.168.129.0/24 -P dhcp=false -P dns=false --domain local.lab pinnedis-net
@@ -9,31 +10,37 @@ A local registry has been configured on a different host.
 The configuration of this additional server is explained [here](docs/registry-server.md).
 
 ## Steps
+
 1. Execute the playbook `deploy.yaml`:
 ```shell
 ap labs/pinned-image-set/deploy.yaml
 ```
+
 2. Mirror the CI registry. It is explained [here](docs/oc-mirror.md)
 3. Disable default operators to avoid noise in the tests. We are not using here.
 ```shell
 oc patch OperatorHub cluster --type json -p '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": true}]'
 ```
+
 4. Add the certificate of the internal registry as trusted source:
 ```shell
 oc apply -f registry-ca-configmap.yaml
 oc patch images.config/cluster --type=merge --patch='{"spec":{"additionalTrustedCA":{"name":"registry-ca"}}}'
 ```
+
 5. Change the upstream and channel to use nightly releases:
 ```shell
 oc patch clusterversion/version --patch '{"spec":{"upstream":"https://amd64.ocp.releases.ci.openshift.org/graph"}}' --type=merge
 oc patch clusterversion/version --patch '{"spec":{"channel":"nightly"}}' --type merge
 ```
+
 6. Enable Technology Preview features:
 > This step requires deploying a new configuration to the nodes. This will take some time. Monitor the cluster operators and wait until the cluster is stable again.
 ```shell
 oc apply -f enable-techpreview.yaml
 oc adm wait-for-stable-cluster --minimum-stable-period=300s
 ```
+
 7. Disable the `ImageStreamTags` _samples_ because they will cause [problems](https://issues.redhat.com/browse/OCPBUGS-35199) during the upgrade.
 ```shell
 declare -a tags
@@ -77,12 +84,15 @@ done
 8. Set the registries configuration to use the internal registry:
 ```shell
 # oc apply -f icsp-generic-0.yaml
+
 oc apply -f icsp-release-0.yaml
 ```
+
 9. Block Internet access from the lab network. This way we can be sure that only internal registry is used.
 ```shell
 iptables -I LIBVIRT_FWO 1 -s 192.168.129.0/24 ! -d 192.168.129.0/24 -j REJECT
 ```
+
 10. Add the images to the `pinned-image-set.yaml` file. They can be obtained with:
 ```shell
 oc adm --insecure=true release info pinnedis-registry.pinnedis.local.lab/openshift/release-images:4.17.0-0.nightly-2024-08-01-100805-x86_64 --output=json \
@@ -95,28 +105,33 @@ Besides that we should add the release image to the list:
 oc adm release info pinnedis-registry.pinnedis.local.lab/openshift/release-images:4.17.0-0.nightly-2024-08-01-100805-x86_64 --insecure=true \
   | awk '/Pull From/ { print "    - name: "$3 }'
 ```
+
 11. Apply the `PinnedImageSet` and wait for the images to download.
 > Note: We can verify if the process has finished by checking the images in the nodes or in the nginx access log.
 ```shell
 oc apply -f pinned-image-set.yaml
 ```
+
 12. Stop the internal registry
 > _WARNING: The upgrade is not possible without registry_  
 > This step is not possible right now
 ```shell
 pinnedis-registry:~# podman stop registry
 ```
+
 13. Disable `TechPreview` for the upgrade. Follow the steps provided [in this document](docs/disable-techpreview.md)
 14. For the cluster upgrade:
 ```shell
 oc adm upgrade --to-image=pinnedis-registry.pinnedis.local.lab/openshift/release-images@sha256:1995202f11dc5a4763cdc44ff30d4d4d6560b3a6e29873b51af2992bd8e33109 --force --allow-not-recommended=true --allow-explicit-upgrade
 ```
+
 15. To follow up the upgrade progress:
 ```shell
 watch -n 10 "oc adm upgrade && oc get co && oc get nodes -o wide"
 ```
 
 ## Validation
+
 1. Check if the Openshift cluster is running:
 ```shell
 $ export KUBECONFIG=/root/labs/pinnedis/deploy/auth/kubeconfig
@@ -167,11 +182,13 @@ operator-lifecycle-manager-packageserver   4.16.0-0.nightly-2024-06-06-064349   
 service-ca                                 4.16.0-0.nightly-2024-06-06-064349   True        False         False      30m
 storage                                    4.16.0-0.nightly-2024-06-06-064349   True        False         False      30m
 ```
+
 2. Check if the CR `PinnedImageSet` is available in the API:
 ```shell
 $ oc api-resources | grep PinnedImageSet
 pinnedimagesets          machineconfiguration.openshift.io/v1alpha1    false        PinnedImageSet
 ```
+
 3. After registry mirroring, check if the target release is available in the internal registry:
 ```shell
 $ skopeo inspect docker://pinnedis-registry.pinnedis.local.lab/openshift/release-images:4.17.0-0.nightly-2024-06-06-110324-x86_64
@@ -199,6 +216,7 @@ $ skopeo inspect docker://pinnedis-registry.pinnedis.local.lab/openshift/release
 
 ... omitted ...
 ```
+
 4. Without Internet access, start a ubi8 container to test if the local registry works fine:
 ```shell
 $ oc run -n default --image=registry.access.redhat.com/ubi8/ubi@sha256:143123d85045df426c5bbafc6863659880ebe276eb02c77ee868b88d08dbd05d ubi8 -it --restart=Never
@@ -207,11 +225,13 @@ If you don't see a command prompt, try pressing enter.
 
 $ oc delete pod ubi8
 ```
+
 5. Once the pinned images are downloaded, we test on the nodes if we have it in the CRI-O cache:
 ```shell
 pinnedis-node-1 $ crictl images --digests --no-trunc | grep sha256:001c49f4fbcc2122066fd53f7f2abb6822ebd1f89cbfcb55a9e58548f33c7289
 quay.io/openshift-release-dev/ocp-v4.0-art-dev   <none>              sha256:001c49f4fbcc2122066fd53f7f2abb6822ebd1f89cbfcb55a9e58548f33c7289   ff6151f6a07831a8bbd32e406a5f302f1bba0e1c39dfcdb772b98c3f15100027   495MB
 ```
+
 6. Check if all images present in the release are in the CRI-O cache:
 ```shell
 [root@pinnedis-node-1 ~]# /var/home/core/pinned-images.sh 4.17.0-ec.0-x86_64 pinnedis-registry.pinnedis.local.lab/openshift/release-images | wc -l
@@ -219,6 +239,7 @@ quay.io/openshift-release-dev/ocp-v4.0-art-dev   <none>              sha256:001c
 ```
 
 ## Links
+
 * [Openshift dev releases](https://quay.io/repository/openshift-release-dev/ocp-release?tab=tags)
 * [Openshift 4.16 clients](https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.16.0-rc.3)
 * [Mirroring images using oc-mirror](https://docs.openshift.com/container-platform/4.15/installing/disconnected_install/installing-mirroring-disconnected.html)

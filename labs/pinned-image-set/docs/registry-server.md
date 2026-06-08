@@ -1,8 +1,10 @@
 # Local registry server
+
 The registry server has been installed in a different VM for an easier monitoring and control.  
 The testing could be done using Quay but the requirements for this registry are lower.  
 
 ## VM settings
+
 * vCPUs: 2
 * Memory: 4096 MB
 * Disk: 100 GB
@@ -11,6 +13,7 @@ The testing could be done using Quay but the requirements for this registry are 
 ## Software setup
 
 ### nginx
+
 ```shell
 dnf install nginx -y
 ```
@@ -70,12 +73,15 @@ semodule -X 300 -i my-nginx.pp
 ```
 
 ### podman
+
 ```shell
 dnf install podman -y
 ```
 
 ## Set up the registry
+
 ### Prepare the filesystem
+
 ```shell
 $ mkdir /var/lib/registry
 $ lvcreate -L 50G -n registry fedora_pinnedis-registry
@@ -86,12 +92,14 @@ $ mount /var/lib/registry/
 ```
 
 ### Start the registry
+
 ```shell
 $ podman pull quay.io/mlorenzofr/registry:latest
 $ podman run -d -p 5000:5000 --restart always --name registry -v /var/lib/registry:/var/lib/registry:Z registry:latest
 ```
 
 ## Validate
+
 On an external host, copy the self-signed certificate to `/etc/containers/certs.d/`.
 ```shell
 $ mkdir /etc/containers/certs.d/pinnedis-registry.pinnedis.local.lab
@@ -104,6 +112,7 @@ $ podman push pinnedis-registry.pinnedis.local.lab/ubi8/ubi --remove-signatures
 ```
 
 ## Links
+
 * [Deploy a registry server](https://distribution.github.io/distribution/about/deploying/)
 * [CNCF Distribution nginx recipes](https://distribution.github.io/distribution/recipes/nginx/)
 * [containers-certs.d](https://github.com/containers/image/blob/main/docs/containers-certs.d.5.md)

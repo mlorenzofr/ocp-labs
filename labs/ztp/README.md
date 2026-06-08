@@ -1,25 +1,31 @@
 # ztp lab
+
 This lab installs a _compact_ Openshift cluster with ACM, Gitops and TALM.  
 In the [ztp-example](https://github.com/mlorenzofr/ztp-example) repository there is a deployment of an SNO cluster that can be tested on day-2.
 
 ## Requirements
+
 None.
 
 ## Steps
+
 1. Execute the playbook `deploy.yaml`:
 ```shell
 ap labs/ztp/deploy.yaml
 ```
+
 2. Configure the ArgoCD applications:
 ```shell
 ap labs/ztp/deploy.yaml --tags argocd
 ```
+
 3. If you are using the ztp-example repository, extract the cluster configuration with:
 ```shell
 ap labs/ztp/deploy.yaml --tags hive-config
 ```
 
 ## Validation
+
 1. Check if the Openshift cluster is running:
 ```shell
 $ export KUBECONFIG=~/ztp/deploy/auth/kubeconfig
@@ -34,6 +40,7 @@ $ oc get clusterversion
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.18.16   True        False         107m    Cluster version is 4.18.16
 ```
+
 2. Check if the ACM, GitOps and TALM operators are installed:
 ```shell
 $ oc get csv -n open-cluster-management
@@ -42,6 +49,7 @@ advanced-cluster-management.v2.13.3        Advanced Cluster Management for Kuber
 openshift-gitops-operator.v1.16.1          Red Hat OpenShift GitOps                     1.16.1    openshift-gitops-operator.v1.16.0-0.1746014725.p   Succeeded
 topology-aware-lifecycle-manager.v4.18.0   Topology Aware Lifecycle Manager             4.18.0                                                       Succeeded
 ```
+
 3. Review if `assisted-service` is running:
 ```shell
 $ oc get pods -n multicluster-engine -l app=assisted-service
@@ -54,7 +62,9 @@ assisted-image-service-0   1/1     Running   0          54m
 ```
 
 ### ZTP spoke cluster validation
+
 To validate the spoke cluster defined on the [repository ztp-example](https://github.com/mlorenzofr/ztp-example):
+
 1. Check the `BaremetalHost` status:
 ```shell
 $ oc get bmh -A
@@ -64,18 +74,21 @@ openshift-machine-api   ztp-master-2   unmanaged     ztp-mwlqs-master-1   true  
 openshift-machine-api   ztp-master-3   unmanaged     ztp-mwlqs-master-2   true             94m
 ztp-sno                 ztp-bmh-1      provisioned                        true             23m
 ```
+
 2. Check the `infraenv`:
 ```shell
 $ oc get infraenv -A
 NAMESPACE   NAME      ISO CREATED AT
 ztp-sno     ztp-sno   2025-06-09T15:57:18Z
 ```
+
 3. Check the `agent`:
 ```shell
 $ oc get agent -A
 NAMESPACE   NAME                                   CLUSTER   APPROVED   ROLE     STAGE
 ztp-sno     759451b4-544a-4163-9a9c-08845888b346   ztp-sno   true       master   Done
 ```
+
 4. Check the `clusterdeployment`:
 ```shell
 $ oc get clusterdeployment -A
@@ -87,6 +100,7 @@ ztp-sno     ztp-sno   039f12a8-d496-4089-a886-166e7a83e54b   agent-baremetal    
 ```shell
 ap labs/ztp/deploy.yaml --tags hive-config
 ```
+
 6. Connect you to the _spoke_ cluster using the CLI:
 ```shell
 $ export KUBECONFIG=~/labs/ztp/ztp-sno/auth/kubeconfig
@@ -138,5 +152,6 @@ storage                                    4.18.16   True        False         F
 ```
 
 ## Links
+
 * [OpenShift GitOps Usage Guide](https://github.com/redhat-developer/gitops-operator/blob/master/docs/OpenShift%20GitOps%20Usage%20Guide.md)
 * [Updating managed clusters with the Topology Aware Lifecycle Manager](https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/edge_computing/cnf-talm-for-cluster-updates)

@@ -1,12 +1,15 @@
 # ocp_assisted_service
+
 This role installs and configures **assisted-service** on an Openshift cluster.
 
 ## Requirements
+
 This role uses the **ocp_mce** or **ocp_acm** roles to deploy the _assisted-service_.  
 For persistent storage, this role uses the **ocp_lvms** role.  
 To create inventory nodes, this role uses the **ocp_baremetal** role.
 
 ## Role Variables
+
 * `ocp_assisted_service_apply`. _Bool_. Set wether the role should apply manifests or simply create them.
 * `ocp_assisted_service_ca_bundle`. _String_. Trusted CA bundle for custom image registries.
 * `ocp_assisted_service_config`. _Dict_. Key-value entries with custom settings for the _assisted-service_.
@@ -28,11 +31,13 @@ To create inventory nodes, this role uses the **ocp_baremetal** role.
 * `ocp_assisted_service_ui_image`. _String_. Image used to install the assisted-installer-ui.
 
 ### Variables for `ocp_assisted_service_images` elements
+
 * `ocp_version`. _String_. Openshift release version.
 * `arch`. _String_. Openshift release CPU architecture.
 * `version`. _String_. Image version.
 
 ### Variables for `ocp_assisted_service_infraenvs` elements
+
 * `cluster_name`. _String_. `ClusterDeployment` name to reference in `InfraEnv`.
 * `full_iso`. _Bool_. Change the image type from _minimal_ (default) to _full_.
 * `name`. _String_. `InfraEnv` name.
@@ -45,11 +50,14 @@ To create inventory nodes, this role uses the **ocp_baremetal** role.
 * `inventory`. _List_. List of machines and their settings.
 
 ### Variables for `ocp_assisted_service_registries` elements
+
 * `location`. _String_. Image registry location.
 * `mirror`. _String_. Mirror registry location.
 
 ## Example Playbook
+
 ```yaml
+
 - hosts: servers
 
   vars:
@@ -74,7 +82,9 @@ To create inventory nodes, this role uses the **ocp_baremetal** role.
 ```
 
 ## License
+
 MIT / BSD
 
 ## Author Information
+
  - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2024-)

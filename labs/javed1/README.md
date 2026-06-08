@@ -1,16 +1,20 @@
 # std-slim lab
+
 This lab installs a compact Openshift cluster with an additional node (BMH) as worker add in day 2.
 
 ## Requirements
+
 None.
 
 ## Steps
+
 1. Deploy:
 ```shell
 ap labs/javed1/deploy.yaml
 ```
 
 ## Validation
+
 1. Check if the Openshift cluster is running:
 ```shell
 $ export KUBECONFIG=/root/labs/stdslim/deploy/auth/kubeconfig

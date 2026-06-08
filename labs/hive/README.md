@@ -1,23 +1,29 @@
 # hive lab
+
 In this lab the goal is install an Openshift Cluster with a **SNO** _spoke cluster_ inside.  
 The cluster will be type **standalone** (not _hosted_ like Hypershift).
 
 ## Custom Resources (CRs)
+
 The CRs of interest used in this lab are:
+
 * `ClusterImageSet`. It references an OpenShift release image. This will be used by the `ClusterDeployment` to know what version of Openshill install.
 * `ClusterDeployment`. It is the object used to define a cluster. Here we set the properties and installation method.
 * `AgentClusterInstall`. This object is an hive extension used to install the cluster using the `assisted-service` API.
 
 ## Requirements
+
 None.
 
 ## Steps
+
 1. Execute the playbook `deploy.yaml`:
 ```shell
 ap labs/hive/deploy.yaml
 ```
 
 ## Validation
+
 1. Check if the _hub cluster_ is running:
 ```shell
 $ export KUBECONFIG=/root/labs/hive/deploy/auth/kubeconfig
@@ -32,6 +38,7 @@ $ oc get clusterversion
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.15.4    True        False         12m     Cluster version is 4.15.4
 ```
+
 2. Check if the _spoke cluster_ is provisioned:
 ```shell
 $ oc get bmh -n hive-sno
@@ -42,6 +49,7 @@ $ oc get clusterdeployment -n hive-sno
 NAME    INFRAID                                PLATFORM          REGION   VERSION   CLUSTERTYPE   PROVISIONSTATUS   POWERSTATE   AGE
 spoke   63414bd9-45af-48f7-9df1-702a8e7e0133   agent-baremetal            4.14.8                  Provisioned       Running      32m
 ```
+
 3. Check if the _spoke_ cluster works:
 ```shell
 $ export KUBECONFIG=/root/labs/hive/spoke/auth/kubeconfig
@@ -92,6 +100,7 @@ storage                                    4.14.8    True        False         F
 ```
 
 ## Links
+
 * [Using Hive](https://github.com/openshift/hive/blob/master/docs/using-hive.md)
 * [ClusterDeployment Spec](https://github.com/openshift/hive/blob/master/apis/hive/v1/clusterdeployment_types.go)
 * [AgentClusterInstall Spec](https://github.com/openshift/assisted-service/blob/master/api/hiveextension/v1beta1/agentclusterinstall_types.go)

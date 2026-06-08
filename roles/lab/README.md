@@ -1,10 +1,13 @@
 # lab
+
 This role is used to create labs in my beaker machine.
 
 ## Requirements
+
 This role depends on the **dnsmasq** role to create DNS resolution for the lab machines.
 
 ## Role Variables
+
 * `lab_api_ips`. _List_. List of IP addresses assigned OCP API.
 * `lab_bootstrap_ip`. _String_. IP address of the machine used for bootstrap OCP cluster.
 * `lab_bootstrap_mac`. _String_. MAC address of the machine used for bootstrap OCP cluster.
@@ -43,6 +46,7 @@ This role depends on the **dnsmasq** role to create DNS resolution for the lab m
 * `lab_worker_replicas`. _Number_. Number of worker nodes.
 
 ### ABI related variables
+
 * `lab_abi`. _Bool_. Enable Agent Based Installation.
 * `lab_abi_ip`. _String_. Assisted Service IP for ABI installation.
 * `lab_node_dhcp`. _Bool_. Enable/Disable IPv4 DHCP for nodes.
@@ -51,6 +55,7 @@ This role depends on the **dnsmasq** role to create DNS resolution for the lab m
 * `lab_node_ipv6`. _Bool_. Enable/Disable IPv6 network stack for nodes.
 
 ### Appliance related variables
+
 * `lab_appliance`. _Bool_. Enable Appliance installation (ABI subtype).
 * `lab_appliance_arch`. _String_. Platform architecture.
 * `lab_appliance_channel`. _String_. Openshift distribution channel.
@@ -60,11 +65,13 @@ This role depends on the **dnsmasq** role to create DNS resolution for the lab m
 * `lab_appliance_version`. _String_. Openshift version.
 
 ### AWS related variables
+
 * `lab_aws_instance_type_master`. _String_. Instance type used for master nodes.
 * `lab_aws_instance_type_worker`. _String_. Instance type used for worker nodes.
 * `lab_aws_region`. _String_. AWS region to deploy the lab.
 
 ### Variables for `lab_hosts` items
+
 * `cpus`. _Number_. Machine vCPUs.
 * `disk`. _String_. Device used to install Openshift (default: `/dev/vda`).
 * `disk_data`. _Number_. Disk size for data disk (GB).
@@ -76,10 +83,13 @@ This role depends on the **dnsmasq** role to create DNS resolution for the lab m
 * `role`. _String_. Machine role (`master|worker`).
 
 ## Dependencies
+
 None.
 
 ## Example Playbook
+
 ```yaml
+
 - hosts: servers
 
   vars:
@@ -92,7 +102,9 @@ None.
 ```
 
 ### Setting custom capabilities
+
 ```yaml
+
 - hosts: servers
 
   vars:
@@ -122,10 +134,13 @@ None.
 ```
 
 ## License
+
 MIT / BSD
 
 ## Versioning
+
 The version number takes the form X.Y.Z where:
+
 * **X** is the major version. It changes with the Ansible major version.
 * **Y** is the minor version. It changes with new functionalities.
 * **Z** is the patch version. It changes with fixes or cosmetic changes.
@@ -133,4 +148,5 @@ The version number takes the form X.Y.Z where:
 For Ansible 7 the major version is **1**.
 
 ## Author Information
+
  - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2024-)

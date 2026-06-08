@@ -1,12 +1,15 @@
 # OCPBUGS-33185 lab
+
 This lab is used to triage the issue [OCPBUGS-33185](https://issues.redhat.com/browse/OCPBUGS-33185).  
 We will install 2 Openshift clusters:
+
 * A _hub cluster_, with a stable version (**4.15.4**). It will be a _compact cluster_ with 3 nodes.
 * A _spoke cluster_, with a nightly build (**4.16.0-nightly**). It will be a _SNO cluster_.
 
 Finally, we will install a non-GA version of ACM (**2.10.3**) and import the _spoke cluster_ into the _hub cluster_.
 
 ## Requirements
+
 We will need credentials to use QE resources because the software builds are not yet public.  
 To install Openshift we will need the `openshift-install` tool for each installed version.  
 ```shell
@@ -14,13 +17,16 @@ oc adm release extract --command=openshift-install registry.ci.openshift.org/ocp
 ```
 
 ## Steps
+
 ### Hub cluster
+
 1. Install a Openshift _compact_ cluster with:
 ```shell
 ap labs/ocpbugs-33185/deploy.yaml --tags ocp
 ```
 
 ### Spoke cluster
+
 2. Switch the `openshift-install` tool to use the version **4.16.0**.
 3. Start _spoke cluster_ installation with:
 ```shell
@@ -28,6 +34,7 @@ ap labs/ocpbugs-33185/deploy.yaml --tags sno
 ```
 
 ### Prepare QE environment
+
 There are some manifests and information omitted from this repository to avoid exposing internal information.  
 This setup must be done **for each** Openshift cluster (hub & spoke).  
 The `klusterlet` pod launched during the cluster import will need the development OCI registry.  
@@ -36,23 +43,27 @@ The `klusterlet` pod launched during the cluster import will need the developmen
 ```shell
 oc set data secret/pull-secret -n openshift-config --from-file=.dockerconfigjson=pull-secret.json
 ```
+
 5. Add the Red Hat's CA as trusted.
 ```shell
 oc apply -f trustedca-configmap.yaml
 oc patch proxy/cluster --type=merge --patch='{"spec":{"trustedCA":{"name":"redhat-ca"}}}'
 oc patch images.config/cluster --type=merge --patch='{"spec":{"additionalTrustedCA":{"name":"redhat-ca"}}}'
 ```
+
 6. Replace the `CatalogSource` **redhat-operators** with **OSBS**.
 ```shell
 oc apply -f catalog-engineering.yaml
 oc patch operatorhubs/cluster --type merge --patch '{"spec":{"sources":[{"disabled": true,"name": "redhat-operators"}]}}'
 ```
+
 7. Set the registries mirroring to use development registry.
 ```shell
 oc apply -f image-config.yaml
 ```
 
 ### Import the SNO cluster
+
 8. Install and configure ACM with:
 ```shell
 ap labs/ocpbugs-33185/deploy.yaml --tags acm
@@ -60,6 +71,7 @@ ap labs/ocpbugs-33185/deploy.yaml --tags acm
 The task will also import the _spoke cluster_.
 
 ## Validation
+
 1. Check if the cluster is running:
 ```shell
 $ export KUBECONFIG=/root/labs/dgon/deploy/auth/kubeconfig
@@ -74,6 +86,7 @@ $ oc get clusterversion
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.15.4    True        False         15h     Cluster version is 4.15.4
 ```
+
 2. On the _hub cluster_ (**dgon**), check the version of the installed operators:
 ```shell
 $ oc get csv -A | grep -v metallb
@@ -83,6 +96,7 @@ openshift-acm                                      advanced-cluster-management.v
 openshift-operator-lifecycle-manager               packageserver                           Package Server                               0.0.1-snapshot                                              Succeeded
 openshift-storage                                  lvms-operator.v4.15.3                   LVM Storage                                  4.15.3                lvms-operator.v4.15.2                 Succeeded
 ```
+
 3. Verify the SNO cluster installation:
 ```shell
 $ export KUBECONFIG=/root/labs/dgonspk/deploy/auth/kubeconfig
@@ -127,12 +141,14 @@ operator-lifecycle-manager-packageserver   4.16.0-0.nightly-2024-05-15-001800   
 service-ca                                 4.16.0-0.nightly-2024-05-15-001800   True        False         False      22m
 storage                                    4.16.0-0.nightly-2024-05-15-001800   True        False         False      21m
 ```
+
 4. On the _spoke cluster_ (**dgonspk**), validate if the debug pod in the `assisted-installer` namespace is not present.
 ```shell
 $ oc get pods -n assisted-installer
 NAME                                  READY   STATUS    RESTARTS   AGE
 assisted-installer-controller-pjlgc   1/1     Running   0          36m
 ```
+
 5. On the _hub cluster_ (**dgon**), check if the _spoke cluster_ has been imported:
 ```shell
 $ oc get managedcluster
@@ -142,6 +158,7 @@ local-cluster   true           https://api.dgon.local.lab:6443      True     Tru
 ```
 
 ## Links
+
 * [OCPBUGS-33185](https://issues.redhat.com/browse/OCPBUGS-33185)
 * [Interacting With CI Image Registries](https://docs.ci.openshift.org/docs/how-tos/use-registries-in-build-farm/)
 * [Openshift Releases](https://openshift-release.apps.ci.l2s4.p1.openshiftapps.com/)
