@@ -80,6 +80,10 @@
       when: lab_platform == 'baremetal'
       notify: 'Remove virtual machines'
 
+    - name: 'Update HAProxy configuration'
+      ansible.builtin.include_role:
+        name: 'haproxy'
+
   handlers:
     - name: 'Restart dnsmasq service'
       ansible.builtin.service:

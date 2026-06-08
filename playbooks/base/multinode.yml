@@ -26,6 +26,7 @@
 
   roles:
     - 'lab'
+    - 'haproxy'
 
   tasks:
     - name: 'Execute base handlers'
