@@ -19,7 +19,7 @@ This template file provides a starting point for your `.user/vars.yml` configura
 ### Required Variables
 
 - **OpenShift Pull Secret**: Required for downloading OpenShift images
-  - Get from: https://console.redhat.com/openshift/install/pull-secret
+  - Get from: <https://console.redhat.com/openshift/install/pull-secret>
   - Can be stored as direct value, in a file, or in a secret manager
 
 - **SSH Public Keys**: Required for accessing cluster nodes

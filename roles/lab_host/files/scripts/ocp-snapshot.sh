@@ -25,7 +25,7 @@ function revert() {
     virsh destroy "${domain}"
     while read -r vdisk file; do
       backing_file=$(qemu-img info -U "${file}" | awk '/^backing file:/ { print $3 }')
-      if [ "x${backing_file}" != "x" ]; then
+      if [ "${backing_file}" != "" ]; then
         virt-xml "${domain}" \
           --edit target="${vdisk}" \
           --disk path="${backing_file}"

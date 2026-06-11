@@ -1,0 +1,43 @@
+---
+name: Super-Linter
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  super-lint:
+    name: Lint code base
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Full git history is needed to get a proper
+          # list of changed files within `super-linter`
+          fetch-depth: 0
+
+      - name: Run Super-Linter
+        uses: super-linter/super-linter@v8.6.0
+        env:
+          DEFAULT_BRANCH: master
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Lint only new or edited files
+          VALIDATE_ALL_CODEBASE: false
+          # Enable specific linters for this Ansible repository
+          VALIDATE_ANSIBLE: true
+          VALIDATE_YAML: true
+          VALIDATE_MARKDOWN: true
+          VALIDATE_BASH: true
+          VALIDATE_DOCKERFILE: true
+          VALIDATE_JSON: true
+          # Ignore certain paths
+          FILTER_REGEX_EXCLUDE: .*gitleaks-report\.json

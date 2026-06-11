@@ -1,5 +1,7 @@
 # Openshift Container Platform labs
 
+[![Super-Linter](https://github.com/mlorenzofr/ocp-labs/actions/workflows/super-linter.yml/badge.svg)](https://github.com/mlorenzofr/ocp-labs/actions/workflows/super-linter.yml)
+
 This repository contains a series of ansible playbooks for creating and configuring OpenShift labs in the Red Hat Beaker environment. It provides automation for deploying various OpenShift configurations including standard clusters, SNO (Single Node OpenShift), hosted control planes, and specialized setups.
 
 ## Table of Contents

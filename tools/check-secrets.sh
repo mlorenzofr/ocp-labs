@@ -81,7 +81,7 @@ if podman run --rm -v "${REPO_DIR}:/repo:z" "${IMAGE}" \
     --no-git \
     ${EXTRA_ARGS} \
     ${VERBOSE} \
-    ${REPORT}; then
+    "${REPORT}"; then
     echo ""
     echo "✅ No secrets detected!"
     exit 0
