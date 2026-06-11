@@ -1,0 +1,17 @@
+repos:
+  # Use local hook with podman (preferred for systems with podman)
+  - repo: local
+    hooks:
+      - id: gitleaks
+        name: Detect hardcoded secrets
+        entry: bash -c 'podman run --rm -v "$(pwd):/repo:z" ghcr.io/gitleaks/gitleaks:v8.30.1 protect --staged --config=/repo/.gitleaks.toml --source=/repo -v'
+        language: system
+        pass_filenames: false
+
+  # Alternative: Use official gitleaks hook (requires docker or podman alias to docker)
+  # Uncomment the section below and comment out the local hook above if needed
+  # - repo: https://github.com/gitleaks/gitleaks
+  #   rev: v8.30.1
+  #   hooks:
+  #     - id: gitleaks-docker
+  #       args: ['--config=.gitleaks.toml']

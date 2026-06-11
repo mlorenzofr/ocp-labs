@@ -3,6 +3,9 @@
 # Don't commit secrets
 secrets/
 
+# Gitleaks reports
+gitleaks-report.json
+
 # Custom user files (env, bash history, ...)
 .user/
 

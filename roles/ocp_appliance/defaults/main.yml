@@ -13,6 +13,6 @@ ocp_appliance_image: 'quay.io/edge-infrastructure/openshift-appliance'
 ocp_appliance_local_registry: false
 ocp_appliance_manifests: []
 ocp_appliance_operators: []
-ocp_appliance_password: 'changeme'
+ocp_appliance_password: ''  # Add your own password in the .user/vars.yml file
 ocp_appliance_pull_policy: '--pull newer'
 ocp_appliance_version: '4.18'

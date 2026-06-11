@@ -1,0 +1,12 @@
+# Gitleaks ignore file
+# Add specific findings to ignore using the fingerprint from gitleaks output
+# Format: <fingerprint>
+
+# Example files with known safe content
+labs/neat/manifest/acm-subscription.yaml:*:dockerconfigjson-secret
+
+# Nutanix CSI snapshot webhook certificate (well-known example cert, marked notsecret)
+/repo/labs/capx/templates/nutanix-csi-crs.yaml.j2:private-key:86
+
+# Add more specific ignores below as needed
+# To get the fingerprint, run: gitleaks detect and copy the fingerprint from the output

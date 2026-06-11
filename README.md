@@ -26,6 +26,28 @@ The `.user` directory contains environment variables, the bash history file and
 └── vars.yml
 ```
 
+## Security
+
+This repository uses [Gitleaks](https://github.com/gitleaks/gitleaks) to prevent
+ committing secrets such as passwords, SSH keys, pull secrets, and other sensitive
+ information.
+
+### Quick Start
+
+```bash
+# Install pre-commit hooks (runs gitleaks automatically before each commit)
+pip install pre-commit
+pre-commit install
+
+# Manual check for secrets
+./tools/check-secrets.sh
+
+# Check only staged files
+./tools/check-secrets.sh --staged
+```
+
+For detailed security guidelines, see [SECURITY.md](SECURITY.md).
+
 ## Examples
 
 ### 1st step

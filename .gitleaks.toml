@@ -1,0 +1,200 @@
+title = "Gitleaks Configuration for OCP Labs"
+
+# Global settings
+[extend]
+useDefault = true
+
+# Disable certain default rules that cause false positives with Ansible/OpenShift
+# We'll rely on our custom rules instead
+[[rules]]
+id = "generic-api-key"
+description = "Disabled - causes false positives with OpenShift resource names"
+regex = '''xxxxxxxxxxxxxxxxx'''  # Effectively disabled
+[[rules]]
+id = "kubernetes-secret-yaml"
+description = "Disabled - replaced by custom dockerconfigjson rules"
+regex = '''xxxxxxxxxxxxxxxxx'''  # Effectively disabled
+
+# Custom rules for OpenShift/Ansible secrets
+[[rules]]
+id = "dockerconfigjson-secret"
+description = "Detects potential dockerconfigjson secrets in Kubernetes/OpenShift manifests"
+regex = '''\.dockerconfigjson:\s*['"]['"]?\{[^}]*auths[^}]*\}['"]['"]?'''
+keywords = [
+    "dockerconfigjson",
+    "auths",
+]
+[rules.allowlist]
+paths = [
+    '''labs/neat/manifest/acm-subscription\.yaml''',  # Already has <redacted>
+]
+regexes = [
+    '''<redacted>''',  # Allow files with <redacted> placeholder
+    '''dockerconfigjson.*\{\{.*\}\}''',  # Allow Jinja2/Ansible templates
+    '''\.dockerconfigjson:\s*["']?\{\{''',  # Allow templated values
+]
+
+[[rules]]
+id = "pullsecret-value"
+description = "Detects pull secret actual values (not variable references)"
+regex = '''pullSecret[s]?:\s*['"]['"]?\{[^}]*auths[^}]*registry[^}]*\}['"]['"]?'''
+keywords = [
+    "pullSecret",
+    "pullsecret",
+    "auths",
+]
+[rules.allowlist]
+regexes = [
+    '''pullSecret[s]?:\s*["']?\{\{''',  # Allow Jinja2/Ansible variable references
+    '''<redacted>''',
+]
+
+[[rules]]
+id = "ssh-private-key"
+description = "Detects SSH private keys"
+regex = '''-----BEGIN\s+(RSA|DSA|EC|OPENSSH)\s+PRIVATE\s+KEY-----'''
+keywords = [
+    "BEGIN RSA PRIVATE KEY",
+    "BEGIN DSA PRIVATE KEY",
+    "BEGIN EC PRIVATE KEY",
+    "BEGIN OPENSSH PRIVATE KEY",
+]
+[rules.allowlist]
+paths = [
+    '''labs/capx/templates/nutanix-csi-crs\.yaml\.j2''',  # Well-known Nutanix CSI snapshot webhook cert
+]
+regexes = [
+    '''#\s*notsecret''',  # Allow keys marked as notsecret
+    '''#\s*example''',  # Allow example keys
+]
+
+[[rules]]
+id = "ssh-public-key-value"
+description = "Detects hardcoded SSH public keys (not variable references)"
+regex = '''(ssh-rsa|ssh-ed25519|ecdsa-sha2-nistp256)\s+AAAA[0-9A-Za-z+/]+[=]{0,3}(\s+\S+)?'''
+keywords = [
+    "ssh-rsa",
+    "ssh-ed25519",
+    "ecdsa-sha2",
+]
+[rules.allowlist]
+regexes = [
+    '''sshKey:\s*["']?\{\{''',  # Allow Jinja2/Ansible variable references
+    '''ssh_key:\s*["']?\{\{''',
+    '''sshAuthorizedKey:\s*\{\{''',
+    '''sshPublicKey:\s*["']?\{\{''',
+]
+
+[[rules]]
+id = "hardcoded-username"
+description = "Detects hardcoded personal usernames that might expose identity"
+regex = '''(username|user|login|email):\s*['"]*[a-z0-9._+-]+@[a-z0-9.-]+\.[a-z]{2,}['"]*'''
+keywords = [
+    "username:",
+    "user:",
+    "login:",
+    "email:",
+]
+[rules.allowlist]
+paths = [
+    '''\.user/.*''',  # Allow in .user directory (gitignored)
+]
+regexes = [
+    '''(username|user|login|email):\s*["']?\{\{''',  # Allow Ansible variables
+    '''@(example\.com|redhat\.com|localhost)''',  # Allow example/test domains
+    '''email:\s*["']?[^@]+@''',  # Allow email fields (expected to have emails)
+]
+
+[[rules]]
+id = "ansible-vault-password"
+description = "Detects plain text passwords in Ansible variables"
+regex = '''(password|passwd|pwd):\s*['"]*[A-Za-z0-9!@#$%^&*()_+=\-]{8,}['"]*'''
+keywords = [
+    "password:",
+    "passwd:",
+    "pwd:",
+]
+[rules.allowlist]
+paths = [
+    '''labs/calico/manifest/calico/crd\.projectcalico\.org''',  # Allow CRD schemas
+]
+regexes = [
+    '''password:\s*["']?\{\{''',  # Allow Ansible variables
+    '''password:\s*ADMIN''',  # Allow default BMC password
+    '''password:\s*["'][*]{3,}["']''',  # Allow masked passwords like '****'
+    '''password:\s*['"]*[A-Za-z0-9+/=]{8,}['"]*\s*#.*placeholder''',  # Allow commented placeholders
+    '''password:\s+properties''',  # Allow schema definitions
+]
+
+[[rules]]
+id = "openshift-kubeconfig"
+description = "Detects OpenShift kubeconfig with actual credentials"
+regex = '''(certificate-authority-data|client-certificate-data|client-key-data):\s*[A-Za-z0-9+/]{20,}={0,2}'''
+keywords = [
+    "certificate-authority-data",
+    "client-certificate-data",
+    "client-key-data",
+]
+
+[[rules]]
+id = "openshift-token"
+description = "Detects OpenShift authentication tokens"
+regex = '''(token|bearer):\s*sha256~[A-Za-z0-9_-]{43,}'''
+keywords = [
+    "sha256~",
+    "token:",
+]
+
+[[rules]]
+id = "aws-credentials"
+description = "Detects AWS credentials that might be used for OpenShift AWS deployments"
+regex = '''(aws_secret_access_key|aws_session_token)[:=]\s*['"]*[A-Za-z0-9/+=]{40,}['"]*'''
+keywords = [
+    "aws_secret_access_key",
+    "aws_session_token",
+]
+[rules.allowlist]
+regexes = [
+    '''aws_secret_access_key:\s*["']?\{\{''',  # Allow Ansible variables
+]
+
+[[rules]]
+id = "redhat-pull-secret"
+description = "Detects Red Hat pull secrets with actual auth tokens"
+regex = '''cloud\.openshift\.com["']:\s*\{["']auth["']:\s*["'][A-Za-z0-9+/=]{20,}["']'''
+keywords = [
+    "cloud.openshift.com",
+    "registry.redhat.io",
+    "auth",
+]
+
+[[rules]]
+id = "bmc-credentials"
+description = "Detects BMC credentials with sensitive passwords"
+regex = '''(username|password):\s*['"]*[A-Za-z0-9!@#$%^&*]{8,}['"]*'''
+keywords = [
+    "bmc",
+    "redfish",
+]
+[rules.allowlist]
+regexes = [
+    '''(username|password):\s*ADMIN''',  # Allow default BMC creds
+    '''(username|password):\s*["']?\{\{''',  # Allow Ansible variables
+    '''address:\s*redfish''',  # Context line, not a credential
+]
+
+# Global allowlist for all rules
+[allowlist]
+description = "Global allowlist for template variables and test files"
+paths = [
+    '''\.user/''',  # Ignore .user directory (gitignored, contains real secrets)
+    '''secrets/''',  # Ignore secrets directory (gitignored)
+    '''\.gitleaks\.toml$''',  # Allow this config file
+    '''\.gitleaksignore$''',  # Allow gitleaks ignore file
+    '''gitleaks-report\.json$''',  # Allow gitleaks report
+]
+regexes = [
+    '''["']?\{\{\s*[a-zA-Z0-9_|.\s()-]+\s*\}\}["']?''',  # Allow all Jinja2/Ansible variables
+    '''%\{\s*[a-zA-Z0-9_|.\s()-]+\s*\}''',  # Allow Ansible % variables
+    '''\$\{\{?\s*[a-zA-Z0-9_|.\s()-]+\s*\}?\}''',  # Allow shell variables
+]
