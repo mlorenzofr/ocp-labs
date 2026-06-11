@@ -189,6 +189,7 @@ description = "Global allowlist for template variables and test files"
 paths = [
     '''\.user/''',  # Ignore .user directory (gitignored, contains real secrets)
     '''secrets/''',  # Ignore secrets directory (gitignored)
+    '''docs/user/vars\.yaml\.example$''',  # Allow example/template files with masked data
     '''\.gitleaks\.toml$''',  # Allow this config file
     '''\.gitleaksignore$''',  # Allow gitleaks ignore file
     '''gitleaks-report\.json$''',  # Allow gitleaks report

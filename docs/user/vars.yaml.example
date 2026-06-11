@@ -1,0 +1,106 @@
+---
+# Example user variables file for ocp-labs
+# Copy this file to .user/vars.yml and customize with your real values
+#
+# IMPORTANT: Never commit .user/vars.yml - it contains sensitive information
+
+# =============================================================================
+# Beaker Environment Configuration
+# =============================================================================
+beaker_domains:
+  - 'lab.example.com'
+  - 'beaker.lab.example.com'
+
+beaker_dns_servers:
+  - {base: 'example.com', address: 'X.X.X.X'}
+  - {base: 'example.com', address: 'X.X.X.X'}
+
+# =============================================================================
+# OpenShift Credentials
+# =============================================================================
+ocp_appliance_password: 'your-secure-password'
+ocp_bmc_password: 'BASE64_ENCODED_PASSWORD'
+ocp_bmc_username: 'BASE64_ENCODED_USERNAME'
+haproxy_stats_password: 'your-haproxy-stats-password'
+
+# =============================================================================
+# AWS Configuration (if using AWS)
+# =============================================================================
+lab_aws_dns_domain: 'subdomain.example.com'
+lab_aws_access_key_id: 'AKIAXXXXXXXXXXXXXXXX'
+lab_aws_secret_access_key: 'your-aws-secret-access-key'
+lab_aws_region: 'us-east-1'
+
+# =============================================================================
+# OpenShift Pull Secret
+# Get your pull secret from: https://console.redhat.com/openshift/install/pull-secret
+# =============================================================================
+lab_host_pull_secret: "{{ lab_pull_secret_str }}"
+lab_pull_secret: "{{ lab_pull_secret_str }}"
+
+# Option 1: Direct value (simple but less secure)
+lab_pull_secret_str: '{"auths":{"cloud.openshift.com":{"auth":"YOUR_BASE64_AUTH_TOKEN"},"quay.io":{"auth":"YOUR_BASE64_AUTH_TOKEN"}}}'
+lab_pull_secret_json: "{{ lab_pull_secret_str | from_json }}"
+lab_pull_secret_b64: 'BASE64_ENCODED_PULL_SECRET'
+
+# Option 2: Using external secret management (recommended)
+# Uncomment and customize if using tools like passwordstore, Vault, etc.
+# lab_pull_secret_str: "{{ lookup('file', '/path/to/pull-secret.json') }}"
+# lab_pull_secret_b64: "{{ lookup('file', '/path/to/pull-secret.b64') }}"
+
+ocp_pullsecret_b64: "{{ lab_pull_secret_b64 }}"
+
+# =============================================================================
+# SSH Public Keys for accessing OCP nodes
+# =============================================================================
+lab_ssh_pubkey: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX user@hostname'
+ocp_ssh_key: "{{ lab_ssh_pubkey }}"
+lab_ssh_pubkey_fips: 'ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX= user@hostname'
+
+# =============================================================================
+# Nutanix Configuration (if using Nutanix)
+# =============================================================================
+nutanix_prism_central: 'prism-central.example.com'
+nutanix_prism_element: 'X.X.X.X'
+nutanix_user: 'your-nutanix-username'
+nutanix_password: 'your-nutanix-password'
+nutanix_cluster: 'YourClusterName'
+nutanix_network: 'vm_network'
+nutanix_net_base: 'X.X.X'
+nutanix_csi_storage_container: 'storage-container-name'
+
+# =============================================================================
+# Repository Configuration
+# Customize these for your environment (Red Hat internal, mirrors, etc.)
+# =============================================================================
+rh_repo: 'download.example.com'
+beaker_repo: 'beaker.example.com'
+
+# =============================================================================
+# Container Registry Configuration (optional)
+# For Red Hat QE or custom registries
+# =============================================================================
+qe_registry: 'registry.example.io'
+qe_agent_registries:
+  - location: 'registry-proxy.example.com'
+    mirror: "{{ qe_registry }}"
+  - location: 'registry.redhat.io'
+    mirror: "{{ qe_registry }}"
+
+# =============================================================================
+# Custom CA Bundle (optional)
+# Required if using internal/self-signed certificates
+# =============================================================================
+# redhat_ca_bundle: |
+#   -----BEGIN CERTIFICATE-----
+#   MIIFxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+#   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+#   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+#   -----END CERTIFICATE-----
+
+# =============================================================================
+# QE Pull Secret (optional)
+# For accessing internal/QE registries
+# =============================================================================
+# qe_pull_secret: '{"auths":{"registry.example.com":{"auth":"BASE64_ENCODED_AUTH_TOKEN"}}}'
+# qe_pull_secret_b64: 'BASE64_ENCODED_PULL_SECRET'
