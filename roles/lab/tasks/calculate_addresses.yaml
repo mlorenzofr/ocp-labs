@@ -10,13 +10,12 @@
 
 - name: 'Parse dnsmasq leases to extract used IP addresses'
   ansible.builtin.set_fact:
-    __used_ips_from_leases: >-
-      {{
+    __used_ips_from_leases: "{{
         (__dnsmasq_leases_raw.content | b64decode).split('\n')
-        | select('match', '^\d+\s+\S+\s+\d+\.\d+\.\d+\.\d+')
-        | map('regex_replace', '^\d+\s+\S+\s+(\d+\.\d+\.\d+\.\d+)\s+.*$', '\1')
+        | select('match', '^\\d+\\s+\\S+\\s+\\d+\\.\\d+\\.\\d+\\.\\d+')
+        | map('regex_replace', '^\\d+\\s+\\S+\\s+(\\d+\\.\\d+\\.\\d+\\.\\d+)\\s+.*$', '\\1')
         | list
-      }}
+      }}"
   when: __dnsmasq_leases_raw.content is defined
 
 - name: 'Initialize used IPs if leases file is empty'
@@ -40,27 +39,25 @@
 
 - name: 'Extract reserved IPs from host-record and address entries'
   ansible.builtin.set_fact:
-    __reserved_ips: >-
-      {{
+    __reserved_ips: "{{
         __dnsmasq_confs_raw.results
         | map(attribute='content')
         | map('b64decode')
-        | join('\n')
-        | regex_findall('(?:host-record|address)=[^,]+,(\d+\.\d+\.\d+\.\d+)')
+        | join('\\n')
+        | regex_findall('(?:host-record|address)=[^,]+,(\\d+\\.\\d+\\.\\d+\\.\\d+)')
         | list
-      }}
+      }}"
 
 - name: 'Extract IPs from dhcp-host entries'
   ansible.builtin.set_fact:
-    __dhcp_host_ips: >-
-      {{
+    __dhcp_host_ips: "{{
         __dnsmasq_confs_raw.results
         | map(attribute='content')
         | map('b64decode')
-        | join('\n')
-        | regex_findall('dhcp-host=[^,]+,[^,]+,(\d+\.\d+\.\d+\.\d+)')
+        | join('\\n')
+        | regex_findall('dhcp-host=[^,]+,[^,]+,(\\d+\\.\\d+\\.\\d+\\.\\d+)')
         | list
-      }}
+      }}"
 
 - name: 'Combine all used IP addresses'
   ansible.builtin.set_fact:
@@ -68,29 +65,27 @@
 
 - name: 'Extract last octet from used IPs in VM range (10-99)'
   ansible.builtin.set_fact:
-    __used_vm_octets: >-
-      {{
+    __used_vm_octets: "{{
         __all_used_ips
-        | select('match', '^' ~ lab_node_network_base | regex_escape ~ '\d+$')
-        | map('regex_replace', '^.*\.(\d+)$', '\1')
+        | select('match', '^' ~ (lab_node_network_base | regex_escape) ~ '\\d+$')
+        | map('regex_replace', '^.*\\.(\\d+)$', '\\1')
         | map('int')
         | select('>=', 10)
         | select('<=', 99)
         | list
-      }}
+      }}"
 
 - name: 'Extract last octet from used IPs in API/Ingress range (100-254)'
   ansible.builtin.set_fact:
-    __used_api_octets: >-
-      {{
+    __used_api_octets: "{{
         __all_used_ips
-        | select('match', '^' ~ lab_node_network_base | regex_escape ~ '\d+$')
-        | map('regex_replace', '^.*\.(\d+)$', '\1')
+        | select('match', '^' ~ (lab_node_network_base | regex_escape) ~ '\\d+$')
+        | map('regex_replace', '^.*\\.(\\d+)$', '\\1')
         | map('int')
         | select('>=', 100)
         | select('<=', 254)
         | list
-      }}
+      }}"
 
 - name: 'Check if lab_hosts is manually defined'
   ansible.builtin.set_fact:
@@ -109,15 +104,14 @@
 
 - name: 'Extract manually specified IDs from lab_hosts'
   ansible.builtin.set_fact:
-    __manual_ids: >-
-      {{
+    __manual_ids: "{{
         __lab_hosts_manual
         | selectattr('id', 'defined')
         | map(attribute='id')
         | map('string')
         | map('int')
         | list
-      }}
+      }}"
   when: __lab_hosts_has_ids | bool
 
 - name: 'Initialize manual IDs as empty when not defined'
@@ -127,10 +121,9 @@
 
 - name: 'Find next available VM IP octets (excluding manually defined IDs)'
   ansible.builtin.set_fact:
-    __available_vm_octets: >-
-      {{
+    __available_vm_octets: "{{
         (range(10, 100) | difference(__used_vm_octets) | difference(__manual_ids) | list)[:__vm_count | int]
-      }}
+      }}"
 
 - name: 'Build lab_hosts with calculated IDs (preserve manual properties)'
   ansible.builtin.set_fact:
@@ -179,10 +172,9 @@
 
 - name: 'Find next available API/Ingress IP octets for non-SNO'
   ansible.builtin.set_fact:
-    __available_api_octets: >-
-      {{
+    __available_api_octets: "{{
         (range(100, 255) | difference(__used_api_octets) | list)[:2]
-      }}
+      }}"
   when:
     - not __is_sno | bool
 
