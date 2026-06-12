@@ -20,7 +20,7 @@
     - name: 'Prepare dnsmasq fileglob pattern'
       ansible.builtin.find:
         path: "{{ dnsmasq_confd }}/"
-        patterns: "^{{ lab_name }}.*\\.conf$"
+        patterns: "^{{ lab_name }}(\\.conf|-.+\\.conf)$"
         use_regex: true
       register: clean_dnsmasq_files
       when: lab_platform == 'baremetal'
