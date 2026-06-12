@@ -11,6 +11,7 @@ Each _spoke cluster_ uses about 4 Gib of memory each _hub_ node.
 ## Steps
 
 1. Execute the playbook `deploy.yaml`:
+
 ```shell
 ap labs/hcp/deploy.yaml
 ```
@@ -18,6 +19,7 @@ ap labs/hcp/deploy.yaml
 ## Validation
 
 1. Check if the _hub cluster_ is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/hcp/deploy/auth/kubeconfig
 
@@ -33,6 +35,7 @@ version   4.18.4    True        False         54m     Cluster version is 4.18.4
 ```
 
 2. Check if _spoke clusters_ are running:
+
 ```shell
 $ oc get managedcluster
 NAME            HUB ACCEPTED   MANAGED CLUSTER URLS             JOINED   AVAILABLE   AGE
@@ -49,6 +52,7 @@ nodepool-spoke-1   spoke     1               1               False         False
 ```
 
 3. Check if the cluster **spoke** works:
+
 ```shell
 $ export KUBECONFIG=/root/labs/hcp/spoke/auth/kubeconfig
 

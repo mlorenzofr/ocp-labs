@@ -14,17 +14,20 @@ Software versions required:
 ### Hub cluster
 
 1. Install a _compact_ Openshift cluster with:
+
 ```shell
 ap labs/mgmt-17923/deploy.yaml --tags ocp
 ```
 
 2. Install ACM.
+
 ```shell
 ap labs/mgmt-17923/deploy.yaml --tags acm
 ```
 
 3. Modify the definition of BMHs to share the same secret between them
 4. Apply the set up manifests:
+
 ```shell
 oc apply -f lvms-subscription.yaml
 oc apply -f lvmcluster-mce-data.yaml
@@ -43,6 +46,7 @@ oc apply -f infra/02-bmh-infra1.yaml
 
 6. Validate
 7. Add the missing secret again
+
 ```shell
 oc apply -f infra/03-secret.yaml
 ```
@@ -52,6 +56,7 @@ oc apply -f infra/03-secret.yaml
 ## Validation
 
 1. Check if the cluster is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/skrenger/deploy/auth/kubeconfig
 
@@ -67,6 +72,7 @@ version   4.13.41   True        False         16h     Cluster version is 4.13.41
 ```
 
 2. Verify the ACM installation:
+
 ```shell
 $ oc get csv -n open-cluster-management
 NAMESPACE                              NAME                                  DISPLAY                                      VERSION   REPLACES                              PHASE
@@ -74,6 +80,7 @@ open-cluster-management                advanced-cluster-management.v2.9.4   Adva
 ```
 
 3. Check the baremetal hosts, we should have 2 hosts provisioned:
+
 ```shell
 $ oc get bmh -A
 NAMESPACE               NAME                STATE         CONSUMER                  ONLINE   ERROR   AGE
@@ -85,6 +92,7 @@ openshift-machine-api   skrenger-node-3     unmanaged     skrenger-rc7gk-master-
 ```
 
 4. Validate that we have only 1 secret in the inventory namespace:
+
 ```shell
 $ oc get secrets -n hardware-inventory
 NAME                           TYPE                                  DATA   AGE
@@ -99,6 +107,7 @@ skrenger-worker-1-bmc-secret   Opaque                                2      4m12
 ```
 
 5. After the BMH removal step. Check if the shared secret has been removed:
+
 ```shell
 $ oc get secrets -n hardware-inventory
 NAME                       TYPE                                  DATA   AGE
@@ -112,6 +121,7 @@ pull-secret-infra1         kubernetes.io/dockerconfigjson        1      15m
 ```
 
 6. Get the status of BMHs:
+
 ```shell
 $ oc get bmh -n hardware-inventory skrenger-worker-1
 NAME                STATE         CONSUMER   ONLINE   ERROR                AGE
@@ -119,6 +129,7 @@ skrenger-worker-1   provisioned              true     registration error   10m
 ```
 
 7. Check the BMH status:
+
 ```shell
 $ oc get bmh -n hardware-inventory skrenger-worker-1 -o json | jq -r '.status | .errorCount, .errorMessage, .errorType, .goodCredentials'
 48

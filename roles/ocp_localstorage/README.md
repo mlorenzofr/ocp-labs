@@ -26,9 +26,9 @@ None.
 * `name`. _String_. Local Volume name.
 * `node_label`. _String_. Node match label for the volume.
 * `storage_classes`. _List_. `StorageClasses` managed by the volume.
-    * `name`. _String_. `StorageClass` name.
-    * `type`. _String_. `StorageClass` type (`Block` or `Part`).
-    * `devices`. _List_. List of block devices to use.
+  * `name`. _String_. `StorageClass` name.
+  * `type`. _String_. `StorageClass` type (`Block` or `Part`).
+  * `devices`. _List_. List of block devices to use.
 
 ### Variables for `ocp_localstorage_volumesets` elements
 
@@ -50,16 +50,19 @@ None.
   vars:
     ocp_localstorage_path: '/home/labs/localstorage'
     ocp_localstorage_nodes:
+
       - {'name': 'standard-master-1', label: 'cluster.ocs.openshift.io/openshift-storage'}
       - {'name': 'standard-master-2', label: 'cluster.ocs.openshift.io/openshift-storage'}
       - {'name': 'standard-master-3', label: 'cluster.ocs.openshift.io/openshift-storage'}
     ocp_localstorage_volumesets:
+
       - name: 'local-block'
         node_label: 'cluster.ocs.openshift.io/openshift-storage'
         sc_name: 'localblock'
         max_devices: 1
 
   roles:
+
     - ocp_localstorage
 ```
 
@@ -69,4 +72,4 @@ MIT / BSD
 
 ## Author Information
 
- - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2024-)
+* **Manuel Lorenzo** (mlorenzofr@redhat.com) (2024-)

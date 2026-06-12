@@ -9,6 +9,7 @@ None.
 ## Steps
 
 1. Deploy:
+
 ```shell
 ap labs/javed1/deploy.yaml
 ```
@@ -16,6 +17,7 @@ ap labs/javed1/deploy.yaml
 ## Validation
 
 1. Check if the Openshift cluster is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/stdslim/deploy/auth/kubeconfig
 

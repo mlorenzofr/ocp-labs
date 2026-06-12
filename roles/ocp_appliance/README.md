@@ -33,6 +33,7 @@ None.
 ## Example Playbooks
 
 * Run individual appliance commands:
+
 ```yaml
 
 - hosts: servers
@@ -54,4 +55,4 @@ MIT / BSD
 
 ## Author Information
 
- - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2025-)
+* **Manuel Lorenzo** (mlorenzofr@redhat.com) (2025-)

@@ -4,9 +4,9 @@ This lab prepares an ACM environment for educational purposes.
 
 The environment provides:
 
-- An OpenShift _compact_ cluster with 3 nodes for ACM (_hub cluster_)
-- 3 virtual machines for the 1st _spoke cluster_. (Hive cluster)
-- An SNO cluster as 2nd _spoke cluster_, to be imported by the _hub cluster_.
+* An OpenShift _compact_ cluster with 3 nodes for ACM (_hub cluster_)
+* 3 virtual machines for the 1st _spoke cluster_. (Hive cluster)
+* An SNO cluster as 2nd _spoke cluster_, to be imported by the _hub cluster_.
 
 This deployment does not apply the manifests, it only creates them.
 
@@ -46,4 +46,4 @@ The guide with the steps to follow to install ACM in this environment can be fou
 
 ## Links
 
-- [MCH & MCE components](https://github.com/stolostron/multiclusterhub-operator/blob/9fc8a6d08afab5c36417809d36d21b88b24730f2/api/v1/multiclusterhub_methods.go#L19)
+* [MCH & MCE components](https://github.com/stolostron/multiclusterhub-operator/blob/9fc8a6d08afab5c36417809d36d21b88b24730f2/api/v1/multiclusterhub_methods.go#L19)

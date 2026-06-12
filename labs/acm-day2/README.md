@@ -9,12 +9,14 @@ None.
 ## Deployment
 
 1. Execute the playbook `deploy.yaml`:
+
 ```shell
 ap labs/acm-day2/deploy.yaml
 ```
 
 2. Import the spoke cluster as `ManagedCluster`
 3. Save the spoke kubeconfig
+
 ```shell
 $ export KUBECONFIG=/root/labs/acm-hub-1/deploy/auth/kubeconfig
 $ oc get secrets -n managed spoke1-admin-kubeconfig -o yaml > /root/labs/acm-hub-1/config/spoke1-admin-kubeconfig.yaml

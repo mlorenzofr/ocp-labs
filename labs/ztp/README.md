@@ -10,16 +10,19 @@ None.
 ## Steps
 
 1. Execute the playbook `deploy.yaml`:
+
 ```shell
 ap labs/ztp/deploy.yaml
 ```
 
 2. Configure the ArgoCD applications:
+
 ```shell
 ap labs/ztp/deploy.yaml --tags argocd
 ```
 
 3. If you are using the ztp-example repository, extract the cluster configuration with:
+
 ```shell
 ap labs/ztp/deploy.yaml --tags hive-config
 ```
@@ -27,6 +30,7 @@ ap labs/ztp/deploy.yaml --tags hive-config
 ## Validation
 
 1. Check if the Openshift cluster is running:
+
 ```shell
 $ export KUBECONFIG=~/ztp/deploy/auth/kubeconfig
 
@@ -42,6 +46,7 @@ version   4.18.16   True        False         107m    Cluster version is 4.18.16
 ```
 
 2. Check if the ACM, GitOps and TALM operators are installed:
+
 ```shell
 $ oc get csv -n open-cluster-management
 NAME                                       DISPLAY                                      VERSION   REPLACES                                           PHASE
@@ -51,6 +56,7 @@ topology-aware-lifecycle-manager.v4.18.0   Topology Aware Lifecycle Manager     
 ```
 
 3. Review if `assisted-service` is running:
+
 ```shell
 $ oc get pods -n multicluster-engine -l app=assisted-service
 NAME                                READY   STATUS    RESTARTS   AGE
@@ -66,6 +72,7 @@ assisted-image-service-0   1/1     Running   0          54m
 To validate the spoke cluster defined on the [repository ztp-example](https://github.com/mlorenzofr/ztp-example):
 
 1. Check the `BaremetalHost` status:
+
 ```shell
 $ oc get bmh -A
 NAMESPACE               NAME           STATE         CONSUMER             ONLINE   ERROR   AGE
@@ -76,6 +83,7 @@ ztp-sno                 ztp-bmh-1      provisioned                        true  
 ```
 
 2. Check the `infraenv`:
+
 ```shell
 $ oc get infraenv -A
 NAMESPACE   NAME      ISO CREATED AT
@@ -83,6 +91,7 @@ ztp-sno     ztp-sno   2025-06-09T15:57:18Z
 ```
 
 3. Check the `agent`:
+
 ```shell
 $ oc get agent -A
 NAMESPACE   NAME                                   CLUSTER   APPROVED   ROLE     STAGE
@@ -90,6 +99,7 @@ ztp-sno     759451b4-544a-4163-9a9c-08845888b346   ztp-sno   true       master  
 ```
 
 4. Check the `clusterdeployment`:
+
 ```shell
 $ oc get clusterdeployment -A
 NAMESPACE   NAME      INFRAID                                PLATFORM          REGION   VERSION   CLUSTERTYPE   PROVISIONSTATUS   POWERSTATE   AGE
@@ -97,11 +107,13 @@ ztp-sno     ztp-sno   039f12a8-d496-4089-a886-166e7a83e54b   agent-baremetal    
 ```
 
 5. Extract the spoke cluster configuration:
+
 ```shell
 ap labs/ztp/deploy.yaml --tags hive-config
 ```
 
 6. Connect you to the _spoke_ cluster using the CLI:
+
 ```shell
 $ export KUBECONFIG=~/labs/ztp/ztp-sno/auth/kubeconfig
 

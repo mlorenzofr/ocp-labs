@@ -10,6 +10,7 @@ None.
 ## Steps
 
 1. Deploy:
+
 ```shell
 ap labs/ztvp/deploy.yaml
 ```
@@ -17,6 +18,7 @@ ap labs/ztvp/deploy.yaml
 ## Validation
 
 1. Check if the Openshift cluster is running:
+
 ```shell
 $ export KUBECONFIG=~/labs/ztvp/deploy/auth/kubeconfig
 
@@ -32,6 +34,7 @@ version   4.18.16   True        False         109s    Cluster version is 4.18.16
 ```
 
 2. Check if the cluster has a default `StorageClass`:
+
 ```shell
 $ oc get sc
 NAME                 PROVISIONER   RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE

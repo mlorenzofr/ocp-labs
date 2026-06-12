@@ -3,18 +3,6 @@
 
 default: true
 
-# MD004 - Unordered list style
-MD004: false
-
-# MD007 - Unordered list indentation
-MD007: false
-
-# MD009 - Trailing spaces
-MD009: false
-
-# MD010 - Hard tabs
-MD010: false
-
 # MD013 - Line length
 MD013: false
 
@@ -26,12 +14,6 @@ MD024: false
 
 # MD029 - Ordered list item prefix
 MD029: false
-
-# MD031 - Fenced code blocks should be surrounded by blank lines
-MD031: false
-
-# MD032 - Lists should be surrounded by blank lines
-MD032: false
 
 # MD033 - Inline HTML
 MD033: false

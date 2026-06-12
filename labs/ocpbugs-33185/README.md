@@ -12,6 +12,7 @@ Finally, we will install a non-GA version of ACM (**2.10.3**) and import the _sp
 
 We will need credentials to use QE resources because the software builds are not yet public.  
 To install Openshift we will need the `openshift-install` tool for each installed version.  
+
 ```shell
 oc adm release extract --command=openshift-install registry.ci.openshift.org/ocp/release:4.16.0-0.nightly-2024-05-15-001800
 ```
@@ -21,6 +22,7 @@ oc adm release extract --command=openshift-install registry.ci.openshift.org/ocp
 ### Hub cluster
 
 1. Install a Openshift _compact_ cluster with:
+
 ```shell
 ap labs/ocpbugs-33185/deploy.yaml --tags ocp
 ```
@@ -29,6 +31,7 @@ ap labs/ocpbugs-33185/deploy.yaml --tags ocp
 
 2. Switch the `openshift-install` tool to use the version **4.16.0**.
 3. Start _spoke cluster_ installation with:
+
 ```shell
 ap labs/ocpbugs-33185/deploy.yaml --tags sno
 ```
@@ -40,11 +43,13 @@ This setup must be done **for each** Openshift cluster (hub & spoke).
 The `klusterlet` pod launched during the cluster import will need the development OCI registry.  
 
 4. Change the **pull-secret** to use credentials with access on the devel registry.
+
 ```shell
 oc set data secret/pull-secret -n openshift-config --from-file=.dockerconfigjson=pull-secret.json
 ```
 
 5. Add the Red Hat's CA as trusted.
+
 ```shell
 oc apply -f trustedca-configmap.yaml
 oc patch proxy/cluster --type=merge --patch='{"spec":{"trustedCA":{"name":"redhat-ca"}}}'
@@ -52,12 +57,14 @@ oc patch images.config/cluster --type=merge --patch='{"spec":{"additionalTrusted
 ```
 
 6. Replace the `CatalogSource` **redhat-operators** with **OSBS**.
+
 ```shell
 oc apply -f catalog-engineering.yaml
 oc patch operatorhubs/cluster --type merge --patch '{"spec":{"sources":[{"disabled": true,"name": "redhat-operators"}]}}'
 ```
 
 7. Set the registries mirroring to use development registry.
+
 ```shell
 oc apply -f image-config.yaml
 ```
@@ -65,14 +72,17 @@ oc apply -f image-config.yaml
 ### Import the SNO cluster
 
 8. Install and configure ACM with:
+
 ```shell
 ap labs/ocpbugs-33185/deploy.yaml --tags acm
 ```
+
 The task will also import the _spoke cluster_.
 
 ## Validation
 
 1. Check if the cluster is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/dgon/deploy/auth/kubeconfig
 
@@ -88,6 +98,7 @@ version   4.15.4    True        False         15h     Cluster version is 4.15.4
 ```
 
 2. On the _hub cluster_ (**dgon**), check the version of the installed operators:
+
 ```shell
 $ oc get csv -A | grep -v metallb
 NAMESPACE                                          NAME                                    DISPLAY                                      VERSION               REPLACES                              PHASE
@@ -98,6 +109,7 @@ openshift-storage                                  lvms-operator.v4.15.3        
 ```
 
 3. Verify the SNO cluster installation:
+
 ```shell
 $ export KUBECONFIG=/root/labs/dgonspk/deploy/auth/kubeconfig
 
@@ -143,6 +155,7 @@ storage                                    4.16.0-0.nightly-2024-05-15-001800   
 ```
 
 4. On the _spoke cluster_ (**dgonspk**), validate if the debug pod in the `assisted-installer` namespace is not present.
+
 ```shell
 $ oc get pods -n assisted-installer
 NAME                                  READY   STATUS    RESTARTS   AGE
@@ -150,6 +163,7 @@ assisted-installer-controller-pjlgc   1/1     Running   0          36m
 ```
 
 5. On the _hub cluster_ (**dgon**), check if the _spoke cluster_ has been imported:
+
 ```shell
 $ oc get managedcluster
 NAME            HUB ACCEPTED   MANAGED CLUSTER URLS                 JOINED   AVAILABLE   AGE

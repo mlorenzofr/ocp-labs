@@ -5,26 +5,31 @@
 ## Steps
 
 1. Execute the playbook `deploy.yaml`:
+
 ```shell
 ap labs/cnv-ocp/deploy.yaml
 ```
 
 2. Create the virtual machines for the spoke cluster:
+
 ```shell
 for i in {1..3}; do oc apply -f vms/cnvn-spoke-${i}.yaml; done
 ```
 
 3. Prepare the **fakefish** image.
 4. Deploy **fakefish** in the hub cluster as it's explained in the [documentation](https://github.com/openshift-metal3/fakefish/blob/main/user-docs/running-fakefish-on-ocp-for-kubevirt.md).
+
 ```shell
 ap labs/cnv-ocp/deploy.yaml --tags fakefish
 ```
 
 5. With the virtual machines stopped, apply the cluster manifest.
+
 > [!WARNING]
 > After create a new `BaremetalHost`, bound to the `InfraEnv`, review if the PVC with the discovery ISO has been created. If it's not present, remove the `BaremetalHost` and retry.
 
 6. The cluster installation begins.
+
 > [!WARNING]
 > The NTP validation takes some time to be validated
 > The discovery ISO doesn't work after writing the image to disk. It may require stop the VM and change the boot order or remove the CD-ROM manually.
@@ -32,6 +37,7 @@ ap labs/cnv-ocp/deploy.yaml --tags fakefish
 ## Validation
 
 1. Check if the cluster is running:
+
 ```shell
 $ export KUBECONFIG=~/labs/cnvn/deploy/auth/kubeconfig
 
@@ -47,6 +53,7 @@ version   4.18.16   True        False         19h     Cluster version is 4.18.16
 ```
 
 2. Check `StorageClasses` and `PersistenVolumeClaims`:
+
 ```shell
 $ oc get sc
 NAME                           PROVISIONER                             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
@@ -68,6 +75,7 @@ openshift-storage     deviceset1-2-data-0d7s9b                      Bound    pvc
 ```
 
 3. Check if the _Multicluster Engine_ is installed and running:
+
 ```shell
 $ oc get csv -n multicluster-engine
 NAME                         DISPLAY                              VERSION   REPLACES                     PHASE
@@ -83,6 +91,7 @@ assisted-service-d4f9885c7-rfl55   2/2     Running   0          19h
 ```
 
 4. Check the `VirtualMachines`:
+
 ```shell
 $ oc get virtualmachine -A
 NAMESPACE   NAME           AGE     STATUS    READY
@@ -92,6 +101,7 @@ default     cnvn-spoke-3   3m47s   Running   True
 ```
 
 5. Check resources related with the cluster deployment:
+
 ```shell
 $ oc get infraenv,clusterdeployment,bmh -n spoke
 NAME                                        ISO CREATED AT
@@ -105,6 +115,7 @@ baremetalhost.metal3.io/cnvn-spoke-1   provisioned              true            
 ```
 
 6. Check if the _spoke_ cluster works:
+
 ```
 $ export KUBECONFIG=~/labs/cnvn/spoke/auth/kubeconfig-32707
 

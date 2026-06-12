@@ -15,11 +15,13 @@ Software versions required:
 ### Hub cluster
 
 1. Install a _compact_ Openshift cluster with:
+
 ```shell
 ap labs/neat/deploy.yaml --tags ocp
 ```
 
 2. Install ACM.
+
 ```shell
 ap labs/neat/deploy.yaml --tags acm
 ```
@@ -29,6 +31,7 @@ ap labs/neat/deploy.yaml --tags acm
 ## Validation
 
 1. Check if the cluster is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/neat/deploy/auth/kubeconfig
 
@@ -44,6 +47,7 @@ version   4.15.4    True        False         14m     Cluster version is 4.15.4
 ```
 
 2. Verify the ACM installation:
+
 ```shell
 $ oc get csv -n open-cluster-management
 NAMESPACE                              NAME                                  DISPLAY                                      VERSION   REPLACES                              PHASE
@@ -51,6 +55,7 @@ open-cluster-management                advanced-cluster-management.v2.10.3   Adv
 ```
 
 3. Check if the `infraenv` called **infra1** exists:
+
 ```shell
 $ oc get infraenv -A
 NAMESPACE            NAME     ISO CREATED AT
@@ -58,7 +63,9 @@ hardware-inventory   infra1
 ```
 
 4. Test the `assisted-service` REST API:
+
 * Create a new `cluster`:
+
 ```shell
 curl -sk -X POST -H "Content-Type: application/json" \
     -d @cluster.json \
@@ -66,6 +73,7 @@ curl -sk -X POST -H "Content-Type: application/json" \
 ```
 
 * Edit the `infraenv.json`file, add the cluster-id value and Create a new `infra-env`
+
 ```shell
 $ curl -k -X POST -H "Content-Type: application/json" \
     -d @infraenv.json \
@@ -91,6 +99,7 @@ $ curl -k -X POST -H "Content-Type: application/json" \
 ```
 
 * Check if the new `infra-env` is present, and _infra1_ (kubeapi) is not present:
+
 ```shell
 $ curl -k https://assisted-service-multicluster-engine.apps.neat.local.lab/api/assisted-install/v2/infra-envs
 
@@ -116,6 +125,7 @@ $ curl -k https://assisted-service-multicluster-engine.apps.neat.local.lab/api/a
 ```
 
 * Request the image URL:
+
 ```shell
 $ curl -k https://assisted-service-multicluster-engine.apps.neat.local.lab/api/assisted-install/v2/infra-envs/fc0bae51-4f54-4a90-a194-21884918a735/downloads/image-url
 
@@ -126,6 +136,7 @@ $ curl -k https://assisted-service-multicluster-engine.apps.neat.local.lab/api/a
 ```
 
 * Download the ISO image:
+
 ```shell
 $ curl -skO https://assisted-image-service-multicluster-engine.apps.neat.local.lab/byid/fc0bae51-4f54-4a90-a194-21884918a735/4.14/x86_64/minimal.iso
 
@@ -137,12 +148,15 @@ $ ls -lh minimal.iso
 ```
 
 5. Test the REST API form an internal pod:
+
 * Start a pod within the cluster:
+
 ```shell
 $ oc run -n default --image=registry.access.redhat.com/ubi8/ubi:latest ubi8 -it --restart=Never
 ```
 
 * Check if the `infra-env` is present:
+
 ```shell
 [root@ubi8 /]# curl -sk https://assisted-service.multicluster-engine.svc.cluster.local:8090/api/assisted-install/v2/infr-envs | jq
 [
@@ -167,6 +181,7 @@ $ oc run -n default --image=registry.access.redhat.com/ubi8/ubi:latest ubi8 -it 
 ```
 
 * Request the image URL:
+
 ```shell
 [root@ubi8 /]# curl -sk https://assisted-service.multicluster-engine.svc.cluster.local:8090/api/assisted-install/v2/infa-envs/2873fc5b-ef62-4f5f-81b7-c5ba67e0102a/downloads/image-url | jq
 {
@@ -176,6 +191,7 @@ $ oc run -n default --image=registry.access.redhat.com/ubi8/ubi:latest ubi8 -it 
 ```
 
 * Download the ISO image using internal and external names:
+
 ```shell
 [root@ubi8 /]# curl -skO https://assisted-image-service-multicluster-engine.apps.neat.local.lab/byid/2873fc5b-ef62-4f5f81b7-c5ba67e0102a/4.14/x86_64/minimal.iso
 [root@ubi8 /]# ls -lh minimal.iso
@@ -188,24 +204,29 @@ $ oc run -n default --image=registry.access.redhat.com/ubi8/ubi:latest ubi8 -it 
 ```
 
 6. Start a cluster installation using the assisted service:
+
 * Attach the ISO image to the bmh hosts.
 * Setup dnsmasq cluster entries.
 * Wait until the BMHs are in ready state.
+
 ```shell
 $ curl -sk https://assisted-service-multicluster-engine.apps.neat.local.lab/api/assisted-install/v2/infra-envs/ec4feadd-c440-47da-ac80-761409413083/hosts | jq .[].status
 ```
 
 * Start the cluster installation
+
 ```shell
 $ curl -X POST -sk https://assisted-service-multicluster-engine.apps.neat.local.lab/api/assisted-install/v2/clusters/e188ae75-7b11-4902-a4f4-05b736e68287/actions/install
 ```
 
 * Get the kubeconfig credentials
+
 ```shell
 curl -sk https://assisted-service-multicluster-engine.apps.neat.local.lab/api/assisted-install/v2/clusters/e188ae75-7b11-4902-a4f4-05b736e68287/downloads/credentials?file_name=kubeconfig
 ```
 
 * Check the cluster status:
+
 ```shell
 $ export KUBECONFIG=./kubeconfig
 $ oc get nodes

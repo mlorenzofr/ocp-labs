@@ -145,53 +145,55 @@ ap labs/osac-demo/deploy.yaml -l b17 --tags osac
 
 1. Check if the Openshift hub cluster is running:
 
-```shell
-export KUBECONFIG=/root/labs/osac-demo/deploy/auth/kubeconfig
+  ```shell
+  export KUBECONFIG=/root/labs/osac-demo/deploy/auth/kubeconfig
 
-$ oc get nodes
-NAME          STATUS   ROLES                         AGE     VERSION
-osac-node-1   Ready    control-plane,master,worker   6h12m   v1.33.6
-osac-node-2   Ready    control-plane,master,worker   6h27m   v1.33.6
-osac-node-3   Ready    control-plane,master,worker   6h27m   v1.33.6
-```
+  $ oc get nodes
+  NAME          STATUS   ROLES                         AGE     VERSION
+  osac-node-1   Ready    control-plane,master,worker   6h12m   v1.33.6
+  osac-node-2   Ready    control-plane,master,worker   6h27m   v1.33.6
+  osac-node-3   Ready    control-plane,master,worker   6h27m   v1.33.6
+  ```
 
 2. Check if the Openshift spoke cluster (_vmaas-cluster_) is running:
 
-```shell
-$ export KUBECONFIG=/root/labs/osac/vmaas-cluster/auth/kubeconfig
+  ```shell
+  $ export KUBECONFIG=/root/labs/osac/vmaas-cluster/auth/kubeconfig
 
-$ oc get nodes
-NAME             STATUS   ROLES                         AGE   VERSION
-vmaas-master-1   Ready    control-plane,master,worker   32h   v1.33.6
-vmaas-master-2   Ready    control-plane,master,worker   31h   v1.33.6
-vmaas-master-3   Ready    control-plane,master,worker   32h   v1.33.6
-vmaas-worker-1   Ready    worker                        31h   v1.33.6
-```
+  $ oc get nodes
+  NAME             STATUS   ROLES                         AGE   VERSION
+  vmaas-master-1   Ready    control-plane,master,worker   32h   v1.33.6
+  vmaas-master-2   Ready    control-plane,master,worker   31h   v1.33.6
+  vmaas-master-3   Ready    control-plane,master,worker   32h   v1.33.6
+  vmaas-worker-1   Ready    worker                        31h   v1.33.6
+  ```
 
 3. Review the `ansible-aap` namespace. We should have:
-  * `secret/config-as-code-ig`
-  * `secret/config-as-code-manifest-ig`
-  * `secret/vmaas-cluster-kubeconfig`
-  * `route.route.openshift.io/osac-aap-controller`
 
-```shell
-oc get all,secrets -n ansible-aap
-```
+  1. `secret/config-as-code-ig`
+  2. `secret/config-as-code-manifest-ig`
+  3. `secret/vmaas-cluster-kubeconfig`
+  4. `route.route.openshift.io/osac-aap-controller`
+
+  ```shell
+  oc get all,secrets -n ansible-aap
+  ```
 
 4. Review the `osac-operator-system` namespace. We should have:
-  * `secret/osac-config`
-  * `secret/vmaas-cluster-kubeconfig`
-  * `pod/osac-operator-controller-manager-585cfcfbd9-8g8n7`
 
-```shell
-oc get all,secrets -n osac-operator-system
-```
+  1. `secret/osac-config`
+  2. `secret/vmaas-cluster-kubeconfig`
+  3. `pod/osac-operator-controller-manager-585cfcfbd9-8g8n7`
+
+  ```shell
+  oc get all,secrets -n osac-operator-system
+  ```
 
 5. Check if volume `vmaas-cluster-kubeconfig` is present in the `deployment.apps/osac-operator-controller-manager`:
 
-```shell
-oc get deployment.apps/osac-operator-controller-manager -n osac-operator-system -o yaml
-```
+  ```shell
+  oc get deployment.apps/osac-operator-controller-manager -n osac-operator-system -o yaml
+  ```
 
 6. In the [OpenShift Web UI](https://console-openshift-console.apps.osac.local.lab), in the left menu, go to `Governance`. Verify that the ACM policies have been applied.
 

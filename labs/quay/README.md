@@ -9,11 +9,13 @@ In this lab we want to create an environment with Openshift and quay registry ru
 ### Hub cluster
 
 1. Deploy an _Agent Based installation_ of Openshift with:
+
 ```shell
 ap labs/quay/deploy.yaml --tags ocp
 ```
 
 2. Deploy Quay and its dependencies with:
+
 ```shell
 ap labs/quay/deploy.yaml --tags postinst
 ```
@@ -23,6 +25,7 @@ ap labs/quay/deploy.yaml --tags postinst
 ## Validation
 
 1. Check if the cluster is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/quay/deploy/auth/kubeconfig
 
@@ -38,6 +41,7 @@ version   4.16.3    True        False         2m27s   Cluster version is 4.16.3
 ```
 
 2. Review if the PVCs used by **NooBaa** and **Quay** are in `Bound` status:
+
 ```shell
 $ oc get pvc -A
 NAMESPACE           NAME                                               STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
@@ -48,6 +52,7 @@ quay                registry-quay-postgres-13                          Bound    
 ```
 
 3. Check if the _NooBaa_ endpoint, required by quay's datastorage, is available:
+
 ```shell
 $ oc get noobaa -n openshift-storage
 NAME     S3-ENDPOINTS                       STS-ENDPOINTS                      SYSLOG-ENDPOINTS   IMAGE                                                                                                            PHASE   AGE
@@ -55,6 +60,7 @@ noobaa   ["https://192.168.129.65:32170"]   ["https://192.168.129.65:30817"]    
 ```
 
 4. Check if Quay operator is running:
+
 ```shell
 $ oc get pods -n openshift-operators
 NAME                                     READY   STATUS    RESTARTS   AGE
@@ -62,8 +68,10 @@ quay-operator.v3.12.0-5fb458b9b6-wh7nl   1/1     Running   0          12m
 ```
 
 5. Check if Quay pods are up and running:
+
 > **NOTE**: It may take approximately 15m for the registry to upgrade and startup.
 > It's normal for some pods to experience errors during the process.
+
 ```shell
 $ oc get pods -n quay
 NAME                                       READY   STATUS      RESTARTS        AGE
@@ -86,6 +94,7 @@ registry-quay-redis-5f77dbbf95-vhctz       1/1     Running     0               9
 7. Create a new user for tests, in this example `username`.
 8. Create a new repository using the UI, in this case we call it `ubi9`.
 9. Login in the Quay registry using `podman`:
+
 ```shell
 $ podman login registry-quay-quay.apps.quay.local.lab --tls-verify=false
 Username: username
@@ -94,6 +103,7 @@ Login Succeeded!
 ```
 
 9. Push a new image to our repository
+
 ```shell
 $ podman tag 02b9afe55b31 registry-quay-quay.apps.quay.local.lab/username/ubi9
 $ podman push registry-quay-quay.apps.quay.local.lab/username/ubi9 --tls-verify=false --remove-signatures
@@ -103,6 +113,7 @@ Writing manifest to image destination
 ```
 
 10. Inspect the image pushed in the previous step:
+
 ```shell
 $ skopeo inspect docker://registry-quay-quay.apps.quay.local.lab/username/ubi9:latest --tls-verify=false
 ```

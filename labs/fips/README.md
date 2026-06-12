@@ -9,6 +9,7 @@ SSH key type ssh-ed25519 unavailable when FIPS is enabled. Please use rsa or ecd
 ## Steps
 
 1. Execute the playbook `deploy.yaml`:
+
 ```shell
 ap labs/fips/deploy.yaml
 ```
@@ -16,6 +17,7 @@ ap labs/fips/deploy.yaml
 ## Validation
 
 1. Check if the _hub cluster_ is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/fips/deploy/auth/kubeconfig
 
@@ -30,7 +32,9 @@ version   4.15.4    True        False         55m     Cluster version is 4.15.4
 ```
 
 2. On OCP nodes, check if `/proc/sys/crypto/fips_enabled` is set to **1**.  
+
 The FIPS version must match version **kernel-5.14.0-284.57.1.el9_2** too.
+
 ```shell
 $ grep . /proc/sys/crypto/fips_*
 /proc/sys/crypto/fips_enabled:1
@@ -39,6 +43,7 @@ $ grep . /proc/sys/crypto/fips_*
 ```
 
 3. On OCP nodes, check wether the version of these packages matches the FIPS certified versions:
+
 ```shell
 $ rpm -qa --queryformat "%{NAME} %{VERSION}-%{RELEASE}\n" openssl libgcrypt gnutls libkcapi libkcapi-hmaccalc nss nettle kernel
 openssl 3.0.7-18.el9_2
@@ -51,6 +56,7 @@ nettle 3.8-3.el9_0
 ```
 
 4. Check if `MachineConfig` templates have the **Fips** enabled:
+
 ```shell
 $ oc get mcp
 NAME     CONFIG                                             UPDATED   UPDATING   DEGRADED   MACHINECOUNT   READYMACHINECOUNT   UPDATEDMACHINECOUNT   DEGRADEDMACHINECOUNT   AGE
@@ -65,7 +71,9 @@ $ oc describe mc rendered-worker-381cbeaef988898e1226447e971a5ca6 | grep Fips
 ```
 
 5. Check if `ClusterDeployments` are provisioned. The spoke cluster **4.15** should work, the version **4.16** should not.
+
 The Agent-Installer for version 4.16 is not yet FIPS compliant.
+
 ```shell
 $ oc get ClusterDeployment -A
 NAMESPACE   NAME     INFRAID                                PLATFORM          REGION   VERSION   CLUSTERTYPE   PROVISIONSTATUS   POWERSTATE   AGE
@@ -76,6 +84,7 @@ spoke2      spoke2   112b1ef5-8d6d-4ff9-ac0a-6b3155e906ef   agent-baremetal     
 ## Optional tasks
 
 Encrypt `etcd` data:
+
 ```shell
 $ oc patch apiserver cluster --type merge --patch '{"spec":{"encryption":{"type": "aesgcm"}}}'
 ```

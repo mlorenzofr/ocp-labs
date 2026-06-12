@@ -16,6 +16,7 @@ In this new cluster, we will:
 ## Requirements
 
 To simulate a disconnected environment, we should block all outgoing traffic on the libvirt network where the VMs have their NICs attached.
+
 ```shell
 iptables -I LIBVIRT_FWO 1 -s 192.168.127.0/24 ! -d 192.168.127.0/24 -j REJECT
 ```
@@ -23,18 +24,21 @@ iptables -I LIBVIRT_FWO 1 -s 192.168.127.0/24 ! -d 192.168.127.0/24 -j REJECT
 ## Steps
 
 1. Deploy the appliance installation and environment configuration with:
+
 ```shell
 ap labs/appliance-pinned/deploy.yaml --tags ocp,day2
 ```
 
 2. Validate the installation
 3. Log in to the cluster and registry:
+
 ```shell
 $ oc login -u kubeadmin --insecure-skip-tls-verify=true -p 'xxxxx-xxxxx-xxxxx-xxxxx' https://api.appliance.lab:6443
 $ podman login -u kubeadmin -p $(oc whoami -t) --tls-verify=false default-route-openshift-image-registry.apps.appliance.lab
 ```
 
 4. Now, we can push the images used in our test deployment to the registry:
+
 ```shell
 $ podman images | grep -E 'nginx|stress'
 docker.io/library/nginx                                           latest          b52e0b094bc0  5 weeks ago    196 MB
@@ -48,6 +52,7 @@ $ podman push --tls-verify=false default-route-openshift-image-registry.apps.app
 ```
 
 5. Deploy the dummy _workload_:
+
 ```shell
 ap labs/appliance-pinned/deploy.yaml --tags workload
 ```
@@ -55,13 +60,16 @@ ap labs/appliance-pinned/deploy.yaml --tags workload
 ### Configure `PinnedImageSets`
 
 1. Enable Technology Preview features:
+
 > This step requires deploying a new configuration to the nodes. This will take some time. Monitor the cluster operators and wait until the cluster is stable again.
+
 ```shell
 oc apply -f enable-techpreview.yaml
 oc adm wait-for-stable-cluster --minimum-stable-period=300s
 ```
 
 2. Apply the `PinnedImageSet` and wait for the images to download.
+
 ```shell
 oc apply -f pinned-image-set.yaml
 ```
@@ -71,6 +79,7 @@ oc apply -f pinned-image-set.yaml
 ### Installation
 
 1. Check if the cluster is running:
+
 ```shell
 $ export KUBECONFIG=/home/ocp-labs/appliance/deploy/auth/kubeconfig
 
@@ -88,6 +97,7 @@ version   4.18.2    True        False         17m     Cluster version is 4.18.2
 ```
 
 2. Check if the PVC required for the `openshift-image-registry` is bound:
+
 ```shell
 $ oc get pvc -n openshift-image-registry
 NAME                     STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
@@ -95,6 +105,7 @@ image-registry-storage   Bound    pvc-d211049b-d6c2-4fa8-93ed-628d195d8312   15G
 ```
 
 3. Check if in the namespace `openshift-image-registry` the pod **image-registry** is _Running_:
+
 ```shell
 $ oc get pods -n openshift-image-registry
 NAME                                               READY   STATUS    RESTARTS      AGE
@@ -110,6 +121,7 @@ node-ca-wzgtb                                      1/1     Running   0          
 ### workload
 
 1. Review if the `ImageStreams` used by the deployment exist:
+
 ```shell
 $ oc get imagestream -n workload
 NAME     IMAGE REPOSITORY                                                            TAGS     UPDATED
@@ -118,6 +130,7 @@ stress   default-route-openshift-image-registry.apps.appliance.lab/workload/stre
 ```
 
 2. Check if the _workload_ pods are **running**:
+
 ```shell
 $ oc get pods -n workload
 NAME                                   READY   STATUS    RESTARTS   AGE
@@ -130,6 +143,7 @@ workload-deployment-68fcdd56df-xlnfp   2/2     Running   0          7m31s
 ### PinnedImageSet
 
 1. Check if the pinned images are present on the nodes:
+
 ```shell
 $ for i in {1..5}; do scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no /home/ocp-labs/appliance/pinned-images.sh core@appliance-node-${i}:/tmp/; done
 
@@ -147,6 +161,7 @@ Warning: Permanently added 'appliance-node-5,192.168.127.15' (ECDSA) to the list
 ```
 
 2. Power off all cluster nodes. Switch them on, wait a few minutes and check the pods in the **workload** namespace. They should have restarts, but be in _running_ state:
+
 ```shell
 $ oc get pods -n workload
 NAME                                   READY   STATUS    RESTARTS   AGE

@@ -12,6 +12,7 @@ The _local-cluster_ `ManagedCluster` is not being imported and that blocks the M
 |  **4.16.9**   | **2.7.1** | :x: | |
 |  **4.14.42**  | **2.6.3** | :x: | |
 |  **4.17.7**   | **2.7.1** | :x: | |
+
 ```shell
 $ oc get managedcluster
 NAME            HUB ACCEPTED   MANAGED CLUSTER URLS   JOINED   AVAILABLE   AGE
@@ -35,6 +36,7 @@ None.
 ## Steps
 
 1. Deploy:
+
 ```shell
 ap labs/hcp-calico/deploy.yaml
 ```
@@ -42,6 +44,7 @@ ap labs/hcp-calico/deploy.yaml
 ## Validation
 
 1. Check if the _hub cluster_ is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/hcp-calico/deploy/auth/kubeconfig
 
@@ -57,12 +60,14 @@ version   4.16.9    True        False         77s     Cluster version is 4.16.9
 ```
 
 2. Validate in the network configuration if the Network Type is set to Calico:
+
 ```shell
 $ oc get network.config/cluster -o jsonpath='{.status.networkType}{"\n"}'
 Calico
 ```
 
 3. Check if _spoke cluster_ is running:
+
 ```shell
 $ oc get managedcluster
 NAME            HUB ACCEPTED   MANAGED CLUSTER URLS                    JOINED   AVAILABLE   AGE
@@ -75,6 +80,7 @@ hcp1   4.17.0    hcp1-admin-kubeconfig   Completed   True        False         T
 ```
 
 4. Check if the cluster **hcp1** works:
+
 ```shell
 $ export KUBECONFIG=/root/labs/hcp-calico/hcp1/auth/kubeconfig
 
@@ -112,6 +118,7 @@ storage                                    4.17.0    True        False         F
 ```
 
 5. On the _spoke cluster_, review the Network Type:
+
 ```shell
 $ oc get network.config/cluster -o jsonpath='{.status.networkType}{"\n"}'
 Calico

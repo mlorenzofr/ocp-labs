@@ -9,6 +9,7 @@ None.
 ## Steps
 
 1. Create a new appliance image with:
+
 ```shell
 ap labs/appliance-sno/deploy.yaml
 ```
@@ -18,6 +19,7 @@ ap labs/appliance-sno/deploy.yaml
 ## Validation
 
 1. Check if the cluster is running:
+
 ```shell
 $ export KUBECONFIG=/home/ocp-labs/applianceiso/deploy/auth/kubeconfig
 

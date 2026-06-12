@@ -47,7 +47,7 @@ This role requires the following roles:
 * `name`. _String_. `ClusterImageSet` name.
 * `image`. _String_. Registry address to pull the image.
 * `visible`. _Bool_. Set whether the image should be visible or not.
-* `channel`. _String_. 
+* `channel`. _String_.
 
 ## Example Playbook
 
@@ -84,4 +84,4 @@ MIT / BSD
 
 ## Author Information
 
- - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2024-)
+* **Manuel Lorenzo** (mlorenzofr@redhat.com) (2024-)

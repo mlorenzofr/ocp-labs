@@ -5,6 +5,7 @@ In this lab the goal is install an OKD Cluster.
 ## Requirements
 
 We need the `openshift-install` binaries downloaded and ready in the installation host.
+
 ```shell
 $ oc adm release extract --registry-config /tmp/pull-secret.txt --command=openshift-baremetal-install --to /usr/local/bin quay.io/openshift/okd:4.12.0-0.okd-2023-04-16-041331
 $ oc adm release extract --registry-config /tmp/pull-secret.txt --command=openshift-install --to /usr/local/bin quay.io/openshift/okd:4.12.0-0.okd-2023-04-16-041331
@@ -14,6 +15,7 @@ $ oc adm release extract --registry-config /tmp/pull-secret.txt --command=oc --t
 ## Steps
 
 1. Execute the playbook `deploy.yaml`:
+
 ```shell
 ap labs/okd/deploy.yaml
 ```
@@ -21,6 +23,7 @@ ap labs/okd/deploy.yaml
 ## Validation
 
 1. Check if the _hub cluster_ is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/okdb/deploy/auth/kubeconfig
 

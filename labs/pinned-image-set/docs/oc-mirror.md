@@ -7,9 +7,10 @@ For this lab we will work with an internal registry. To retrieve the OCI images
 
 Unfortunately, this tool only works with stable Openshift registries, used by OCP  
  and OKD. Therefore, we have had to rebuild the binary by replacing the OCP  
- Cincinnati graph address with its CI counterpart. These changes can be found in 
+ Cincinnati graph address with its CI counterpart. These changes can be found in
  the branch  [ci-releases](https://github.com/mlorenzofr/oc-mirror/tree/ci-releases)  
  of my personal `oc-mirror` fork.
+
 ```shell
 $ git clone git@github.com:mlorenzofr/oc-mirror.git
 $ cd oc-mirror
@@ -28,6 +29,7 @@ $ update-alternatives --config oc-mirror
 The mirror configuration is managed by a CR `ImageSetConfiguration`.  
 It's not strictly necessary, but for our testing and to provide support for original and upgrade versions, we will include fixed versions for 4.16 and 4.17.  
 The `oc-mirror` downloads all versions between _minversion_ and _maxversion_ (only the last version if the parameters are omitted). We set a fixed version to save space.  
+
 ```yaml
 ---
 kind: ImageSetConfiguration
@@ -58,6 +60,7 @@ mirror:
 
 Once we have the binary and our registry server, we can create a mirror using  
  the configuration and executing the command:
+
 ```shell
 $ oc-mirror --config=./imageset-config.yaml --dest-skip-tls docker://pinnedis-registry.pinnedis.local.lab
 ```

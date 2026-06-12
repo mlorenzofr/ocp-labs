@@ -4,8 +4,8 @@ This lab installs a compact Openshift cluster on AWS platform.
 
 ## Requirements
 
-- You must have your AWS credentials added inside the `~/.aws/credentials` file.
-- Your _baseDomain_ zone must be manually created in **AWS Route53** before you start the deployment.
+* You must have your AWS credentials added inside the `~/.aws/credentials` file.
+* Your _baseDomain_ zone must be manually created in **AWS Route53** before you start the deployment.
 
 ## Steps
 
@@ -44,4 +44,4 @@ open-cluster-management   aws-group-one   1      0         0       <redacted>   
 
 ## Links
 
-- [Hive ClusterPool](https://github.com/openshift/hive/blob/master/docs/clusterpools.md)
+* [Hive ClusterPool](https://github.com/openshift/hive/blob/master/docs/clusterpools.md)

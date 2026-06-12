@@ -17,6 +17,7 @@ The following **okd-scos** versions are validated:
 ## Steps
 
 1. Execute the playbook `deploy.yaml`:
+
 ```shell
 ap labs/hive-okd/deploy.yaml
 ```
@@ -24,6 +25,7 @@ ap labs/hive-okd/deploy.yaml
 ## Validation
 
 1. Check if the _hub cluster_ is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/okd/deploy/auth/kubeconfig
 
@@ -39,6 +41,7 @@ version   4.15.4    True        False         129m    Cluster version is 4.15.4
 ```
 
 2. Check if OKD _standalone cluster_ is provisioned:
+
 ```shell
 $ oc get bmh -n hive-sno
 NAME        STATE         CONSUMER   ONLINE   ERROR   AGE
@@ -50,6 +53,7 @@ sno    fbc67676-11b7-4f7c-b6d1-ec501fb98b57   agent-baremetal            4.15.0-
 ```
 
 3. Check if the OKD cluster works:
+
 ```shell
 $ export KUBECONFIG=/root/labs/okd/sno/auth/kubeconfig
 

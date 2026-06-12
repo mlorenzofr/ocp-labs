@@ -25,9 +25,9 @@ This role installs and configures gitops operator on an Openshift cluster.
 * `pull_secret_name`. _String_. Name of the pull-secret secret.
 * `pull_secret`. _String_. Pull secret (base64 encoded).
 * `nodes`. _List_. List of cluster nodes.
-    * `hostname`. _String_. Node name.
-    * `bmc_username`. _String_. BMC node username.
-    * `bmc_password`. _String_. BMC node password.
+  * `hostname`. _String_. Node name.
+  * `bmc_username`. _String_. BMC node username.
+  * `bmc_password`. _String_. BMC node password.
 
 ## Example Playbook
 
@@ -36,6 +36,7 @@ This role installs and configures gitops operator on an Openshift cluster.
 - hosts: servers
 
   roles:
+
     - ocp_gitops
 ```
 
@@ -45,4 +46,4 @@ MIT / BSD
 
 ## Author Information
 
- - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2025-)
+* **Manuel Lorenzo** (mlorenzofr@redhat.com) (2025-)

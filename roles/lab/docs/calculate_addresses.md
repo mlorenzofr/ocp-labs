@@ -11,8 +11,8 @@ The task analyzes:
 
 ## IP Range Allocation
 
-- **VM IPs**: `192.168.x.10-99`
-- **API/Ingress IPs**: `192.168.x.100-254`
+* **VM IPs**: `192.168.x.10-99`
+* **API/Ingress IPs**: `192.168.x.100-254`
 
 ## Usage
 
@@ -38,10 +38,10 @@ Simply specify the number of VMs needed:
 
 The task automatically sets these variables if not manually defined:
 
-- `lab_hosts`: List of VM configurations with auto-calculated IDs
-- `lab_abi_ip`: IP for the first node (e.g., `192.168.125.10`)
-- `lab_api_ips`: API endpoint IP(s)
-- `lab_ingress_ips`: Ingress endpoint IP(s)
+* `lab_hosts`: List of VM configurations with auto-calculated IDs
+* `lab_abi_ip`: IP for the first node (e.g., `192.168.125.10`)
+* `lab_api_ips`: API endpoint IP(s)
+* `lab_ingress_ips`: Ingress endpoint IP(s)
 
 ### Preserving Manual Properties
 
@@ -71,13 +71,13 @@ vars:
 
 For SNO deployments (`lab_master_replicas: 1`):
 
-- `lab_api_ips` and `lab_ingress_ips` will be set to the same IP as `lab_abi_ip`
+* `lab_api_ips` and `lab_ingress_ips` will be set to the same IP as `lab_abi_ip`
 
 ### Multi-Node Clusters
 
 For non-SNO deployments:
 
-- `lab_api_ips` and `lab_ingress_ips` will be assigned 2 available IPs from the range `192.168.x.100-254`
+* `lab_api_ips` and `lab_ingress_ips` will be assigned 2 available IPs from the range `192.168.x.100-254`
 
 ## Example Output
 
@@ -91,6 +91,7 @@ lab_ingress_ips: ['192.168.125.101']
 ```
 
 With manual properties preserved:
+
 ```
 Lab type: Multi-node
 VMs needed: 3

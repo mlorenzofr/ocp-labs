@@ -7,11 +7,13 @@ None.
 ## Steps
 
 1. Create the environment network:
+
 ```shell
 kcli create network -c "192.168.131.0/24" --domain local.lab -P dns=false -P dhcp=false -P plan=ovishlit1 ovishlit-net
 ```
 
 2. Deploy:
+
 ```shell
 ap labs/ovishlit1/deploy.yaml
 ```
@@ -19,6 +21,7 @@ ap labs/ovishlit1/deploy.yaml
 ## Validation
 
 1. Check if the Openshift cluster is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/ovishlit1/deploy/auth/kubeconfig
 

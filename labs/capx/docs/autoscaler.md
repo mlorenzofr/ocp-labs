@@ -7,6 +7,7 @@ In this approach, we will use the autoscaler deployed on the management cluster,
 ## Management Cluster
 
 1. Add these annotations to the `MachineDeployment`:
+
 ```shell
 $ kubectl annotate machinedeployment capi-ntx-2-wmd capacity.cluster-autoscaler.kubernetes.io/cpu="24"
 $ kubectl annotate machinedeployment capi-ntx-2-wmd capacity.cluster-autoscaler.kubernetes.io/ephemeral-disk="120Gi"
@@ -14,15 +15,18 @@ $ kubectl annotate machinedeployment capi-ntx-2-wmd capacity.cluster-autoscaler.
 $ kubectl annotate machinedeployment capi-ntx-2-wmd cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size="0"
 $ kubectl annotate machinedeployment capi-ntx-2-wmd cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size="3"
 ```
+
 The first three annotations, the capacity ones, are necessary because we are using a [zero-sized node group](https://cluster-api.sigs.k8s.io/tasks/automated-machine-management/autoscaling#scale-from-zero-support) in our lab.
 
 2. Disable the `ControlPlaneIsStable` preflight check:
+
 ```shell
 $ ms=$(kubectl get machineset -l "cluster.x-k8s.io/deployment-name=capi-ntx-1-wmd" -o jsonpath='{.items[*].metadata.name}')
 $ kubectl annotate machineset/"${ms}" "machineset.cluster.x-k8s.io/skip-preflight-checks=ControlPlaneIsStable"
 ```
 
 3. Copy the secret with the workload cluster's kubeconfig to the `kube-system` namespace:
+
 ```shell
 $ kubectl get secret capi-ntx-2-admin-kubeconfig -o yaml | sed 's/namespace: .*/namespace: kube-system/' | kubectl apply -f -
 ```
@@ -32,6 +36,7 @@ $ kubectl get secret capi-ntx-2-admin-kubeconfig -o yaml | sed 's/namespace: .*/
 ## Validation
 
 1. On the workload cluster, apply the [stress-test](../manifest/autoscaler/stress-test.yaml) manifest. This will create a _deployment_ with replica factor of 100, which should be enough to stress the cluster.
+
 ```shell
 $ kubectl get secret/capi-ntx-2-admin-kubeconfig -o json | jq -r '.data.kubeconfig | @base64d' > /tmp/kubeconfig-capi-ntx-2
 $ export KUBECONFIG=/tmp/kubeconfig-capi-ntx-2
@@ -40,6 +45,7 @@ $ kubectl apply -f stress-test.yaml
 ```
 
 2. On the workload cluster, check if you have any replicas in _pending_ status:
+
 ```shell
 $ kubectl get pods
 NAME                          READY   STATUS                   RESTARTS   AGE
@@ -48,7 +54,9 @@ stress-test-d8bf88685-2mb2l   0/1     Pending                  0          16m
 stress-test-d8bf88685-4h5dh   0/1     Pending                  0          16m
 stress-test-d8bf88685-5jq5q   1/1     Running                  0          60m
 ```
+
 If you don't have any, scale up replicas until some pod becomes in _pending_ state due to insufficient resources:
+
 ```shell
 $ kubectl scale deployment/stress-test --replicas=200
 
@@ -57,6 +65,7 @@ FailedScheduling :: 0/3 nodes are available: 3 Insufficient cpu. preemption: 0/3
 ```
 
 3. On the management cluster, look for a scale-up message in the `cluster-autoscaler` logs and check if the `MachineDeployment` is in **ScalingUp** phase.
+
 ```shell
 $ kubectl logs cluster-autoscaler-76c76ff5c9-9w2d6 -n kube-system | grep orchestrator
 I0218 13:43:35.810409       1 orchestrator.go:582] Scale-up: setting group MachineDeployment/default/capi-ntx-2-wmd size to 1
@@ -67,6 +76,7 @@ default     capi-ntx-2-wmd       capi-ntx-2                                    1
 ```
 
 4. If the scale-up process has started, we should see a new VM in the Nutanix Prism Console, and after a few minutes the new node should be available on the workload cluster:
+
 ```shell
 $ kubectl get nodes
 NAME                             STATUS   ROLES                         AGE    VERSION

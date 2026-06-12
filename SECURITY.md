@@ -6,13 +6,13 @@ This document outlines security practices for the ocp-labs repository, particula
 
 This repository uses [Gitleaks](https://github.com/gitleaks/gitleaks) to prevent committing sensitive information such as:
 
-- Pull secrets and Docker registry credentials
-- SSH keys (both public and private)
-- Passwords and authentication tokens
-- OpenShift authentication tokens
-- AWS credentials
-- Personal email addresses used as usernames
-- BMC credentials
+* Pull secrets and Docker registry credentials
+* SSH keys (both public and private)
+* Passwords and authentication tokens
+* OpenShift authentication tokens
+* AWS credentials
+* Personal email addresses used as usernames
+* BMC credentials
 
 ### Pre-commit Hook
 
@@ -40,9 +40,9 @@ gitleaks detect --config=.gitleaks.toml --no-git
 
 ### Configuration Files
 
-- **`.gitleaks.toml`**: Main configuration file with custom rules for OpenShift/Ansible patterns
-- **`.gitleaksignore`**: Contains fingerprints of known false positives to ignore
-- **`.pre-commit-config.yaml`**: Pre-commit hook configuration
+* **`.gitleaks.toml`**: Main configuration file with custom rules for OpenShift/Ansible patterns
+* **`.gitleaksignore`**: Contains fingerprints of known false positives to ignore
+* **`.pre-commit-config.yaml`**: Pre-commit hook configuration
 
 ### Custom Rules
 
@@ -64,13 +64,13 @@ The gitleaks configuration includes custom rules tailored for OpenShift environm
 
 The following patterns are allowed and won't trigger alerts:
 
-- Jinja2/Ansible variable templates: `{{ variable_name }}`
-- Shell variables: `${VARIABLE}`
-- Files in `.user/` directory (gitignored)
-- Files in `secrets/` directory (gitignored)
-- Default/placeholder passwords like `ADMIN` or `changeme`
-- Redacted values: `<redacted>`
-- Role defaults in `roles/*/defaults/main.yml`
+* Jinja2/Ansible variable templates: `{{ variable_name }}`
+* Shell variables: `${VARIABLE}`
+* Files in `.user/` directory (gitignored)
+* Files in `secrets/` directory (gitignored)
+* Default/placeholder passwords like `ADMIN` or `changeme`
+* Redacted values: `<redacted>`
+* Role defaults in `roles/*/defaults/main.yml`
 
 ### Handling False Positives
 
@@ -116,18 +116,20 @@ git commit --no-verify -m "Your message"
 ## Pattern Reference
 
 The grep pattern used for detection:
+
 ```
 dockerconfigjson|pass|user|pull|ssh|auth|ecret
 ```
 
 This pattern helps identify potential secret leaks in:
-- Docker/Kubernetes config JSON (dockerconfigjson)
-- Passwords (pass)
-- Usernames (user)
-- Pull secrets (pull)
-- SSH keys (ssh)
-- Authentication tokens (auth)
-- Generic secrets (ecret - catches 'secret', 'secrets', etc.)
+
+* Docker/Kubernetes config JSON (dockerconfigjson)
+* Passwords (pass)
+* Usernames (user)
+* Pull secrets (pull)
+* SSH keys (ssh)
+* Authentication tokens (auth)
+* Generic secrets (ecret - catches 'secret', 'secrets', etc.)
 
 ## Questions or Issues?
 

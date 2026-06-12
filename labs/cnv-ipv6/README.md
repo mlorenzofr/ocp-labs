@@ -8,6 +8,7 @@ The QE team will use the lab to do some testing with CNV. Because of this, we wi
 For this lab, an IPv6-only libvirt network is required.  
 There is an example in the file [libvirt/net.xml](libvirt/net.xml).  
 You can define it with:
+
 ```shell
 virsh # net-define --file /tmp/net.xml
 ```
@@ -15,12 +16,15 @@ virsh # net-define --file /tmp/net.xml
 ## Steps
 
 1. Execute the playbook `deploy.yaml`:
+
 ```shell
 ap labs/cnv-ipv6/deploy.yaml --tags ocp
 ```
 
 2. Unfortunately, we do not know at installation time what role will be assigned to each node. So once the cluster is installed, we need to stop the worker nodes and increase their data disk manually.
+
   2.1. Check the nodes:
+
 ```shell
 $ oc get nodes
 NAME         STATUS   ROLES                  AGE     VERSION
@@ -31,7 +35,9 @@ cnv-node-4   Ready    worker                 3h29m   v1.28.7+f1b5f6c
 cnv-node-5   Ready    worker                 3h29m   v1.28.7+f1b5f6c
 cnv-node-6   Ready    worker                 3h29m   v1.28.7+f1b5f6c
 ```
+
   2.2. Step by step, switch off each VM, increase its data disk and start the VM:
+
 ```
 $ qemu-img resize /var/lib/libvirt/images/cnv-node-4_1.img +199G
 $ qemu-img resize /var/lib/libvirt/images/cnv-node-5_1.img +199G
@@ -39,19 +45,21 @@ $ qemu-img resize /var/lib/libvirt/images/cnv-node-6_1.img +199G
 ```
 
 3. Apply post-installation setup
+
 ```shell
 ap labs/ipv6-single-stack/deploy.yaml --tags postinst
 ```
 
 4. Finally, for the QE team, we will need to configure additional components, not included here to avoid exposing internal information:
-  * `ConfigMap` with internal certificates, to mark it as trusted.
-  * `CatalogSources` with the internal catalog.
-  * `ImageContentSourcePolicy` with the internal registry mirroring.
-  * Set the `secret/pull-secret` in `openshift-config` with a valid token for the internal registry.
+    * `ConfigMap` with internal certificates, to mark it as trusted.
+    * `CatalogSources` with the internal catalog.
+    * `ImageContentSourcePolicy` with the internal registry mirroring.
+    * Set the `secret/pull-secret` in `openshift-config` with a valid token for the internal registry.
 
 ## Validation
 
 1. Check if the cluster is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/okd/deploy/auth/kubeconfig
 
@@ -106,6 +114,7 @@ storage                                    4.15.4    True        False         F
 ```
 
 2. Verify that services are running only with IPv6 addresses:
+
 ```shell
 $ oc get svc -n openshift-console
 NAME        TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
@@ -123,6 +132,7 @@ check-endpoints   ClusterIP   fd02::cefe   <none>        17698/TCP   3h42m
 ```
 
 3. Verify that the ODF SCs and PVCs are present:
+
 ```shell
 $ oc get sc
 NAME                              PROVISIONER                                 RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
@@ -141,6 +151,7 @@ openshift-storage-odf   deviceset1-2-data-0b9q66   Bound    local-pv-a32fb595   
 ```
 
 4. Check if the _Multicluster Engine_ is installed and running:
+
 ```shell
 $ oc get csv -n multicluster-engine
 NAME                         DISPLAY                              VERSION   REPLACES                     PHASE

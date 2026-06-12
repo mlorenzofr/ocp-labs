@@ -6,6 +6,7 @@ A SNO cluster deployment is included in the [ztp-example](https://github.com/mlo
 >[!WARNING]  
 > While this lab can be useful for verifying resources, development and understanding the workflow, the SNO cluster will never be installed because the software RAID provisioning is not supported.  
 > We would find this error in the `BaremetalHost`:
+
 ```shell
 Clean step raid.create_configuration failed on node e0ceb412-b9ac-447c-8ae2-ab2c63381fa8. Failed to create md device /dev/md0 on /dev/vda1 /dev/vdb1: Unexpected error while running command.
 Command: mdadm --create /dev/md0 --force --run --metadata=1 --level 1 --name /dev/md0 --raid-devices 2 /dev/vda1 /dev/vdb1
@@ -21,19 +22,23 @@ None.
 ## Steps
 
 1. Execute the playbook `deploy.yaml`:
+
 ```shell
 ap labs/zraid/deploy.yaml
 ```
 
 2. Edit the **multiclusterhub-operator** and replace the  `OPERAND_IMAGE_SITECONFIG_OPERATOR` environment variable with the custom image:
+
 ```
 quay.io/mlorenzofr/siteconfig-manager@sha256:7241f06269801bcb8f01a7d56fae877e95a8df4872fea3dcb1eb0739dc20f45b
 ```
+
 ```shell
 $ oc edit deploy -n open-cluster-management multiclusterhub-operator -o yaml
 ```
 
 3. Configure the ArgoCD applications:
+
 ```shell
 ap labs/zraid/deploy.yaml --tags argocd
 ```
@@ -41,6 +46,7 @@ ap labs/zraid/deploy.yaml --tags argocd
 ## Validation
 
 1. Check if the Openshift cluster is running:
+
 ```shell
 $ export KUBECONFIG=~/zraid/deploy/auth/kubeconfig
 
@@ -56,6 +62,7 @@ version   4.18.16   True        False         107m    Cluster version is 4.18.16
 ```
 
 2. Check if the ACM, GitOps and TALM operators are installed:
+
 ```shell
 $ oc get csv -n open-cluster-management
 NAME                                       DISPLAY                                      VERSION   REPLACES                                           PHASE
@@ -65,6 +72,7 @@ topology-aware-lifecycle-manager.v4.18.0   Topology Aware Lifecycle Manager     
 ```
 
 3. Review if `assisted-service` is running:
+
 ```shell
 $ oc get pods -n multicluster-engine -l app=assisted-service
 NAME                                READY   STATUS    RESTARTS   AGE
@@ -80,6 +88,7 @@ assisted-image-service-0   1/1     Running   0          54m
 This cluster will never be installed, but to review the resources involved:
 
 1. `ClusterInstances`:
+
 ```shell
 $ oc get clusterinstances.siteconfig.open-cluster-management.io -A
 NAMESPACE   NAME      PAUSED   PROVISIONSTATUS   PROVISIONDETAILS       AGE
@@ -87,6 +96,7 @@ ztp-sno     ztp-sno            InProgress        Provisioning cluster   3h37m
 ```
 
 2. `BaremetalHost`:
+
 ```shell
 $ oc get bmh -A
 NAMESPACE               NAME             STATE       CONSUMER               ONLINE   ERROR               AGE
@@ -99,6 +109,7 @@ $ oc get bmh -n ztp-sno zraid-bmh-1 -o yaml
 ```
 
 3. `infraenv`:
+
 ```shell
 $ oc get infraenv -A
 NAMESPACE   NAME      ISO CREATED AT
@@ -106,6 +117,7 @@ ztp-sno     ztp-sno   2025-06-18T07:40:58Z
 ```
 
 4. `clusterdeployment`:
+
 ```shell
 $ oc get clusterdeployment -A
 NAMESPACE   NAME      INFRAID   PLATFORM          REGION   VERSION   CLUSTERTYPE   PROVISIONSTATUS   POWERSTATE   AGE

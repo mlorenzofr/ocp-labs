@@ -3,6 +3,7 @@
 We have the environment pre-installed, with the cluster hub deployed.
 
 We begin by exporting the `KUBECONFIG` variable and verifying that we have access to the cluster:
+
 ```shell
 $ export KUBECONFIG=~/labs/acm/deploy/auth/kubeconfig
 
@@ -14,6 +15,7 @@ acm-master-3   Ready    control-plane,master,worker   19h   v1.33.5
 ```
 
 The manifests we will use to deploy ACM-related resources are available in the directory `~/labs/acm/config`.
+
 ```shell
 cd ~/labs/acm/config
 ```
@@ -22,17 +24,20 @@ The Web UI for our OpenShift cluster is available [here](https://console-openshi
 It is also possible to work using `oc` or `kubectl` from your computer using the OpenShift API.  
 For it to function correctly, these DNS addresses must be resolved:
 
-- `console-openshift-console.apps.acm.local.lab`
-- `oauth-openshift.apps.acm.local.lab`
-- `api.acm.local.lab`
+* `console-openshift-console.apps.acm.local.lab`
+* `oauth-openshift.apps.acm.local.lab`
+* `api.acm.local.lab`
 
 ## ACM installation
 
 The first step is to install the ACM operator. We can do this via the Web UI or by applying the subscription manifest.
+
 ```shell
 $ oc create -f acm-subscription.yaml
 ```
+
 We can see if the operator installation has finished by checking its status:
+
 ```shell
 $ oc get subscriptions acm -n open-cluster-management -o jsonpath='{.status.state}{"\n"}'
 AtLatestKnown
@@ -44,11 +49,13 @@ multiclusterhub-operator-666c97996f-wrmpb   1/1     Running   0          6m38s
 ```
 
 Now that the operator is installed, we can create the `MulticlusterHub` resource, which will deploy all the ACM components.
+
 ```shell
 oc create -f acm.yaml
 ```
 
 We will see that this creates new pods and operators, including the `MultiClusterEngine`, which in turn includes **assisted-service**.
+
 ```shell
 $ oc get pods -n multicluster-engine
 NAME                                                   READY   STATUS    RESTARTS   AGE
@@ -105,11 +112,12 @@ We've finished installing ACM, but the assisted service isn't working yet. This 
 Let's review the `agent-service-config.yaml` file.  
 In this file we can see 3 storage definitions:
 
-- **databaseStorage**. This will be the storage for the PostgreSQL database that uses `assisted-service`.
-- **filesystemStorage**. This space will store logs and other user data from the `assisted-service`.
-- **imageStorage**. This will be the storage that the `assisted-image-service` will use to save CoreOS images.
+* **databaseStorage**. This will be the storage for the PostgreSQL database that uses `assisted-service`.
+* **filesystemStorage**. This space will store logs and other user data from the `assisted-service`.
+* **imageStorage**. This will be the storage that the `assisted-image-service` will use to save CoreOS images.
 
 With this configuration we can see that we will need some storage in our OpenShift cluster, but right now we don't have any.
+
 ```shell
 $ oc get sc
 No resources found
@@ -120,6 +128,7 @@ No resources found
 To add storage to our cluster, we will use local resources. The operator we will use for this purpose is the **LVMS operator**.
 
 First we will install the operator:
+
 ```shell
 $ oc create -f lvms-subscription.yaml
 
@@ -132,11 +141,13 @@ lvms-operator-78b5486445-8fjwq   1/1     Running   0          13s
 ```
 
 Okay, with the operator ready, we'll now create the `LVMCluster` object. The nodes in our Openshift cluster have an additional disk ready to be used as local storage by the LVMS operator.
+
 ```shell
 $ oc create -f lvmcluster-lv-data.yaml
 ```
 
 Now we can see a StorageClass in our cluster ready to be used.
+
 ```shell
 $ oc get sc
 NAME                 PROVISIONER   RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
@@ -146,11 +157,13 @@ lvms-vg1 (default)   topolvm.io    Delete          WaitForFirstConsumer   true  
 ### Initiating assisted service
 
 Now that we have the storage, we can configure and start the **assisted service**:
+
 ```shell
 oc create -f agent-service-config.yaml
 ```
 
 If we check the multicluster-engine namespace, we can see the `assisted-service` pods running.
+
 ```shell
 $ oc get pods -n multicluster-engine -l app=assisted-service
 NAME                                READY   STATUS    RESTARTS   AGE
@@ -166,15 +179,18 @@ assisted-image-service-0   1/1     Running   0          2m45s
 For development purposes, we may be interested in replacing the `assisted-service` image with an image that we have built ourselves.
 
 Images can be configured as environment variables of the `infrastructure-operator`. However, this operator is managed by the `multicluster-engine-operator` (**MCE**), which in turn is managed by the `cluster-version-operator` (**CVO**). If we want to change the images, we must stop these two operators:
+
 ```shell
 $ oc scale -n openshift-cluster-version deployment/cluster-version-operator --replicas=0
 $ oc scale deployment/multicluster-engine-operator -n multicluster-engine --replicas=0
 ```
 
 Finally, we edited the `infrastructure-operator` deployment and replace the `assisted-installer` image with our own version:
+
 ```shell
 $ oc edit deployment -n multicluster-engine infrastructure-operator
 ```
+
 ```yaml
 env:
 
@@ -183,6 +199,7 @@ env:
 ```
 
 This change will restart the deployment and cause the `assisted-service` pod to use this new image.
+
 ```shell
 $ oc get pods -n multicluster-engine -l app=assisted-service
 NAME                                READY   STATUS    RESTARTS   AGE
@@ -200,10 +217,10 @@ In terms of resources, we already have 4 VMs created in our lab. The VMs are cur
 
 To create this cluster we will use the following kinds of resources:
 
-- `BareMetalHost`. It is the logical representation of a physical machine. It is related to an _Infraenv_.
-- `InfraEnv`. Defines an infrastructure and its properties. Contains references to a _ClusterDeployment_ and its _AgentClusterInstall_.
-- `AgentClusterInstall`. This contains the _ClusterDeployment_ installation properties.
-- `ClusterDeployment`. It is the resource that defines the OpenShift Cluster and triggers the installation process.
+* `BareMetalHost`. It is the logical representation of a physical machine. It is related to an _Infraenv_.
+* `InfraEnv`. Defines an infrastructure and its properties. Contains references to a _ClusterDeployment_ and its _AgentClusterInstall_.
+* `AgentClusterInstall`. This contains the _ClusterDeployment_ installation properties.
+* `ClusterDeployment`. It is the resource that defines the OpenShift Cluster and triggers the installation process.
 
 > [!WARNING]
 > These objects use secrets to store personal credentials. These secrets have been provisioned beforehand in our cluster.
@@ -212,11 +229,13 @@ To create this cluster we will use the following kinds of resources:
 > `oc patch provisioning/provisioning-configuration -p '{"spec":{"watchAllNamespaces":true}}' --type merge`
 
 The image we'll use to install our cluster exists, but it's not visible. We need to change this label in the `ClusterImageSet` resource.
+
 ```shell
 $ oc label ClusterImageSet img4.20.3-x86-64-appsub --overwrite visible=true
 ```
 
 We create the objects to begin the installation:
+
 ```shell
 $ oc create -f infraenv-spoke-acm.yaml
 infraenv.agent-install.openshift.io/spoke-acm created
@@ -234,6 +253,7 @@ clusterdeployment.hive.openshift.io/spoke-acm created
 ```
 
 The VMs will power on and provisioning will begin.
+
 ```shell
 $ virsh list | grep acm
  493   acm-master-1          running
@@ -253,6 +273,7 @@ acm-bmh-4   provisioned              true             2m8s
 ```
 
 We can monitor the installation process by checking cluster events and agent status.
+
 ```shell
 $ watch -n5 oc get agent -A
 NAMESPACE   NAME                                   CLUSTER     APPROVED   ROLE     STAGE
@@ -282,6 +303,7 @@ $ curl -sk "$(oc get agentclusterinstall spoke-acm -n spoke -o jsonpath='{.statu
 ```
 
 When the installation process is complete, we can see this result:
+
 ```shell
 $ oc get agent -A
 NAMESPACE   NAME                                   CLUSTER     APPROVED   ROLE     STAGE
@@ -295,6 +317,7 @@ spoke       spoke-acm   30bda52c-d558-49be-aaa7-113c2bce23ed   agent-baremetal  
 ```
 
 We can extract the kubeconfig from the spoke cluster by extracting the secret:
+
 ```shell
 $ mkdir ~/labs/acm/spoke-1
 $ oc extract -n spoke secret/spoke-acm-admin-kubeconfig --to=~/labs/acm/spoke-1 --confirm
@@ -307,11 +330,13 @@ In our environment we have an active SNO cluster that we can import into our hub
 The steps to follow are the following:
 
 1. Create a namespace with the same name as the cluster we are going to import.
+
 ```shell
 oc create ns acm-spoke-2
 ```
 
 2. Create a secret called `auto-import-secret` using the kubeconfig of the cluster to be imported.
+
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -327,6 +352,7 @@ type: Opaque
 ```
 
 3. Apply the `ManagedCluster` manifest.
+
 ```shell
 oc apply -f managedcluster-acm-spoke-2.yaml
 ```

@@ -23,12 +23,14 @@ From the Nutanix environment, you will need to gather the following information:
 ## Steps
 
 1. Run the playbook `deploy.yaml`:
+
 ```shell
 $ ap labs/capx/deploy.yaml
 ```
 
 2. Change the subnet network settings on Nutanix and add the `capi-manager` IP address to the DNS server list.
 3. Start the workload cluster installation (CAPI):
+
 ```shell
 $ ap labs/capx/deploy.yaml --tags capi-cluster
 
@@ -36,14 +38,17 @@ $ ap labs/capx/deploy.yaml --tags capi-cluster
 
 $ ap labs/capx/deploy.yaml --tags capi-cluster,csi
 ```
+
 In a few minutes we should be able to see the VMs created on Nutanix.
 
 4. Once the workload cluster has finished installating, we can install the Nutanix CSI operator with:
+
 ```shell
 $ ap labs/capx/deploy.yaml --tags csi
 ```
 
 5. To create the day-2 resources for the Nutanix CSI operator (for validation):
+
 ```shell
 $ ap labs/capx/deploy.yaml --tags csi-day-2
 ```
@@ -53,11 +58,14 @@ $ ap labs/capx/deploy.yaml --tags csi-day-2
 To scale up the worker nodes in the workload cluster, you can do so by increasing the number of replicas in the `MachineDeployment` resource.
 
 However, due an issue with the `ControlPlaneIsStable` preflight check, it must be disabled in the `MachineSet` first.
+
 ```shell
 $ ms=$(kubectl get machineset -l "cluster.x-k8s.io/deployment-name=capi-ntx-1-wmd" -o jsonpath='{.items[*].metadata.name}')
 $ kubectl annotate machineset/"${ms}" "machineset.cluster.x-k8s.io/skip-preflight-checks=ControlPlaneIsStable"
 ```
+
 Once the annotation is ready and the check is disabled, we can scale up the cluster by changing the replicas:
+
 ```shell
 $ kubectl scale machinedeployment capi-ntx-1-wmd --replicas=1
 ```
@@ -67,7 +75,9 @@ $ kubectl scale machinedeployment capi-ntx-1-wmd --replicas=1
 ### environment
 
 1. The provisioning flow will need DNS resolution for both the assisted-service and assisted-image.  
+
 Check if the names point to the IP address of the `capi-manager` machine.
+
 ```shell
 $ host assisted-service.assisted-installer.com
 assisted-service.assisted-installer.com has address 10.0.0.170
@@ -77,7 +87,9 @@ assisted-image.assisted-installer.com has address 10.0.0.170
 ```
 
 2. The assisted-service must be published on the IP address of the `capi-manager` machine.  
+
 It doesn't matter if it replies with 404, but it must reply. It must work for KIND pods and VMs on Nutanix.
+
 ```shell
 $ podman exec -it capi-nutanix-provider-control-plane /bin/bash
 \- (container):/# curl http://assisted-service.assisted-installer.com/
@@ -87,6 +99,7 @@ $ podman exec -it capi-nutanix-provider-control-plane /bin/bash
 ### CAPI
 
 1. Verify if CAPI components are running on the manager cluster:
+
 ```shell
 $ kubectl get deployment -A
 NAMESPACE                        NAME                                        READY   UP-TO-DATE   AVAILABLE   AGE
@@ -107,6 +120,7 @@ nginx-ingress                    ingress-nginx-controller                    1/1
 ```
 
 2. Check if `infraenv` objects were created:
+
 ```shell
 $ kubectl get infraenv -A
 
@@ -117,6 +131,7 @@ default     capi-ntx-1-v9ch2   2025-01-28T17:04:02Z
 ```
 
 3. Review the `agent` resources and whether they are _approved_
+
 ```shell
 $ kubectl get agent -A
 
@@ -127,6 +142,7 @@ default     caee384e-9b68-454a-ae9b-6fceaf396538   capi-ntx-1   true       maste
 ```
 
 4. If we want to follow the installation of the agents we can do so by checking its status:
+
 ```shell
 $ watch -n5 "kubectl get agent -A -o json | jq -jr '.items[].status.debugInfo | .state,\" \",.stateInfo,\"\n\"'"
 ```
@@ -134,11 +150,13 @@ $ watch -n5 "kubectl get agent -A -o json | jq -jr '.items[].status.debugInfo | 
 ### Workload Cluster
 
 1. We can extract the workload cluster kubeconfig from the manager cluster:
+
 ```shell
 kubectl get secret/capi-ntx-1-admin-kubeconfig -o json | jq -r '.data.kubeconfig | @base64d' > /tmp/kubeconfig-capi-ntx-1
 ```
 
 2. Check the status of Openshift:
+
 ```shell
 $ export KUBECONFIG=/tmp/kubeconfig-capi-ntx-1
 
@@ -183,6 +201,7 @@ service-ca                                 4.17.0    True        False         F
 ### Nutanix CSI operator
 
 1. Check if the Nutanix Operator is installed:
+
 ```shell
 $ kubectl get subscription nutanixcsioperator -n openshift-cluster-csi-drivers -o jsonpath='{.status.state}{"\n"}'
 
@@ -190,6 +209,7 @@ AtLatestKnown
 ```
 
 2. We should have a `NutanixCsiStorage` resource:
+
 ```shell
 $ kubectl get nutanixcsistorage -A
 
@@ -198,6 +218,7 @@ openshift-cluster-csi-drivers   nutanixcsistorage   54m
 ```
 
 3. Verify if we have a `StorageClass`:
+
 ```shell
 $ kubectl get sc
 NAME                       PROVISIONER       RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
@@ -205,6 +226,7 @@ nutanix-volume (default)   csi.nutanix.com   Delete          Immediate          
 ```
 
 4. If everything is alrigth, then we should have a PVC in **bound** status:
+
 ```shell
 $ kubectl get pvc -A
 
@@ -215,6 +237,7 @@ openshift-cluster-csi-drivers   pvc-test   Bound    pvc-bb2b7939-d0e0-4c12-8dc8-
 ### Scale up
 
 1. In the management cluster, check if we can see a _worker_ node:
+
 ```shell
 $ kubectl get agent -A
 
@@ -226,6 +249,7 @@ default     db56104e-2aca-4d3a-a23f-f4afbd5cfde4   capi-ntx-1   true       worke
 ```
 
 2. In the workload cluster, list the nodes and verify the _worker_ node:
+
 ```shell
 $ kubectl get nodes
 

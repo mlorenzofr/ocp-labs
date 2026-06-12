@@ -10,6 +10,7 @@ None.
 ## Steps
 
 1. Deploy:
+
 ```shell
 ap labs/calico/deploy.yaml
 ```
@@ -17,6 +18,7 @@ ap labs/calico/deploy.yaml
 ## Validation
 
 1. Check if the Openshift cluster is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/calico/deploy/auth/kubeconfig
 
@@ -32,12 +34,14 @@ version   4.16.9    True        False         4m4s    Cluster version is 4.16.9
 ```
 
 2. Validate in the network configuration if the Network Type is set to Calico:
+
 ```shell
 $ oc get network.config/cluster -o jsonpath='{.status.networkType}{"\n"}'
 Calico
 ```
 
 3. Get the status of Calico components:
+
 ```shell
 $ oc get tigerastatuses
 NAME        AVAILABLE   PROGRESSING   DEGRADED   SINCE

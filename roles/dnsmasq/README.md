@@ -79,6 +79,7 @@ None.
 ```
 
 External roles can include or import this role to add their own dnsmasq configuration snippets:
+
 ```yaml
 
 - name: 'Create dnsmasq snippet'
@@ -97,4 +98,4 @@ MIT / BSD
 
 ## Author Information
 
- - **Manuel Lorenzo** (mlorenzofr@redhat.com) (2025-)
+* **Manuel Lorenzo** (mlorenzofr@redhat.com) (2025-)

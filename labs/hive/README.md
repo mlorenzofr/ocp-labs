@@ -18,6 +18,7 @@ None.
 ## Steps
 
 1. Execute the playbook `deploy.yaml`:
+
 ```shell
 ap labs/hive/deploy.yaml
 ```
@@ -25,6 +26,7 @@ ap labs/hive/deploy.yaml
 ## Validation
 
 1. Check if the _hub cluster_ is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/hive/deploy/auth/kubeconfig
 
@@ -40,6 +42,7 @@ version   4.15.4    True        False         12m     Cluster version is 4.15.4
 ```
 
 2. Check if the _spoke cluster_ is provisioned:
+
 ```shell
 $ oc get bmh -n hive-sno
 NAME         STATE         CONSUMER   ONLINE   ERROR   AGE
@@ -51,6 +54,7 @@ spoke   63414bd9-45af-48f7-9df1-702a8e7e0133   agent-baremetal            4.14.8
 ```
 
 3. Check if the _spoke_ cluster works:
+
 ```shell
 $ export KUBECONFIG=/root/labs/hive/spoke/auth/kubeconfig
 

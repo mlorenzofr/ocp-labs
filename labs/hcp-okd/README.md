@@ -17,6 +17,7 @@ This lab has been tested with these software versions:
 ## Steps
 
 1. Execute the playbook `deploy.yaml`:
+
 ```shell
 ap labs/hcp-okd/deploy.yaml
 ```
@@ -24,6 +25,7 @@ ap labs/hcp-okd/deploy.yaml
 ## Validation
 
 1. Check if the _hub cluster_ is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/okd/deploy/auth/kubeconfig
 
@@ -40,6 +42,7 @@ version   4.15.4    True        False         15h     Cluster version is 4.15.4
 ```
 
 2. Check if OKD _spoke cluster_ is running:
+
 ```shell
 $ oc get hostedcluster -n spoke
 NAME    VERSION   KUBECONFIG               PROGRESS   AVAILABLE   PROGRESSING   MESSAGE
@@ -93,6 +96,7 @@ redhat-operators-catalog-5b4c9cfd9f-wlbvj             1/1     Running   0       
 ```
 
 3. Check if the OKD cluster works:
+
 ```shell
 $ export KUBECONFIG=/root/labs/okd/spoke/auth/kubeconfig
 

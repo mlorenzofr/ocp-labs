@@ -85,8 +85,8 @@ The role can automatically discover OpenShift labs from dnsmasq configuration fi
 
 1. The role scans `/etc/dnsmasq.d/*.conf` files for lab configurations
 2. Extracts lab information from dnsmasq entries:
-   * **API endpoint**: `host-record=api.<lab-name>.<domain>,<api-ip>`
-   * **Ingress endpoint**: `address=/apps.<lab-name>.<domain>/<ingress-ip>`
+    * **API endpoint**: `host-record=api.<lab-name>.<domain>,<api-ip>`
+    * **Ingress endpoint**: `address=/apps.<lab-name>.<domain>/<ingress-ip>`
 
 3. Automatically configures HAProxy backends for discovered labs
 4. Merges auto-discovered labs with manually configured ones (manual configuration takes precedence)

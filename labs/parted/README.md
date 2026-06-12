@@ -9,6 +9,7 @@ None.
 ## Steps
 
 1. Deploy:
+
 ```shell
 ap labs/parted/deploy.yaml
 ```
@@ -16,6 +17,7 @@ ap labs/parted/deploy.yaml
 ## Validation
 
 1. Check if the Openshift cluster is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/parted/deploy/auth/kubeconfig
 
@@ -31,6 +33,7 @@ version   4.18.4    True        False         10m     Cluster version is 4.18.4
 ```
 
 2. Open a debug session on one node and list the disk layout. You should see the vda5 partition unused.
+
 ```shell
 $ oc debug node/parted-node-2
 Starting pod/parted-node-2-debug-gs4mh ...

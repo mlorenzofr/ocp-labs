@@ -12,6 +12,7 @@ Each _spoke cluster_ uses about 4 Gib of memory each _hub_ node.
 ## Steps
 
 1. Execute the playbook `hcp-compact.yaml`:
+
 ```shell
 ap labs/hcp-compact/hcp-compact.yaml
 ```
@@ -19,6 +20,7 @@ ap labs/hcp-compact/hcp-compact.yaml
 ## Validation
 
 1. Check if the _hub cluster_ is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/hcp/deploy/auth/kubeconfig
 
@@ -34,6 +36,7 @@ version   4.15.4    True        False         69m     Cluster version is 4.15.4
 ```
 
 2. Check if _spoke clusters_ are running:
+
 ```shell
 $ oc get managedcluster
 NAME            HUB ACCEPTED   MANAGED CLUSTER URLS             JOINED   AVAILABLE   AGE
@@ -52,6 +55,7 @@ hcp2   4.14.13   hcp2-admin-kubeconfig   Completed   True        False         T
 ```
 
 3. Check if we have 3 etcd pods, and they are running in different nodes:
+
 ```shell
 $ oc get pods -n hcp1-hcp1 -o wide | grep etcd
 etcd-0                                                3/3     Running   0          39m   10.132.0.125   hcp-master-3   <none>           <none>
@@ -65,6 +69,7 @@ etcd-2                                                3/3     Running   0       
 ```
 
 4. Check if the cluster **hcp1** works:
+
 ```shell
 $ export KUBECONFIG=/root/labs/hcp/hcp1/auth/kubeconfig
 
@@ -102,6 +107,7 @@ storage                                    4.14.8    True        False         F
 ```
 
 5. Check if the cluster **hcp2** works:
+
 ```shell
 $ export KUBECONFIG=/root/labs/hcp/hcp2/auth/kubeconfig
 

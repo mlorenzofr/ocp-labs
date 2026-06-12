@@ -10,16 +10,19 @@ Unfortunately, this lab is not fully functional and we switched to a new solutio
 ## Steps
 
 1. Execute the playbook `deploy.yaml` with tag `ocp`:
+
 ```shell
 ap labs/elior/deploy.yaml --tags ocp
 ```
 
 2. Execute the playbook `deploy.yaml` with `postinst`tag:
+
 ```shell
 ap labs/elior/deploy.yaml --tags postinst
 ```
 
 3. Manual steps:
+
 ```shell
 oc apply -f lvmcluster-mce-data.yaml
 oc apply -f hive-operator.yaml
@@ -36,6 +39,7 @@ oc apply -f infra/01-env-sno.yaml
 ## Validation
 
 1. Check if the _hub cluster_ is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/elior/deploy/auth/kubeconfig
 
@@ -51,11 +55,13 @@ version   4.15.4    True        False         129m    Cluster version is 4.15.4
 ```
 
 2. Check assisted-installer operator:
+
 ```shell
 oc get pods -n assisted-installer
 ```
 
 2. Check if OKD _standalone cluster_ is provisioned:
+
 ```shell
 $ oc get bmh -n hive-sno
 NAME        STATE         CONSUMER   ONLINE   ERROR   AGE
@@ -67,6 +73,7 @@ sno    fbc67676-11b7-4f7c-b6d1-ec501fb98b57   agent-baremetal            4.15.0-
 ```
 
 3. Check if the OKD cluster works:
+
 ```shell
 $ export KUBECONFIG=/root/labs/elior/sno/auth/kubeconfig
 
@@ -121,6 +128,7 @@ There are problems with `assisted-installer` and `hive` operators.
 RBAC policies are not included or some CRD's are missing from the installation.  
 In the case of `hive` some problems were resolved using the version `1.2.4355-e5f809f`.  
 Some examples:
+
 ```
 $ oc logs -n assisted-installer agentinstalladmission-6df69585b5-xxgd2
 ... ...

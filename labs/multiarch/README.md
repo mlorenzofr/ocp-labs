@@ -11,6 +11,7 @@ None.
 ## Steps
 
 1. Deploy:
+
 ```shell
 ap labs/multiarch/deploy.yaml
 ```
@@ -18,6 +19,7 @@ ap labs/multiarch/deploy.yaml
 ## Validation
 
 1. Check if the _hub cluster_ is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/multiarch/deploy/auth/kubeconfig
 
@@ -33,6 +35,7 @@ version   4.18.4    True        False         57m     Cluster version is 4.18.4
 ```
 
 2. Check if the _spoke cluster_ is provisioned:
+
 ```shell
 $ oc get bmh -n managed
 ME              STATE         CONSUMER   ONLINE   ERROR   AGE
@@ -52,6 +55,7 @@ f419d363-a128-4924-ab31-96f634fde52a   spoke-multiarch   true       master   Don
 ```
 
 3. Check if the _spoke_ cluster works:
+
 ```shell
 $ export KUBECONFIG=/root/labs/multiarch/spoke-multiarch/auth/kubeconfig
 
@@ -67,6 +71,7 @@ version   4.18.6    True        False         5m48s   Cluster version is 4.18.6
 ```
 
 4. Check if the _spoke_ cluster is a `ManagedCluster`:
+
 ```shell
 $ oc get managedcluster -A
 NAME              HUB ACCEPTED   MANAGED CLUSTER URLS                         JOINED   AVAILABLE   AGE

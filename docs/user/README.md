@@ -18,62 +18,68 @@ This template file provides a starting point for your `.user/vars.yml` configura
 
 ### Required Variables
 
-- **OpenShift Pull Secret**: Required for downloading OpenShift images
-  - Get from: <https://console.redhat.com/openshift/install/pull-secret>
-  - Can be stored as direct value, in a file, or in a secret manager
+* **OpenShift Pull Secret**: Required for downloading OpenShift images
+  * Get from: <https://console.redhat.com/openshift/install/pull-secret>
+  * Can be stored as direct value, in a file, or in a secret manager
 
-- **SSH Public Keys**: Required for accessing cluster nodes
-  - Standard key: `lab_ssh_pubkey`
-  - FIPS-compatible key: `lab_ssh_pubkey_fips`
+* **SSH Public Keys**: Required for accessing cluster nodes
+  * Standard key: `lab_ssh_pubkey`
+  * FIPS-compatible key: `lab_ssh_pubkey_fips`
 
 ### Optional Variables by Platform
 
 **AWS** (if deploying to AWS):
-- `lab_aws_dns_domain`
-- `lab_aws_access_key_id`
-- `lab_aws_secret_access_key`
-- `lab_aws_region`
+
+* `lab_aws_dns_domain`
+* `lab_aws_access_key_id`
+* `lab_aws_secret_access_key`
+* `lab_aws_region`
 
 **Nutanix** (if deploying to Nutanix):
-- `nutanix_prism_central`
-- `nutanix_prism_element`
-- `nutanix_user`
-- `nutanix_password`
-- `nutanix_cluster`
-- `nutanix_network`
-- `nutanix_csi_storage_container`
+
+* `nutanix_prism_central`
+* `nutanix_prism_element`
+* `nutanix_user`
+* `nutanix_password`
+* `nutanix_cluster`
+* `nutanix_network`
+* `nutanix_csi_storage_container`
 
 **Beaker** (if using Red Hat Beaker):
-- `beaker_domains`
-- `beaker_dns_servers`
-- `rh_repo`
-- `beaker_repo`
+
+* `beaker_domains`
+* `beaker_dns_servers`
+* `rh_repo`
+* `beaker_repo`
 
 ### Variable Naming Conventions
 
 The template uses placeholder values that should be replaced:
 
-- `X.X.X.X` - Replace with actual IP addresses
-- `example.com` - Replace with your domain names
-- `YOUR_*` - Replace with your actual credentials
-- `BASE64_ENCODED_*` - Replace with base64-encoded values
-- `your-*` - Replace with your specific configuration values
+* `X.X.X.X` - Replace with actual IP addresses
+* `example.com` - Replace with your domain names
+* `YOUR_*` - Replace with your actual credentials
+* `BASE64_ENCODED_*` - Replace with base64-encoded values
+* `your-*` - Replace with your specific configuration values
 
 ### Secret Management Options
 
 The template shows multiple approaches for handling secrets:
 
 1. **Direct Values** (least secure, simplest):
+
    ```yaml
    lab_pull_secret_str: '{"auths":{...}}'
    ```
 
 2. **File Lookups** (recommended):
+
    ```yaml
    lab_pull_secret_str: "{{ lookup('file', '/path/to/secret') }}"
    ```
 
 3. **Secret Management Tools** (most secure):
+
    ```yaml
    # passwordstore
    lab_pull_secret_str: "{{ lookup('community.general.passwordstore', 'path/to/secret') }}"
@@ -84,10 +90,10 @@ The template shows multiple approaches for handling secrets:
 
 ## Important Security Notes
 
-- **Never commit** `.user/vars.yml` to version control
-- The `.user/` directory is gitignored by default
-- Consider using external secret management for production environments
-- Keep backup copies of your configuration in a secure location
+* **Never commit** `.user/vars.yml` to version control
+* The `.user/` directory is gitignored by default
+* Consider using external secret management for production environments
+* Keep backup copies of your configuration in a secure location
 
 ## Minimal Configuration Example
 

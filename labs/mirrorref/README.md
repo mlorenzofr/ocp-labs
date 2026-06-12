@@ -10,34 +10,41 @@ None.
 ## Steps
 
 1. Install the Openlshift cluster `deploy.yaml`:
+
 ```shell
 ap labs/mirrorref/deploy.yaml --tags ocp
 ```
 
 2. Enable the Openshift image registry:
+
 ```shell
 ap labs/mirrorref/deploy.yaml --tags postinst
 ```
+
 <details>
 
 <summary>
 
 3. Mirror the Openshift release:
+
 </summary>
 
 1. Create a new `auth.json` with the kubeadmin credentials:
+
 ```shell
 $ export REGISTRY_AUTH_FILE=/root/pull-secret.json
 $ podman login --tls-verify=false -u kubeadmin -p $(oc whoami -t) default-route-openshift-image-registry.apps.mirrorref.local.lab
 ```
 
 2. Create a new namespace
+
 ```shell
 $ oc create ns openshift-release-dev
 $ oc create ns edge-infrastructure
 ```
 
 3. Mirror the release and assisted-service images to the internal registry:
+
 ```shell
 $ oc adm release mirror --from=quay.io/openshift-release-dev/ocp-release:4.18.4-x86_64 --to=default-route-openshift-image-registry.apps.mirrorref.local.lab/openshift-release-dev/ocp-release --to-release-image=default-route-openshift-image-registry.apps.mirrorref.local.lab/openshift-release-dev/ocp-release:4.18.4-x86_64 --insecure=true -a /root/pull-secret.json
 
@@ -49,6 +56,7 @@ oc image mirror --insecure=true -a /root/pull-secret.json quay.io/edge-infrastru
 </details>
 
 4. Create the spoke cluster:
+
 ```shell
 ap labs/mirrorref/deploy.yaml --tags hive
 ```
@@ -56,6 +64,7 @@ ap labs/mirrorref/deploy.yaml --tags hive
 ## Validation
 
 1. Check if the Openshift cluster is running:
+
 ```shell
 $ export KUBECONFIG=/root/labs/mirrorref/deploy/auth/kubeconfig
 
@@ -71,6 +80,7 @@ version   4.18.4    True        False         5d14h   Cluster version is 4.18.4
 ```
 
 2. Validate that the _openshift-image-registry_ is running:
+
 ```shell
 $ oc get pods -n openshift-image-registry
 NAME                                              READY   STATUS      RESTARTS        AGE
@@ -90,6 +100,7 @@ default-route   default-route-openshift-image-registry.apps.mirrorref.local.lab 
 ```
 
 3. Check if the _spoke_ cluster works:
+
 ```shell
 $ export KUBECONFIG=/root/labs/hive/spoke/auth/kubeconfig
 
