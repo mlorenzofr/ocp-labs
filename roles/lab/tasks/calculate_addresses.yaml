@@ -44,7 +44,7 @@
         | map(attribute='content')
         | map('b64decode')
         | join('\\n')
-        | regex_findall('(?:host-record|address)=[^,]+,(\\d+\\.\\d+\\.\\d+\\.\\d+)')
+        | regex_findall('(?:host-record=[^,]+,|address=/[^/]+/)(\\d+\\.\\d+\\.\\d+\\.\\d+)')
         | list
       }}"
 
