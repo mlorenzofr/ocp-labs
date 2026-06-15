@@ -8,11 +8,11 @@ The _spoke_ cluster will be a **standalone** cluster, not a `HostedCluster` like
 The image used in the `assisted-service` must be an OKD/SCOS version, otherwise the installation fails.
 The following **okd-scos** versions are validated:
 
-| Version | Agent image  | OKD image  | status |
-| :---:   | :------:     | :-------:  | :----: |
-| 4.15    | [415.92.202402130021-0](https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.15/4.15.0/rhcos-4.15.0-x86_64-live.x86_64.iso) | quay.io/okd/scos-release:4.15.0-0.okd-scos-2024-01-18-223523 | :white_check_mark: |
-| 4.14    | [414.92.202310210434-0](https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.14/4.14.0/rhcos-4.14.0-x86_64-live.x86_64.iso) | quay.io/okd/scos-release:4.14.0-0.okd-scos-2024-01-30-032525 | :white_check_mark: |
-| 4.13    | [413.92.202308210212-0](https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.13/4.13.10/rhcos-4.13.10-x86_64-live.x86_64.iso) | quay.io/okd/scos-release:4.13.0-0.okd-scos-2023-10-19-111256 | :white_check_mark: |
+| Version | Agent image | OKD image | status |
+| :-----: | :---------: | :-------: | :----: |
+| 4.15 | [415.92.202402130021-0](https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.15/4.15.0/rhcos-4.15.0-x86_64-live.x86_64.iso) | quay.io/okd/scos-release:4.15.0-0.okd-scos-2024-01-18-223523 | :white_check_mark: |
+| 4.14 | [414.92.202310210434-0](https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.14/4.14.0/rhcos-4.14.0-x86_64-live.x86_64.iso) | quay.io/okd/scos-release:4.14.0-0.okd-scos-2024-01-30-032525 | :white_check_mark: |
+| 4.13 | [413.92.202308210212-0](https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.13/4.13.10/rhcos-4.13.10-x86_64-live.x86_64.iso) | quay.io/okd/scos-release:4.13.0-0.okd-scos-2023-10-19-111256 | :white_check_mark: |
 
 ## Steps
 

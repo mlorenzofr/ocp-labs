@@ -149,4 +149,4 @@ For Ansible 7 the major version is **1**.
 
 ## Author Information
 
-* **Manuel Lorenzo** (mlorenzofr@redhat.com) (2024-)
+* **Manuel Lorenzo** (<mlorenzofr@redhat.com>) (2024-)

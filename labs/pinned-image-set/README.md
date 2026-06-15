@@ -9,7 +9,7 @@ kcli create network -c 192.168.129.0/24 -P dhcp=false -P dns=false --domain loca
 ```
 
 A local registry has been configured on a different host.
-The configuration of this additional server is explained [here](docs/registry-server.md).
+The configuration of this additional server is explained in the [registry server documentation](docs/registry-server.md).
 
 ## Steps
 
@@ -19,7 +19,7 @@ The configuration of this additional server is explained [here](docs/registry-se
 ap labs/pinned-image-set/deploy.yaml
 ```
 
-2. Mirror the CI registry. It is explained [here](docs/oc-mirror.md)
+2. Mirror the CI registry. It is explained in the [oc-mirror documentation](docs/oc-mirror.md)
 3. Disable default operators to avoid noise in the tests. We are not using here.
 
 ```shell

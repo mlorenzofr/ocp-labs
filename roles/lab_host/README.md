@@ -38,4 +38,4 @@ The version number takes the form X.Y.Z where:
 
 ## Author Information
 
-* **Manuel Lorenzo** (mlorenzofr@redhat.com) (2024-)
+* **Manuel Lorenzo** (<mlorenzofr@redhat.com>) (2024-)

@@ -30,7 +30,7 @@ None.
 
 ### Variables for `ConsolePlugin` elements
 
-**TODO**
+## TODO
 
 ## Example Playbook
 
@@ -58,4 +58,4 @@ MIT / BSD
 
 ## Author Information
 
-* **Manuel Lorenzo** (mlorenzofr@redhat.com) (2025-)
+* **Manuel Lorenzo** (<mlorenzofr@redhat.com>) (2025-)

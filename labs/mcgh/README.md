@@ -13,7 +13,7 @@ The SNO clusters with ACS only (spoke clusters) will be imported to the hub clus
 
 The ACM nodes, where ACS is installed, require at least 40 GB of memory and 14 CPUs due to the ACS minimum requirements. Additionally, 100 GiB of local storage will be needed for the **central-db** database.
 
-All ACS requirements and detailed information are available [here](https://docs.openshift.com/acs/4.5/installing/acs-default-requirements.html).
+All ACS requirements and detailed information are available in the [ACS default requirements documentation](https://docs.openshift.com/acs/4.5/installing/acs-default-requirements.html).
 
 ## Steps
 

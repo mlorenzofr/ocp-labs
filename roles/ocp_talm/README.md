@@ -29,4 +29,4 @@ MIT / BSD
 
 ## Author Information
 
-* **Manuel Lorenzo** (mlorenzofr@redhat.com) (2025-)
+* **Manuel Lorenzo** (<mlorenzofr@redhat.com>) (2025-)

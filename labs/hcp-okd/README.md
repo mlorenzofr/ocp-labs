@@ -7,12 +7,13 @@ We will use **Hypershift** to do it.
 
 Not all combinations of OKD and Fedora Core OS work well.  
 This lab has been tested with these software versions:
-|  OCP     | Fedora Core OS     | OKD                        | status             | comment                                                                                        |
-|  :---:   | :------:           | :-------:                  | :--------:         | :--------------------------------------:                                                       |
-|  **4.15.4**  | **37** (20221225.3.0)  | **4.12.0** (2023-03-18-084815) | :white_check_mark: | Could not update machineconfig "99-okd-master-disable-mitigations"                             |
-|  **4.15.4**  | **39** (20240322.3.1)  | **4.15.0** (2024-03-10-010116) | :x:                | the latest version supported is: "4.14.0". Attempting to use: "4.15.0-0.okd-2024-03-10-010116" |
-|  **4.15.4**  | **39** (20240322.3.1)  | **4.14.0** (2024-01-26-175629) | :white_check_mark: | Could not update machineconfig "99-okd-master-disable-mitigations"                             |
-|  **4.15.4**  | **38** (20231027.3.2)  | **4.13.0** (2023-10-28-065448) | :x:                | okd cluster installs but ingress controller does not work                                      |
+
+| OCP | Fedora Core OS | OKD | status | comment |
+| :---------: | :----------------: | :------------------------: | :----------------: | :-----------------------------: |
+| **4.15.4** | **37** (20221225.3.0) | **4.12.0** (2023-03-18-084815) | :white_check_mark: | Could not update machineconfig "99-okd-master-disable-mitigations" |
+| **4.15.4** | **39** (20240322.3.1) | **4.15.0** (2024-03-10-010116) | :x: | the latest version supported is: "4.14.0". Attempting to use: "4.15.0-0.okd-2024-03-10-010116" |
+| **4.15.4** | **39** (20240322.3.1) | **4.14.0** (2024-01-26-175629) | :white_check_mark: | Could not update machineconfig "99-okd-master-disable-mitigations" |
+| **4.15.4** | **38** (20231027.3.2) | **4.13.0** (2023-10-28-065448) | :x: | okd cluster installs but ingress controller does not work |
 
 ## Steps
 

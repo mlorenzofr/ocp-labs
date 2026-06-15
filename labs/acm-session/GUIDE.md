@@ -20,7 +20,7 @@ The manifests we will use to deploy ACM-related resources are available in the d
 cd ~/labs/acm/config
 ```
 
-The Web UI for our OpenShift cluster is available [here](https://console-openshift-console.apps.acm.local.lab/)  
+The Web UI for our OpenShift cluster is available at [the OpenShift console](https://console-openshift-console.apps.acm.local.lab/)  
 It is also possible to work using `oc` or `kubectl` from your computer using the OpenShift API.  
 For it to function correctly, these DNS addresses must be resolved:
 

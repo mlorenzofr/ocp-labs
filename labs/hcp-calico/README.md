@@ -7,11 +7,12 @@ In this lab the goal is install an _Hosted cluster_ with Calico as SDN.
 Currently, this lab is not working.  
 Using SDN `OVNKubernetes`, this deployment works fine.  
 The _local-cluster_ `ManagedCluster` is not being imported and that blocks the MCE operator.
-|  OCP     | MCE     | status             | comment                                                                                        |
-|  :---:   | :------:           | :--------:         | :--------------------------------------:                                                       |
-|  **4.16.9**   | **2.7.1** | :x: | |
-|  **4.14.42**  | **2.6.3** | :x: | |
-|  **4.17.7**   | **2.7.1** | :x: | |
+
+| OCP         | MCE       | status | comment |
+| :---------: | :-------: | :----: | :-----: |
+| **4.16.9**  | **2.7.1** | :x:    |         |
+| **4.14.42** | **2.6.3** | :x:    |         |
+| **4.17.7**  | **2.7.1** | :x:    |         |
 
 ```shell
 $ oc get managedcluster
