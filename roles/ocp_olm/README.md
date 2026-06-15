@@ -30,16 +30,22 @@ None.
 
 ### Variables for `ConsolePlugin` elements
 
-## TODO
+* `name`. _String_. Name of the `ConsolePlugin` resource.
+* `display_name`. _String_. Display name for the console plugin. Defaults to the value of `name` if not specified.
+* `ns`. _String_. Namespace where the console plugin service is running.
+* `port`. _Integer_. Port number where the console plugin service is exposed.
+* `service_name`. _String_. Name of the service for the console plugin. Defaults to the value of `name` if not specified.
+* `base_path`. _String_. Base path for the console plugin service. Defaults to `/` if not specified.
 
 ## Example Playbook
 
-```yaml
+### Creating an Operator Subscription
 
+```yaml
 - hosts: servers
 
   tasks:
-    - name: 'Create LVM installation manifest'
+    - name: 'Create operator subscription manifest'
       ansible.builtin.include_role:
         name: 'ocp_olm'
         tasks_from: 'subscription.yaml'
@@ -48,8 +54,25 @@ None.
           ns: 'olm-example'
           operator_group: 'example-operatorgroup'
           source: 'community-operators'
-    tags: ['olm']
+      tags: ['olm']
+```
 
+### Creating a ConsolePlugin
+
+```yaml
+- hosts: servers
+
+  tasks:
+    - name: 'Create ConsolePlugin manifest'
+      ansible.builtin.include_role:
+        name: 'ocp_olm'
+        tasks_from: 'console_plugin.yaml'
+      loop:
+        - name: 'gitops-plugin'
+          display_name: 'GitOps Plugin'
+          ns: 'openshift-gitops'
+          port: 9001
+      tags: ['console']
 ```
 
 ## License
