@@ -1,0 +1,11 @@
+---
+apiVersion: v1beta1
+kind: ImageBasedConfig
+metadata:
+  name: {{ lab_name }}
+additionalNTPSources:
+{% for server in lab_ntp_sources %}
+  - '{{ server }}'
+{% endfor %}
+hostname: {{ lab_name }}.{{ lab_domain }}
+releaseRegistry: {{ lab_ibi_registry }}

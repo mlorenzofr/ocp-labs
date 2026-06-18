@@ -36,6 +36,23 @@
   ignore_errors: "{{ ansible_check_mode }}"
   no_log: "{{ lab_hide_secrets | bool }}"
 
+- name: 'Create image-based installation config file'
+  ansible.builtin.template:
+    src: 'image-based-installation-config.yaml.j2'
+    dest: "{{ lab_path }}/{{ lab_name }}/config/image-based-installation-config.yaml"
+    mode: '0644'
+  ignore_errors: "{{ ansible_check_mode }}"
+  no_log: "{{ lab_hide_secrets | bool }}"
+  when: lab_ibi
+
+- name: 'Create image-based config file'
+  ansible.builtin.template:
+    src: 'image-based-config.yaml.j2'
+    dest: "{{ lab_path }}/{{ lab_name }}/config/image-based-config.yaml"
+    mode: '0644'
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: lab_ibi
+
 - name: 'Include baremetal tasks'
   ansible.builtin.include_tasks: baremetal.yaml
   when: lab_platform == 'baremetal'
