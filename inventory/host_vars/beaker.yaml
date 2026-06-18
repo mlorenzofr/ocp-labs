@@ -1,6 +1,7 @@
 ---
 dnsmasq_dhcp_hosts:
   - {hwaddr: '52:54:00:9c:93:36', hostname: 'pinnedis-registry', ipaddr: '192.168.129.200'}
+  - {hwaddr: '52:54:00:dd:d6:c2', hostname: 'registry', ipaddr: '192.168.133.155'}
   - {hwaddr: '52:54:00:9e:95:23', hostname: 'javed-rhel9', ipaddr: '192.168.125.149'}
 
 libvirt_image_dir: '/home/libvirt-ocp'
@@ -47,10 +48,14 @@ lab_host_networks:
   - name: 'assisted-net'
     cidr: '192.168.130.0/24'
     gw: '192.168.130.1'
-  - name: 'ovishlit-net'
-    cidr: '192.168.131.0/24'
-    gw: '192.168.131.1'
-    dhcp_range: '192.168.131.150,192.168.131.250'
+  - name: 'ibi-proxy-net'
+    cidr: '192.168.132.0/24'
+    gw: '192.168.132.1'
+    dhcp_range: '192.168.132.150,192.168.132.250'
+  - name: 'ibi-proxy-tgt'
+    cidr: '192.168.133.0/24'
+    gw: '192.168.133.1'
+    dhcp_range: '192.168.133.150,192.168.133.250'
 # - name: 'cnv-network'
 #   cidr: 'fd00:0:0:1::/64'
 #   domain: 'cnv.local.lab'

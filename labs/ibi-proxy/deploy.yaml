@@ -1,0 +1,83 @@
+---
+# Run it with:
+#   ap labs/ibi-proxy/deploy.yaml
+
+- name: 'Clean ibi-proxy lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'ibi-proxy'
+  tags:
+    - 'clean'
+    - 'clean-seed'
+    - 'never'
+
+- name: 'Clean ibi-proxy-target lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'ibi-proxy-target'
+  tags:
+    - 'clean'
+    - 'clean-target'
+    - 'never'
+
+- name: 'Deploy seed cluster (ibi-proxy)'
+  ansible.builtin.import_playbook: ../../playbooks/base/sno.yaml
+  tags:
+    - 'seed'
+    - 'ocp'
+  vars:
+    lab_name: 'ibi-proxy'
+    lab_local_path: "/ansible/labs/{{ lab_name }}"
+    lab_mac_base: '52:54:00:c0:84:'
+    lab_node_network_base: '192.168.132.'
+    lab_node_disk_sys: 750
+    lab_proxy_http: "http://{{ lab_node_network_base }}1:3128"
+    lab_network_name: 'ibi-proxy-net'
+    sno_ip: 31
+    install_extra_manifests:
+      - src: "{{ lab_local_path }}/manifest/mco/98-var-lib-containers-partitioned.yaml"
+        dest: '98-var-lib-containers-partitioned.yaml'
+    start_install: true
+
+- name: 'Install Lifecycle Agent on seed cluster'
+  hosts:
+    - 'lab'
+  gather_facts: false
+  vars:
+    lab_name: 'ibi-proxy'
+    lab_configs: "/root/labs/{{ lab_name }}/config"
+    ocp_lca_registry: "{{ lab_registry_fqdn }}"
+    ocp_lca_seedgen_auth: "{{ lab_registry_auth }}"
+  environment:
+    KUBECONFIG: "/root/labs/{{ lab_name }}/deploy/auth/kubeconfig"
+  roles:
+    - 'ocp_lca'
+  tags:
+    - 'seed'
+    - 'lca'
+    - 'seedgenerator'
+
+- name: 'Create target cluster VM (ibi-proxy-target)'
+  ansible.builtin.import_playbook: ../../playbooks/base/sno.yaml
+  tags:
+    - 'target'
+    - 'ocp'
+  vars:
+    lab_name: 'ibi-cluster'
+    lab_ibi: True
+    lab_ibi_registry: "{{ lab_registry_fqdn }}"
+    lab_ibi_seed_image: 'ibi-proxy'
+    lab_ibi_seed_image_tag: '4.21.13'
+    lab_ibi_seed_version: '4.21.13'
+    lab_local_path: "/ansible/labs/ibi-proxy"
+    lab_mac_base: '52:54:00:c0:85:'
+    lab_node_network_base: '192.168.133.'
+    lab_node_disk_sys: 650
+    lab_proxy_http: "http://{{ lab_node_network_base }}1:3128"
+    lab_proxy_exceptions: ['example.com']
+    lab_network_name: 'ibi-proxy-tgt'
+    sno_ip: 31
+    install_extra_manifests:
+      - src: "{{ lab_local_path }}/manifest/mco/98-var-lib-containers-partitioned.yaml"
+        dest: '98-var-lib-containers-partitioned.yaml'
+    start_install: false
