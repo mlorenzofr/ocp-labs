@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  role_name: ocp_oadp
+  namespace: mlorenzofr
+  author: 'Manuel Lorenzo'
+  description: 'Install and configure OADP operator on an OpenShift Cluster'
+  company: 'Red Hat'
+  license: 'BSD'
+  min_ansible_version: '2.12'
+  platforms:
+    - name: 'EL'
+      versions:
+        - '8'
+        - '9'
+  galaxy_tags: []
+dependencies: []

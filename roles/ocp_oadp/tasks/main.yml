@@ -1,0 +1,14 @@
+---
+- name: 'Create OADP installation manifest'
+  ansible.builtin.include_role:
+    name: 'ocp_olm'
+    tasks_from: 'subscription.yaml'
+  loop:
+    - operator_name: 'redhat-oadp-operator'
+      ns: "{{ ocp_oadp_ns }}"
+      monitoring: True
+      operator_group: "{{ ocp_oadp_operatorgroup }}"
+      channel: "{{ ocp_oadp_channel }}"
+      source: "{{ ocp_oadp_source }}"
+      source_ns: "{{ ocp_oadp_source_ns }}"
+  tags: ['olm']
