@@ -50,6 +50,22 @@
           --dir {{ lab_path }}/{{ lab_name }}/deploy
         creates: "{{ lab_path }}/{{ lab_name }}/deploy/.openshift_install_state.json"
 
+    - name: 'Add extra manifests'
+      block:
+        - name: 'Create openshift manifests directory'
+          ansible.builtin.file:
+            path: "{{ lab_path }}/{{ lab_name }}/deploy/openshift"
+            state: 'directory'
+        - name: 'Copy custom manifests'
+          ansible.builtin.copy:
+            src: "{{ item.src }}"
+            dest: "{{ lab_path }}/{{ lab_name }}/deploy/openshift/{{ item.dest }}"
+            mode: '0640'
+          loop: "{{ install_extra_manifests }}"
+      when:
+        - install_extra_manifests is defined
+        - install_extra_manifests | length > 0
+
     - name: 'Generate bootstrap ISO image'
       ansible.builtin.command:
         cmd: >
