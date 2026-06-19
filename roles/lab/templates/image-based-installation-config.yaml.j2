@@ -1,0 +1,16 @@
+---
+apiVersion: v1beta1
+kind: ImageBasedInstallationConfig
+metadata:
+  name: {{ lab_name }}-image-based-installation-config
+seedImage: {{ lab_ibi_registry }}/{{ lab_ibi_seed_image }}:{{ lab_ibi_seed_image_tag }}
+seedVersion: {{ lab_ibi_seed_version }}
+installationDisk: {{ lab_ibi_disk }}
+pullSecret: '{{ lab_pull_secret_install | default(lab_pull_secret) }}'
+{% if lab_proxy_http != '' %}
+proxy:
+  httpProxy: {{ lab_proxy_http | default('') }}
+  httpsProxy: {{ lab_proxy_https | default(lab_proxy_http) }}
+  noProxy: {{ lab_proxy_exceptions | join(',') }}
+{% endif %}
+sshKey: '{{ lab_ssh_pubkey }}'

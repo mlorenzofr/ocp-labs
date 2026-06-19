@@ -70,6 +70,15 @@ This role depends on the **dnsmasq** role to create DNS resolution for the lab m
 * `lab_aws_instance_type_worker`. _String_. Instance type used for worker nodes.
 * `lab_aws_region`. _String_. AWS region to deploy the lab.
 
+### IBI (Image-Based Installation) related variables
+
+* `lab_ibi`. _Bool_. Enable Image-Based Installation configuration files generation. Default: `False`.
+* `lab_ibi_disk`. _String_. Installation disk for image-based installation. Default: `'/dev/vda'`.
+* `lab_ibi_registry`. _String_. Container registry URL where the seed image is stored. Default: `'quay.io/example'`.
+* `lab_ibi_seed_image`. _String_. Name of the seed image in the registry. Default: value of `lab_name` or `'seed-image'`.
+* `lab_ibi_seed_image_tag`. _String_. Tag for the seed image. Default: `'4.21.13'`.
+* `lab_ibi_seed_version`. _String_. Seed version for the installation. Default: `'4.21.13'`.
+
 ### Variables for `lab_hosts` items
 
 * `cpus`. _Number_. Machine vCPUs.

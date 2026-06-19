@@ -24,6 +24,12 @@ lab_domain: 'local.lab'
 lab_fips: False
 lab_gateway: ''
 lab_hide_secrets: True
+lab_ibi: False
+lab_ibi_disk: '/dev/vda'
+lab_ibi_registry: 'quay.io/example'
+lab_ibi_seed_image: "{{ lab_name | default('seed-image') }}"
+lab_ibi_seed_image_tag: '4.21.13'
+lab_ibi_seed_version: '4.21.13'
 lab_ingress_ips: []
 lab_master_replicas: 3
 lab_network_name: 'lab-network'
