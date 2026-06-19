@@ -9,7 +9,7 @@
     lab_appliance: True
     ocp_appliance_cfg_dir: "{{ lab_path }}/{{ lab_name }}/config"
     ocp_appliance_cwd: "{{ lab_path }}/{{ lab_name }}/deploy"
-    lab_mac_base: 'be:be:ca:fe:03:'
+    lab_mac_base: '52:54:00:c0:7d:'
     lab_node_disk_sys: 150
     lab_node_disk_data: 1
     lab_node_network_base: '192.168.125.'

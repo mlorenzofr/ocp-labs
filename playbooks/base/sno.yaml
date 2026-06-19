@@ -15,7 +15,7 @@
     lab_ingress_ips: ["{{ lab_node_network_base }}{{ sno_ip }}"]
     lab_name: 'sno'
     lab_master_replicas: 1
-    lab_mac_base: 'be:be:ca:fe:03:'
+    lab_mac_base: '52:54:00:c0:7d:'
     lab_node_disk_data: 1
     lab_node_network_base: '192.168.125.'
     lab_node_role: 'node'

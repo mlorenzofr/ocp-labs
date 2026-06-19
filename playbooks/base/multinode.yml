@@ -13,7 +13,7 @@
     lab_bootstrap_mac: "{{ lab_mac_base }}00"
     lab_ingress_ips: ["{{ lab_node_network_base }}11"]
     lab_name: 'multinode'
-    lab_mac_base: 'be:be:ca:fe:01:'
+    lab_mac_base: '52:54:00:c0:7d:'
     lab_worker_replicas: 1
     lab_redfish_ip: "{{ lab_node_network_base }}1"
     lab_node_disk_data: 1
