@@ -1,0 +1,11 @@
+---
+ocp_lca_apply: "{{ ocp_apply | default(true) }}"
+ocp_lca_channel: 'stable'
+ocp_lca_image_name: "{{ lab_name | default('lifecycle-agent') }}"
+ocp_lca_image_tag: ''
+ocp_lca_ns: 'openshift-lifecycle-agent'
+ocp_lca_operatorgroup: 'openshift-lifecycle-agent'
+ocp_lca_path: "{{ lab_configs | default('/tmp') }}"
+ocp_lca_registry: 'quay.io/example'
+ocp_lca_seedgen_auth: ''
+ocp_lca_source: 'redhat-operators'

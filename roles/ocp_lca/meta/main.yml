@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  role_name: ocp_lca
+  namespace: mlorenzofr
+  author: 'Manuel Lorenzo'
+  description: 'Install and configure the Lifecycle Agent operator on an OpenShift cluster'
+  company: 'Red Hat'
+  license: 'BSD'
+  min_ansible_version: '2.12'
+  platforms:
+    - name: 'EL'
+      versions:
+        - '8'
+        - '9'
+  galaxy_tags: []
+dependencies:
+  - name: 'ocp_oadp'

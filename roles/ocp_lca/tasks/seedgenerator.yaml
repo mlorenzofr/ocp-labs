@@ -1,0 +1,29 @@
+---
+- name: 'Get OpenShift cluster version'
+  kubernetes.core.k8s_info:
+    api_version: 'config.openshift.io/v1'
+    kind: 'ClusterVersion'
+    name: 'version'
+  register: cluster_version_info
+  when: ocp_lca_image_tag | length == 0
+
+- name: 'Set ocp_lca_image_tag from cluster version'
+  ansible.builtin.set_fact:
+    ocp_lca_image_tag: "{{ cluster_version_info.resources[0].status.desired.version }}"
+  when:
+    - ocp_lca_image_tag | length == 0
+    - cluster_version_info.resources is defined
+    - cluster_version_info.resources | length > 0
+
+- name: 'Create seedgen manifest'
+  ansible.builtin.template:
+    src: 'seedgenerator.yaml.j2'
+    dest: "{{ ocp_lca_path }}/seedgenerator.yaml"
+    mode: '0640'
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: 'Apply seedgen manifest'
+  kubernetes.core.k8s:
+    state: 'present'
+    src: "{{ ocp_lca_path }}/seedgenerator.yaml"
+  ignore_errors: "{{ ansible_check_mode }}"

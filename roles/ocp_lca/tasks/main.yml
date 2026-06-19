@@ -1,0 +1,72 @@
+---
+- name: 'Create LCA namespace'
+  kubernetes.core.k8s:
+    state: 'present'
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        annotations:
+          workload.openshift.io/allowed: management
+        name: "{{ ocp_lca_ns }}"
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ocp_lca_apply
+
+- name: 'Create LCA subscription'
+  ansible.builtin.include_role:
+    name: 'ocp_olm'
+    tasks_from: 'subscription.yaml'
+  loop:
+    - operator_name: 'lifecycle-agent'
+      ns: "{{ ocp_lca_ns }}"
+      operator_group: "{{ ocp_lca_operatorgroup }}"
+      channel: "{{ ocp_lca_channel }}"
+      source: "{{ ocp_lca_source }}"
+  tags: ['olm']
+
+- name: 'Waiting for lifecycle-agent-operator pods'
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        namespace: "{{ ocp_lca_ns }}"
+    label_selectors:
+      - 'app.kubernetes.io/name=lifecycle-agent-operator'
+    wait: yes
+    wait_condition:
+      type: Ready
+      status: "True"
+    wait_timeout: 300
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: 'Create seedgen secret'
+  kubernetes.core.k8s:
+    state: 'present'
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: 'seedgen'
+        namespace: "{{ ocp_lca_ns }}"
+      data:
+        seedAuth: "{{ ocp_lca_seedgen_auth | b64encode }}"
+  ignore_errors: "{{ ansible_check_mode }}"
+  when:
+    - ocp_lca_apply
+    - ocp_lca_seedgen_auth is defined
+    - ocp_lca_seedgen_auth | length > 0
+
+- name: 'Include seedgenerator tasks'
+  ansible.builtin.include_tasks:
+    file: 'seedgenerator.yaml'
+    apply:
+      tags:
+        - 'seedgenerator'
+  when:
+    - ocp_lca_apply
+    - ocp_lca_seedgen_auth is defined
+    - ocp_lca_seedgen_auth | length > 0
+  tags:
+    - 'never'
+    - 'seedgenerator'

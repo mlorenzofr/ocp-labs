@@ -1,0 +1,7 @@
+---
+apiVersion: lca.openshift.io/v1
+kind: SeedGenerator
+metadata:
+  name: seedimage
+spec:
+  seedImage: {{ ocp_lca_registry }}/{{ ocp_lca_image_name }}:{{ ocp_lca_image_tag }}
