@@ -20,6 +20,15 @@
     - 'clean-target'
     - 'never'
 
+- name: 'Clean ibi-example lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'ibi-example'
+  tags:
+    - 'clean'
+    - 'clean-example'
+    - 'never'
+
 - name: 'Deploy seed cluster (ibi-proxy)'
   ansible.builtin.import_playbook: ../../playbooks/base/sno.yaml
   tags:
