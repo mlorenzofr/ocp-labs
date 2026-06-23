@@ -18,7 +18,9 @@ additionalTrustBundlePolicy: Proxyonly
 proxy:
   httpProxy: {{ lab_proxy_http | default('') }}
   httpsProxy: {{ lab_proxy_https | default(lab_proxy_http) }}
+{% if lab_proxy_exceptions | length > 0 %}
   noProxy: {{ lab_proxy_exceptions | join(',') }}
+{% endif %}
 {% endif %}
 {% if lab_fips %}
 fips: true
