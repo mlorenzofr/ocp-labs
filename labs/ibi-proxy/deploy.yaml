@@ -39,6 +39,21 @@
         dest: '98-var-lib-containers-partitioned.yaml'
     start_install: true
 
+- name: 'Deploy example cluster (ibi-example)'
+  ansible.builtin.import_playbook: ../../playbooks/base/sno.yaml
+  tags:
+    - 'sno-example'
+    - 'ocp'
+  vars:
+    lab_name: 'ibi-example'
+    lab_mac_base: '52:54:00:c0:84:'
+    lab_node_network_base: '192.168.132.'
+    lab_proxy_http: "http://{{ lab_node_network_base }}1:3128"
+    lab_proxy_exceptions: []
+    lab_network_name: 'ibi-proxy-net'
+    sno_ip: 41
+    start_install: true
+
 - name: 'Install Lifecycle Agent on seed cluster'
   hosts:
     - 'lab'
