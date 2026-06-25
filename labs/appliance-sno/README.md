@@ -4,7 +4,13 @@ In this lab we create an environment using the appliance tool.
 
 ## Requirements
 
-None.
+### Resources (per node)
+
+| | nodes | vCPUs | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| **Main cluster** | | | | | | |
+| masters | 1 | 12 | 31 GB | 150 GB | 1 GB | 151 GB |
+| **Total** | **1** | **12** | **31 GB** | **150 GB** | **1 GB** | **151 GB** |
 
 ## Steps
 

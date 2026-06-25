@@ -5,6 +5,19 @@ We will use **Hypershift** to do it.
 
 ## Requirements
 
+### Resources (per node)
+
+| | nodes | vCPUs | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| **Main cluster** | | | | | | |
+| masters | 3 | 12 | 27 GB | 120 GB | 60 GB | 180 GB |
+| workers | 1 | 12 | 27 GB | 120 GB | 60 GB | 180 GB |
+| **Additional resources** | | | | | | |
+| bmh-node | 1 | 12 | 23 GB | 120 GB | 1 GB | 121 GB |
+| **Totals** | **5** | **60** | **131 GB** | **600 GB** | **241 GB** | **841 GB** |
+
+### Software versions
+
 Not all combinations of OKD and Fedora Core OS work well.  
 This lab has been tested with these software versions:
 

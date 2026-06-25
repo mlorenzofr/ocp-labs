@@ -2,6 +2,14 @@
 
 ## Requirements
 
+### Resources (per node)
+
+| | nodes | vCPUs | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| hub | 3 | 24 | 55 GB | 0 GB | 300 GB | 300 GB |
+| spoke | 3 | 12 | 16 GB | 120 GB | 0 GB | 120 GB |
+| **Total** | **6** | **36** | **71 GB** | **120 GB** | **300 GB** | **420 GB** |
+
 ## Steps
 
 1. Execute the playbook `deploy.yaml`:

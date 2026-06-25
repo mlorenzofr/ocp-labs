@@ -4,7 +4,14 @@ This lab installs a _compact_ Openshift cluster with ACM and a spoke cluster to 
 
 ## Requirements
 
-None.
+### Resources (per node)
+
+| | nodes | vCPUS | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| Hub cluster | 3 | 12 | 27 GB | 120 GB | 60 GB | 180 GB |
+| Spoke cluster (spoke1) | 3 | 12 | 23 GB | 120 GB | 1 GB | 121 GB |
+| Day-2 BMH nodes | 1 | 12 | 23 GB | 120 GB | 1 GB | 121 GB |
+| **Total** | **7** | **84** | **173 GB** | 840 GB | 184 GB | **1024 GB** |
 
 ## Deployment
 

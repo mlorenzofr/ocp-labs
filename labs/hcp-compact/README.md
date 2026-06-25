@@ -7,7 +7,16 @@ Two _spoke clusters_ (`HostedCluster`) will be created.
 ## Requirements
 
 We need to use big nodes because the resources growth with the number of _spoke clusters_.  
-Each _spoke cluster_ uses about 4 Gib of memory each _hub_ node.  
+Each _spoke cluster_ uses about 4 Gib of memory each _hub_ node.
+
+### Resources (per node)
+
+| | nodes | vCPUS | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| Hub cluster | 3 | 12 | 31 GB | 120 GB | 60 GB | 180 GB |
+| Spoke cluster 1 (hcp1-worker-1) | 1 | 12 | 23 GB | 120 GB | 1 GB | 121 GB |
+| Spoke cluster 2 (hcp2-worker-1) | 1 | 12 | 23 GB | 120 GB | 1 GB | 121 GB |
+| **Total** | **5** | **60** | **139 GB** | 600 GB | 182 GB | **782 GB** |
 
 ## Steps
 

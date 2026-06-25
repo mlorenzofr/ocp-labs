@@ -5,6 +5,14 @@ The management control plane and the hosted control planes will share the same n
 
 ## Requirements
 
+### Resources (per node)
+
+| | nodes | vCPUS | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| hub | 3 | 12 | 27 GB | 120 GB | 60 GB | 180 GB |
+| spoke | 1 | 12 | 23 GB | 120 GB | 1 GB | 121 GB |
+| **Total** | **4** | **48** | **104 GB** | 480 GB | 181 GB | **661 GB** |
+
 We need to use big nodes because the resources growth with the number of _spoke clusters_.  
 Each _spoke cluster_ uses about 4 Gib of memory each _hub_ node.  
 

@@ -5,6 +5,16 @@ The QE team will use the lab to do some testing with CNV. Because of this, we wi
 
 ## Requirements
 
+### Resources (per node)
+
+| | nodes | vCPUS | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| masters | 3 | 12 | 32 GB | 120 GB | 1 GB | 121 GB |
+| workers | 3 | 12 | 32 GB | 120 GB | 1 GB | 121 GB |
+| **Total** | **6** | **24** | **64 GB** | **240 GB** | **2 GB** | **242 GB** |
+
+### Network
+
 For this lab, an IPv6-only libvirt network is required.  
 There is an example in the file [libvirt/net.xml](libvirt/net.xml).  
 You can define it with:

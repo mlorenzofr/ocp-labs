@@ -2,6 +2,13 @@
 
 ## Requirements
 
+### Resources (per node)
+
+| | nodes | vCPUS | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| rhcos-ostree VM | 1 | 12 | 20 GB | 0 GB | 0 GB | 0 GB |
+| **Total** | **1** | **12** | **20 GB** | **0 GB** | **0 GB** | **0 GB** |
+
 ## Steps
 
 1. Create a new VM using [this XML definition](libvirt/rhcos-ostree.xml)

@@ -4,7 +4,13 @@ This lab creates a Single Node Openshift (**SNO**) environment.
 
 ## Requirements
 
-None.
+### Resources (per node)
+
+| | nodes | vCPUs | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| **Main cluster** | | | | | | |
+| masters | 1 | 12 | 23 GB | 120 GB | 1 GB | 121 GB |
+| **Total** | **1** | **12** | **23 GB** | **120 GB** | **1 GB** | **121 GB** |
 
 ## Steps
 

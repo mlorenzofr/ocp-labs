@@ -4,6 +4,13 @@ In this lab the goal is install an Openshift Cluster in an offline environment w
 
 ## Requirements
 
+### Resources (per node)
+
+| | nodes | vCPUS | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| Main cluster | 3 | 12 | 21 GB | 120 GB | 1 GB | 121 GB |
+| **Total** | **3** | **36** | **63 GB** | 360 GB | 3 GB | **363 GB** |
+
 ## Steps
 
 1. Block Internet access from the lab network. This way we can be sure that the proxy is used.

@@ -4,6 +4,17 @@ In this lab the goal is install an Openshift Cluster with FIPS mode enabled.
 
 ## Requirements
 
+### Resources (per node)
+
+| | nodes | vCPUS | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| Hub cluster | 3 | 12 | 31 GB | 120 GB | 60 GB | 180 GB |
+| spoke1-sno | 1 | 12 | 23 GB | 120 GB | 1 GB | 121 GB |
+| spoke2-sno | 1 | 12 | 23 GB | 120 GB | 1 GB | 121 GB |
+| **Total** | **5** | **60** | **139 GB** | 600 GB | 182 GB | **782 GB** |
+
+### Additional Notes
+
 SSH key type ssh-ed25519 unavailable when FIPS is enabled. Please use rsa or ecdsa.
 
 ## Steps

@@ -5,6 +5,16 @@ Currently, the platform type used in the deployment is `baremetal`.
 
 ## Requirements
 
+### Resources (per node)
+
+| | nodes | vCPUS | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| Main cluster | 3 | 12 | 24 GB | 120 GB | 0 GB | 120 GB |
+| Kind cluster | 1 | 4 | 8 GB | 20 GB | 0 GB | 20 GB |
+| **Total** | **4** | **40** | **80 GB** | 380 GB | 0 GB | **380 GB** |
+
+### Configuration
+
 There are some manual configuration steps required before we begin the installation.
 
 1. We will need a RHCOS generic disk image uploaded to Nutanix. This image will be used to deplo the Openshift nodes. The RHCOS images are available on their [official mirror](https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/).

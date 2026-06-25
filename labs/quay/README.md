@@ -4,6 +4,13 @@ In this lab we want to create an environment with Openshift and quay registry ru
 
 ## Requirements
 
+### Resources (per node)
+
+| | nodes | vCPUS | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| hub | 3 | 12 | 31 GB | 120 GB | 60 GB | 180 GB |
+| **Total** | **3** | **36** | **93 GB** | 360 GB | 180 GB | **540 GB** |
+
 ## Steps
 
 ### Hub cluster

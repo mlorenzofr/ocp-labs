@@ -5,7 +5,13 @@ In the [ztp-example](https://github.com/mlorenzofr/ztp-example) repository there
 
 ## Requirements
 
-None.
+### Resources (per node)
+
+| | nodes | vCPUS | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| Hub cluster | 3 | 12 | 27 GB | 120 GB | 60 GB | 180 GB |
+| Spoke cluster | 1 | 12 | 23 GB | 120 GB | 1 GB | 121 GB |
+| **Total** | **4** | **48** | **104 GB** | 480 GB | 181 GB | **661 GB** |
 
 ## Steps
 

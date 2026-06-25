@@ -15,6 +15,16 @@ In this new cluster, we will:
 
 ## Requirements
 
+### Resources (per node)
+
+| | nodes | vCPUS | Memory | OS Disk | Data Disk | Total Disk |
+| :-: | :-----: | :-----: | :------: | :-------: | :---------: | :----------: |
+| master | 3 | 12 | 31 GB | 150 GB | 1 GB | 151 GB |
+| worker | 2 | 12 | 31 GB | 150 GB | 1 GB | 151 GB |
+| **Total** | **5** | **60** | **155 GB** | 750 GB | 5 GB | **755 GB** |
+
+### Network Isolation
+
 To simulate a disconnected environment, we should block all outgoing traffic on the libvirt network where the VMs have their NICs attached.
 
 ```shell
