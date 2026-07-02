@@ -21,6 +21,7 @@
     lab_node_network: '10.0.0.0/16'
     lab_cluster_network: '10.128.0.0/14'
     lab_service_network: '172.30.0.0/16'
+    lab_auto_addresses: false
 
   roles:
     - 'lab'
