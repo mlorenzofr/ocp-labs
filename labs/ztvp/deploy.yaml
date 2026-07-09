@@ -49,7 +49,8 @@
   vars:
     lab_name: 'ztvp'
     lab_mac_base: 'ce:00:0a:ba:ee:'
-    lab_node_memory: 40000
+    lab_node_cpus: 16
+    lab_node_memory: 42000
     lab_node_disk_data: 320
     lab_custom_capability_set: 'None'
     lab_custom_capabilities:
@@ -74,7 +75,8 @@
   vars:
     lab_name: 'ztvp2'
     lab_mac_base: 'ce:00:0a:ba:ee:'
-    lab_node_memory: 40000
+    lab_node_cpus: 16
+    lab_node_memory: 42000
     lab_node_disk_data: 320
     lab_custom_capability_set: 'None'
     lab_custom_capabilities:
