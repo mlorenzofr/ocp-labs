@@ -1,0 +1,29 @@
+{# Under development #}
+apiVersion: oadp.openshift.io/v1alpha1
+kind: DataProtectionApplication
+metadata:
+  name: {{ item.name }}
+  namespace: {{ ocp_oadp_ns }}
+spec:
+  configuration:
+    velero:
+      defaultPlugins:
+{% for plugin in ocp_oadp_velero_plugins %}
+        - {{ plugin }}
+{% endfor %}
+      resourceTimeout: {{ ocp_oadp_velero_timeout }}
+    nodeAgent:
+      enable: true
+      uploaderType: kopia
+      podConfig:
+        nodeSelector: {{ item.node_selector }}
+  backupLocations:
+    - velero:
+        provider: kubevirt
+        default: true
+        credential:
+          key: cloud
+          name: <default_secret>
+        objectStorage:
+          bucket: <bucket_name>
+          prefix: <prefix>
