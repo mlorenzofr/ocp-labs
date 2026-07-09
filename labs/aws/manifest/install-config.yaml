@@ -19,7 +19,7 @@ compute:
     hyperthreading: Enabled
     platform:
       aws:
-        type: m5.xlarge
+        type: m6a.4xlarge
     replicas: 0
 controlPlane:
   name: master
