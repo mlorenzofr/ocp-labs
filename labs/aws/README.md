@@ -15,6 +15,53 @@ This lab installs a compact Openshift cluster on AWS platform.
 ap labs/aws/deploy.yaml
 ```
 
+2. (Optional) Apply a custom TLS certificate to the ingress controller:
+
+   The playbook reads certificate files from `/ansible/labs/aws/cert` inside the
+   Ansible container. Mount your local certbot **archive** directory into
+   `run-ansible.sh` so those files are available at runtime.
+
+   Certbot directory layout (archive path shown; `live/` contains symlinks to
+   the same files):
+
+   ```text
+   certbot/conf/
+   ├── archive/
+   │   └── apps.<cluster>.example.com/
+   │       ├── cert1.pem
+   │       ├── chain1.pem
+   │       ├── fullchain1.pem
+   │       └── privkey1.pem
+   └── live/
+       └── apps.<cluster>.example.com/
+           ├── fullchain.pem -> ../../archive/apps.<cluster>.example.com/fullchain1.pem
+           └── privkey.pem -> ../../archive/apps.<cluster>.example.com/privkey1.pem
+   ```
+
+   Add a volume mount to `run-ansible.sh`, pointing the archive directory for
+   your domain to `/ansible/labs/aws/cert`:
+
+   ```shell
+   podman run --rm -it \
+     ...
+     -v "${PWD}:/ansible:Z" \
+     ...
+     -v "${HOME}/projects/<project>/certbot/conf/archive/apps.<cluster>.example.com:/ansible/labs/aws/cert:Z" \
+     ...
+   ```
+
+   The `:Z` suffix relabels the volume for SELinux. Adjust the host path to
+   match your certbot layout; the container path must stay
+   `/ansible/labs/aws/cert` unless you also change `__ingress_cert_dir` in
+   `labs/aws/deploy.yaml`. By default, the playbook reads `fullchain1.pem` and
+   `privkey1.pem` from that directory.
+
+   Apply the certificate:
+
+```shell
+ap labs/aws/deploy.yaml --tags ingress-cert
+```
+
 ## Validation
 
 1. Check if the Openshift cluster is running:

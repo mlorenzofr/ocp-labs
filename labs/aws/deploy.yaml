@@ -47,3 +47,50 @@
     - 'never'
     - 'postinst'
     - 'import-cluster'
+
+- name: 'Configure ingress TLS certificate'
+  hosts:
+    - 'lab'
+  gather_facts: false
+  vars:
+    lab_name: 'aws'
+    lab_path: '/root/labs'
+    lab_hide_secrets: True
+    __ingress_tls_secret_name: 'letsencrypt2'
+    __ingress_cert_dir: '/ansible/labs/aws/cert'
+    __ingress_cert_bundle_file: 'fullchain1.pem'
+    __ingress_cert_key_file: 'privkey1.pem'
+  environment:
+    KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+  tags:
+    - 'never'
+    - 'ingress-cert'
+  tasks:
+    - name: 'Create ingress TLS secret'
+      kubernetes.core.k8s:
+        state: 'present'
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: "{{ __ingress_tls_secret_name }}"
+            namespace: 'openshift-ingress'
+          type: kubernetes.io/tls
+          data:
+            tls.crt: "{{ lookup('file', __ingress_cert_dir + '/' + __ingress_cert_bundle_file) | b64encode }}"
+            tls.key: "{{ lookup('file', __ingress_cert_dir + '/' + __ingress_cert_key_file) | b64encode }}"
+      no_log: "{{ lab_hide_secrets | bool }}"
+      ignore_errors: "{{ ansible_check_mode }}"
+
+    - name: 'Set default certificate on ingress controller'
+      kubernetes.core.k8s_json_patch:
+        api_version: 'operator.openshift.io/v1'
+        kind: 'IngressController'
+        name: 'default'
+        namespace: 'openshift-ingress-operator'
+        patch:
+          - op: 'replace'
+            path: '/spec/defaultCertificate'
+            value:
+              name: "{{ __ingress_tls_secret_name }}"
+      ignore_errors: "{{ ansible_check_mode }}"
