@@ -16,10 +16,14 @@ ocp_assisted_service_ssh_key: "{{ ocp_ssh_key }}"
 ocp_assisted_service_storage_db_size: 10
 ocp_assisted_service_storage_fs_size: 20
 ocp_assisted_service_storage_image_size: 10
+# https://github.com/openshift/assisted-service/blob/master/data/default_os_images.json
 ocp_assisted_service_images:
   - ocp_version: '4.21.0'
     arch: 'x86_64'
     version: '9.6.20251212-1'
+  - ocp_version: '4.22.0'
+    arch: 'x86_64'
+    version: '9.8.20260428-0'
 ocp_assisted_service_registries: []
 ocp_assisted_service_ui: false
 ocp_assisted_service_ui_image: 'quay.io/edge-infrastructure/assisted-installer-ui:latest'

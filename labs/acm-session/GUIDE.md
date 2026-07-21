@@ -224,6 +224,7 @@ To create this cluster we will use the following kinds of resources:
 
 > [!WARNING]
 > These objects use secrets to store personal credentials. These secrets have been provisioned beforehand in our cluster.
+
 > [!WARNING]
 > By default, the Openshift only searches for `BareMetalHosts` in the `openshift-machine-api` namespace. This is already configured in our environment, but if setting up this scenario from scratch, the cluster provisioning configuration would need to be patched.
 > `oc patch provisioning/provisioning-configuration -p '{"spec":{"watchAllNamespaces":true}}' --type merge`
@@ -231,7 +232,7 @@ To create this cluster we will use the following kinds of resources:
 The image we'll use to install our cluster exists, but it's not visible. We need to change this label in the `ClusterImageSet` resource.
 
 ```shell
-$ oc label ClusterImageSet img4.20.3-x86-64-appsub --overwrite visible=true
+$ oc label ClusterImageSet img4.22.5-x86-64-appsub --overwrite visible=true
 ```
 
 We create the objects to begin the installation:
@@ -313,7 +314,7 @@ spoke       73161c13-ac16-451c-bade-b5b191323ed0   spoke-acm   true       master
 
 $ oc get clusterdeployment -A
 NAMESPACE   NAME        INFRAID                                PLATFORM          REGION   VERSION   CLUSTERTYPE   PROVISIONSTATUS   POWERSTATE   AGE
-spoke       spoke-acm   30bda52c-d558-49be-aaa7-113c2bce23ed   agent-baremetal            4.20.3                  Provisioned       Running      57m
+spoke       spoke-acm   30bda52c-d558-49be-aaa7-113c2bce23ed   agent-baremetal            4.22.5                  Provisioned       Running      57m
 ```
 
 We can extract the kubeconfig from the spoke cluster by extracting the secret:
