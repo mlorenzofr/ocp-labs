@@ -225,8 +225,11 @@ To create this cluster we will use the following kinds of resources:
 > [!WARNING]
 > These objects use secrets to store personal credentials. These secrets have been provisioned beforehand in our cluster.
 
+<!-- -->
+
 > [!WARNING]
 > By default, the Openshift only searches for `BareMetalHosts` in the `openshift-machine-api` namespace. This is already configured in our environment, but if setting up this scenario from scratch, the cluster provisioning configuration would need to be patched.
+>
 > `oc patch provisioning/provisioning-configuration -p '{"spec":{"watchAllNamespaces":true}}' --type merge`
 
 The image we'll use to install our cluster exists, but it's not visible. We need to change this label in the `ClusterImageSet` resource.

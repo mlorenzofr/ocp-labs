@@ -170,10 +170,10 @@ ap labs/osac-demo/deploy.yaml -l b17 --tags osac
 
 3. Review the `ansible-aap` namespace. We should have:
 
-  1. `secret/config-as-code-ig`
-  2. `secret/config-as-code-manifest-ig`
-  3. `secret/vmaas-cluster-kubeconfig`
-  4. `route.route.openshift.io/osac-aap-controller`
+   1. `secret/config-as-code-ig`
+   2. `secret/config-as-code-manifest-ig`
+   3. `secret/vmaas-cluster-kubeconfig`
+   4. `route.route.openshift.io/osac-aap-controller`
 
   ```shell
   oc get all,secrets -n ansible-aap
@@ -181,9 +181,9 @@ ap labs/osac-demo/deploy.yaml -l b17 --tags osac
 
 4. Review the `osac-operator-system` namespace. We should have:
 
-  1. `secret/osac-config`
-  2. `secret/vmaas-cluster-kubeconfig`
-  3. `pod/osac-operator-controller-manager-585cfcfbd9-8g8n7`
+   1. `secret/osac-config`
+   2. `secret/vmaas-cluster-kubeconfig`
+   3. `pod/osac-operator-controller-manager-585cfcfbd9-8g8n7`
 
   ```shell
   oc get all,secrets -n osac-operator-system

@@ -57,6 +57,7 @@ ap labs/ibi-proxy/deploy.yaml
 ```
 
 This will:
+
 * Deploy the seed cluster
 * Install and configure the Lifecycle Agent (LCA) operator
 * Install the OpenShift API for Data Protection (OADP) operator
