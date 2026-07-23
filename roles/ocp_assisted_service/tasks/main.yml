@@ -1,4 +1,35 @@
 ---
+# ALLOW_CONVERGED_FLOW must be true on OpenShift 4.22+ hubs
+# https://github.com/openshift/ironic-agent-image
+- name: 'Get hub cluster version'
+  kubernetes.core.k8s_info:
+    api_version: 'config.openshift.io/v1'
+    kind: 'ClusterVersion'
+    name: 'version'
+  register: __cluster_version
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: 'Set allow_converged_flow from hub version'
+  ansible.builtin.set_fact:
+    ocp_assisted_service_allow_converged_flow: "{{ 'true' if (__cluster_version.resources[0].status.desired.version is version('4.22', '>=')) else 'false' }}"
+  when:
+    - __cluster_version.resources is defined
+    - __cluster_version.resources | length > 0
+
+- name: 'Set allow_converged_flow default when CVO is unavailable'
+  ansible.builtin.set_fact:
+    ocp_assisted_service_allow_converged_flow: 'false'
+  when: ocp_assisted_service_allow_converged_flow is not defined
+
+- name: 'Build ALLOW_CONVERGED_FLOW config fact'
+  ansible.builtin.set_fact:
+    __ocp_assisted_service_converged_flow_config:
+      ALLOW_CONVERGED_FLOW: '"{{ ocp_assisted_service_allow_converged_flow }}"'
+
+- name: 'Combine ALLOW_CONVERGED_FLOW into assisted-service config'
+  ansible.builtin.set_fact:
+    ocp_assisted_service_config: "{{ ocp_assisted_service_config | combine(__ocp_assisted_service_converged_flow_config) }}"
+
 - name: 'Create Agent Service config manifest'
   ansible.builtin.template:
     src: 'config.yaml.j2'

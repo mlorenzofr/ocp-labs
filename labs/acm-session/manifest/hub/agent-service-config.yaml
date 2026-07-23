@@ -5,7 +5,7 @@ metadata:
   name: assisted-service-config
   namespace: multicluster-engine
 data:
-  ALLOW_CONVERGED_FLOW: "false"
+  ALLOW_CONVERGED_FLOW: "true"
 ---
 apiVersion: agent-install.openshift.io/v1beta1
 kind: AgentServiceConfig

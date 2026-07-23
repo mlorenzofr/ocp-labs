@@ -40,6 +40,7 @@
       data:
         .dockerconfigjson: "{{ item.pullsecret | default(ocp_hive_pullsecret) }}"
   no_log: "{{ ocp_hive_hide_secrets | bool }}"
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Prepare hive cluster'
   ansible.builtin.template:

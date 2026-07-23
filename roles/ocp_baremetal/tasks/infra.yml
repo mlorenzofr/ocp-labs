@@ -24,6 +24,7 @@
     loop_var: bmc
     extended: true
   no_log: "{{ ocp_baremetal_hide_secrets | bool }}"
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Create Baremetal hosts manifest'
   ansible.builtin.template:
