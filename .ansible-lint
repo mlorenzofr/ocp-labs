@@ -7,5 +7,4 @@ exclude_paths:
   - dependencies.yml
   - molecule
 
-parseable: true
 verbosity: 1
