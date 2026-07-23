@@ -7,4 +7,7 @@ exclude_paths:
   - dependencies.yml
   - molecule
 
+skip_list:
+  - yaml[line-length] # too long lines
+
 verbosity: 1
