@@ -39,7 +39,7 @@ $ oc create -f acm-subscription.yaml
 We can see if the operator installation has finished by checking its status:
 
 ```shell
-$ oc get subscriptions acm -n open-cluster-management -o jsonpath='{.status.state}{"\n"}'
+$ oc get subscriptions.operators.coreos.com acm -n open-cluster-management -o jsonpath='{.status.state}{"\n"}'
 AtLatestKnown
 
 $ oc get pods -n open-cluster-management
