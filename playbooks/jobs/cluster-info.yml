@@ -1,0 +1,57 @@
+---
+# Execution example:
+#
+# $ ansible-playbook playbooks/jobs/cluster-info.yml \
+#     -e lab_name=acm
+
+- name: 'Show cluster information'
+  hosts:
+    - 'lab'
+
+  gather_facts: false
+
+  vars:
+    lab_name: ''
+    lab_path: '/root/labs'
+
+  environment:
+    KUBECONFIG: "{{ lab_path }}/{{ lab_name }}/deploy/auth/kubeconfig"
+
+  tasks:
+    - name: 'Test lab_name'
+      ansible.builtin.fail:
+        msg: 'Variable lab_name is empty'
+      when: lab_name | length == 0
+
+    - name: 'Get Kubernetes cluster information'
+      kubernetes.core.k8s_cluster_info:
+      register: __cluster_info
+
+    - name: 'Get OpenShift cluster version from CVO'
+      kubernetes.core.k8s_info:
+        api_version: 'config.openshift.io/v1'
+        kind: 'ClusterVersion'
+        name: 'version'
+      register: __cluster_version
+
+    - name: 'Display Kubernetes cluster information'
+      ansible.builtin.debug:
+        msg:
+          - "API host: {{ __cluster_info.connection.host }}"
+          - "Client version: {{ __cluster_info.version.client }}"
+          - "Server version: {{ '{}.{}'.format(__cluster_info.version.server.kubernetes.major, __cluster_info.version.server.kubernetes.minor) }}"
+          - "git tag: {{ __cluster_info.version.server.kubernetes.gitVersion }}"
+          - "build date: {{ __cluster_info.version.server.kubernetes.buildDate }}"
+          - "Server platform: {{ __cluster_info.version.server.kubernetes.platform }}"
+
+    - name: 'Display OpenShift cluster version'
+      ansible.builtin.debug:
+        msg:
+          - "OpenShift version: {{ __cluster_version.resources[0].status.desired.version }}"
+          - "Channel: {{ __cluster_version.resources[0].spec.channel | default('n/a') }}"
+          - "Available: {{ (__cluster_version.resources[0].status.conditions | selectattr('type', 'equalto', 'Available') | map(attribute='status') | first) | default('Unknown') }}"
+          - "Progressing: {{ (__cluster_version.resources[0].status.conditions | selectattr('type', 'equalto', 'Progressing') | map(attribute='status') | first) | default('Unknown') }}"
+          - "Cluster ID: {{ __cluster_version.resources[0].spec.clusterID | default('n/a') }}"
+      when:
+        - __cluster_version.resources is defined
+        - __cluster_version.resources | length > 0
