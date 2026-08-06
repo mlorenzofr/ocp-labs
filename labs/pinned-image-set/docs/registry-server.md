@@ -124,6 +124,15 @@ $ podman tag 95ad8395795e pinnedis-registry.pinnedis.local.lab/ubi8/ubi
 $ podman push pinnedis-registry.pinnedis.local.lab/ubi8/ubi --remove-signatures
 ```
 
+## Purge the registry
+
+Stop the registry container, remove all stored data under `/var/lib/registry`, and start it again.  
+The `df` commands before and after show the freed disk space.
+
+```shell
+$ df -h /var/lib/registry && podman stop registry && rm -Rf /var/lib/registry/* && podman start registry && df -h /var/lib/registry
+```
+
 ## Links
 
 * [Deploy a registry server](https://distribution.github.io/distribution/about/deploying/)
