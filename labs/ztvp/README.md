@@ -3,6 +3,9 @@
 This lab installs a compact Openshift cluster and configures default storage.  
 This environment will be used as a base scenario for the deployment of _Validated Patterns_.
 
+A local git server has been configured on a different host.
+The configuration of this additional server is explained in the [git server documentation](docs/git-server.md).
+
 ## Requirements
 
 None.
