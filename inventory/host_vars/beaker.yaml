@@ -1,6 +1,7 @@
 ---
 dnsmasq_dhcp_hosts:
   - {hwaddr: '52:54:00:9c:93:36', hostname: 'pinnedis-registry', ipaddr: '192.168.129.200'}
+  - {hwaddr: '52:54:00:9c:93:37', hostname: 'git-server', ipaddr: '192.168.129.201'}
   - {hwaddr: '52:54:00:dd:d6:c2', hostname: 'registry', ipaddr: '192.168.133.155'}
   - {hwaddr: '52:54:00:9e:95:23', hostname: 'javed-rhel9', ipaddr: '192.168.125.149'}
 
@@ -26,6 +27,18 @@ lab_host_repos:
     baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/HighAvailability/{{ ansible_machine }}/debug/tree"
   - name: 'beaker-HighAvailability'
     baseurl: "http://{{ rh_repo }}/released/rhel-9/RHEL-9/{{ lab_host_rh_release }}/HighAvailability/{{ ansible_machine }}/os"
+
+lab_host_ssh_config_hosts:
+  - host: 'pinnedis-registry'
+    hostname: 'pinnedis-registry'
+    remote_user: 'root'
+    user_known_hosts_file: '/dev/null'
+    strict_host_key_checking: 'no'
+  - host: 'git-server'
+    hostname: 'git-server'
+    remote_user: 'root'
+    user_known_hosts_file: '/dev/null'
+    strict_host_key_checking: 'no'
 
 lab_host_networks:
   - name: 'lab-network'
