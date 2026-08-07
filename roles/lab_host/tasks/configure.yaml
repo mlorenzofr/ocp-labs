@@ -74,3 +74,15 @@
     - lab_host_aws
     - lab_aws_access_key_id is defined
     - lab_aws_secret_access_key is defined
+
+- name: 'Configure SSH host entries'
+  community.general.ssh_config:
+    user: "{{ item.user | default('root') }}"
+    host: "{{ item.host }}"
+    hostname: "{{ item.hostname | default(omit) }}"
+    remote_user: "{{ item.remote_user | default(omit) }}"
+    identity_file: "{{ item.identity_file | default(omit) }}"
+    user_known_hosts_file: "{{ item.user_known_hosts_file | default(omit) }}"
+    strict_host_key_checking: "{{ item.strict_host_key_checking | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ lab_host_ssh_config_hosts }}"

@@ -26,6 +26,7 @@ lab_host_packages_dist:
 lab_host_pip_packages:
   - 'strato-skipper==2.0.2'
   - 'kubernetes'
+  - 'paramiko'
 
 lab_host_scripts:
   - 'extract-ignition.sh'

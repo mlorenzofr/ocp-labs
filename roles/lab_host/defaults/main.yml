@@ -14,3 +14,4 @@ lab_host_oc_source: 'openshift-client-linux.tar.gz'
 lab_host_packages: []
 lab_host_repos: []
 lab_host_rh_release: '9.5.0'
+lab_host_ssh_config_hosts: []

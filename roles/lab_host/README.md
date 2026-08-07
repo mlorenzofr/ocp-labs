@@ -26,6 +26,7 @@ This role is used to configure a Beaker machine and get it ready to deploy OpenS
 * `lab_host_packages`. _List_. Additional packages to install. Defaults to `[]`.
 * `lab_host_repos`. _List_. Additional software repositories to configure. Defaults to `[]`.
 * `lab_host_rh_release`. _String_. Red Hat release version. Defaults to `'9.5.0'`.
+* `lab_host_ssh_config_hosts`. _List_. SSH host entries to configure in `~/.ssh/config`. Defaults to `[]`.
 
 ### Variables for `lab_host_repos` items
 
@@ -40,6 +41,17 @@ This role is used to configure a Beaker machine and get it ready to deploy OpenS
 
 * `version`. _String_. OpenShift version to install (e.g., `'4.16.0'`).
 * `state`. _String_. Installation state (`'present'` or `'absent'`). Defaults to `'present'`.
+
+### Variables for `lab_host_ssh_config_hosts` items
+
+* `host`. _String_. SSH host alias this configuration applies to.
+* `hostname`. _String_. Actual host to connect to. Optional.
+* `remote_user`. _String_. User to log in as on the remote host. Optional.
+* `identity_file`. _String_. Path to an SSH private key used for this host. Optional.
+* `user_known_hosts_file`. _String_. Path to the known hosts file. Optional.
+* `strict_host_key_checking`. _String_. Strict host key checking mode (`'yes'`, `'no'`, `'ask'`, or `'accept-new'`). Optional.
+* `user`. _String_. Local user whose `~/.ssh/config` is updated. Defaults to `'root'`.
+* `state`. _String_. Entry state (`'present'` or `'absent'`). Defaults to `'present'`.
 
 ### AWS Configuration Variables
 
@@ -77,7 +89,8 @@ This role performs the following tasks:
    * OpenShift CLI tools (oc, kubectl, openshift-install, oc-mirror)
 5. **Container Configuration**: Sets up container registry authentication.
 6. **AWS Configuration**: Configures AWS credentials (optional).
-7. **Utility Scripts**: Deploys helper scripts for cluster management.
+7. **SSH Configuration**: Adds SSH host entries from `lab_host_ssh_config_hosts`.
+8. **Utility Scripts**: Deploys helper scripts for cluster management.
 
 ## Example Playbook
 
