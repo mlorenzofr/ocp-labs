@@ -40,6 +40,34 @@
     - 'clean-ztvp-spoke-2'
     - 'never'
 
+# use a different base when switching lab_node_network_base (LAB_DISCONNECTED=true).
+- name: 'Configure network for ZTVP hubs'
+  hosts:
+    - 'lab'
+  gather_facts: false
+  tags:
+    - 'ocp'
+    - 'ztvp-hub'
+    - 'ztvp-hub-install'
+    - 'ztvp2-hub'
+    - 'ztvp2-hub-install'
+  vars:
+    __lab_mac_base: 'ce:00:0a:ba:ee:'
+    __lab_mac_base_disconnected: 'ce:00:0a:ba:ef:'
+  tasks:
+    - name: 'Set default MAC base for ZTVP hubs'
+      ansible.builtin.set_fact:
+        lab_mac_base: "{{ __lab_mac_base }}"
+
+    - name: 'Apply disconnected network overrides'
+      when: lookup('ansible.builtin.env', 'LAB_DISCONNECTED') | lower == 'true'
+      block:
+        - name: 'Set disconnected network and MAC base'
+          ansible.builtin.set_fact:
+            lab_node_network_base: '192.168.129.'
+            lab_network_name: 'pinnedis-net'
+            lab_mac_base: "{{ __lab_mac_base_disconnected }}"
+
 - name: 'Install ZTVP hub cluster'
   ansible.builtin.import_playbook: ../../playbooks/base/abi.yaml
   tags:
@@ -48,7 +76,6 @@
     - 'ztvp-hub-install'
   vars:
     lab_name: 'ztvp'
-    lab_mac_base: 'ce:00:0a:ba:ee:'
     lab_node_cpus: 16
     lab_node_memory: 42000
     lab_node_disk_data: 320
@@ -74,7 +101,6 @@
     - 'ztvp2-hub-install'
   vars:
     lab_name: 'ztvp2'
-    lab_mac_base: 'ce:00:0a:ba:ee:'
     lab_node_cpus: 16
     lab_node_memory: 42000
     lab_node_disk_data: 320
