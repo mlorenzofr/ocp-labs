@@ -3,6 +3,9 @@
 dhcp-boot={{ dnsmasq_pxe_boot_file }}
 dhcp-match=set:ipxe,175
 dhcp-boot=tag:ipxe,{{ dnsmasq_pxe_boot_url }}
+{% if dnsmasq_pxe_root_path %}
+dhcp-option=option:root-path,iscsi:{{ dnsmasq_pxe_iscsi_address }}:::{{ dnsmasq_pxe_iscsi_lun }}:://{{ dnsmasq_pxe_iscsi_target_name }}
+{% endif %}
 
 enable-tftp
 tftp-root={{ dnsmasq_tftp_root }}

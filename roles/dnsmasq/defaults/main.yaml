@@ -32,6 +32,10 @@ dnsmasq_port: 53
 dnsmasq_pxe: false
 dnsmasq_pxe_boot_file: 'undionly.kpxe'
 dnsmasq_pxe_boot_url: ''
+dnsmasq_pxe_iscsi_address: ''
+dnsmasq_pxe_iscsi_lun: 0
+dnsmasq_pxe_iscsi_target_name: ''
+dnsmasq_pxe_root_path: false
 dnsmasq_servers: []
 dnsmasq_strict_order: true
 dnsmasq_resolvconf: true

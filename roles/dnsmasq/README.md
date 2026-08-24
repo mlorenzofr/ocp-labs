@@ -40,6 +40,10 @@ None.
 * `dnsmasq_pxe`. _Bool_. Enable/disable PXE boot configuration via TFTP and DHCP boot options.
 * `dnsmasq_pxe_boot_file`. _String_. Boot file name for non-iPXE clients.
 * `dnsmasq_pxe_boot_url`. _String_. Boot URL for iPXE clients.
+* `dnsmasq_pxe_iscsi_address`. _String_. iSCSI target address for the root-path DHCP option.
+* `dnsmasq_pxe_iscsi_lun`. _Number_. iSCSI LUN for the root-path DHCP option.
+* `dnsmasq_pxe_iscsi_target_name`. _String_. iSCSI target IQN for the root-path DHCP option.
+* `dnsmasq_pxe_root_path`. _Bool_. Enable/disable the DHCP root-path option for iSCSI network boot.
 * `dnsmasq_servers`. _List_. List of upstream servers.
 * `dnsmasq_strict_order`. _Bool_. Forces queries to strictly follow the order of servers in which they appear in `/etc/resolv.conf`.
 * `dnsmasq_resolvconf`. _Bool_. Sets wether `/etc/resolv.conf` should be managed or not.
@@ -91,6 +95,10 @@ None.
   vars:
     dnsmasq_pxe: true
     dnsmasq_pxe_boot_url: 'http://192.168.125.1:8080/boot.ipxe'
+    dnsmasq_pxe_iscsi_address: '192.168.125.150'
+    dnsmasq_pxe_iscsi_lun: 0
+    dnsmasq_pxe_iscsi_target_name: 'iqn.2023-01.com.example:target01'
+    dnsmasq_pxe_root_path: true
 
   roles:
     - dnsmasq

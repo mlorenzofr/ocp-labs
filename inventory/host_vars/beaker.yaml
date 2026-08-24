@@ -7,6 +7,10 @@ dnsmasq_dhcp_hosts:
   - {hwaddr: '52:54:00:15:f9:ff', hostname: 'iscsi', ipaddr: '192.168.125.150'}
 dnsmasq_pxe: true
 dnsmasq_pxe_boot_url: 'http://192.168.125.1:8080/boot.ipxe'
+dnsmasq_pxe_iscsi_address: '192.168.125.150'
+dnsmasq_pxe_iscsi_lun: 0
+dnsmasq_pxe_iscsi_target_name: 'iqn.2023-01.com.example:target01'
+dnsmasq_pxe_root_path: true
 
 libvirt_image_dir: '/home/libvirt-ocp'
 lab_network_name: 'lab-network'
