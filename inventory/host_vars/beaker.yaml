@@ -4,6 +4,7 @@ dnsmasq_dhcp_hosts:
   - {hwaddr: '52:54:00:9c:93:37', hostname: 'git-server', ipaddr: '192.168.129.201'}
   - {hwaddr: '52:54:00:dd:d6:c2', hostname: 'registry', ipaddr: '192.168.133.155'}
   - {hwaddr: '52:54:00:9e:95:23', hostname: 'javed-rhel9', ipaddr: '192.168.125.149'}
+  - {hwaddr: '52:54:00:15:f9:ff', hostname: 'iscsi', ipaddr: '192.168.125.150'}
 
 libvirt_image_dir: '/home/libvirt-ocp'
 lab_network_name: 'lab-network'
