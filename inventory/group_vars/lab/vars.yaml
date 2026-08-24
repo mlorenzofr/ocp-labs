@@ -1,10 +1,4 @@
 ---
-dns_upstream: '1.1.1.1'
-dns_external:
-  - {address: "{{ dns_upstream }}"}
-  - {base: 'registry.access.redhat.com', address: "{{ dns_upstream }}"}
-  - {base: 'access.redhat.com', address: "{{ dns_upstream }}"}
-
 dnsmasq_conf_dirs:
   - {path: '/etc/dnsmasq.d', exclude: ['.rpmnew', '.rpmsave', '.rpmorig']}
 dnsmasq_conf_snippets:
@@ -18,7 +12,7 @@ dnsmasq_no_resolv: true
 dnsmasq_resolvconf_domains: "{{ beaker_domains }}"
 dnsmasq_resolvconf_options: ['edns0', 'trust-ad']
 dnsmasq_local_domains: ['local.lab']
-dnsmasq_servers: "{{ dns_external + beaker_dns_servers }}"
+dnsmasq_servers: "{{ beaker_dns_servers }}"
 
 lab_host_squid_networks:
   - 'fd00:0:0:1::/64'
