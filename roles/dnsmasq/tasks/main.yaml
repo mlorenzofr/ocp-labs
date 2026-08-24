@@ -55,6 +55,31 @@
   tags:
     - 'conf'
 
+- name: 'Configure PXE'
+  ansible.builtin.template:
+    src: 'pxe.conf.j2'
+    dest: '/etc/dnsmasq.d/pxe.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  when: dnsmasq_pxe
+  notify:
+    - 'svc restart dnsmasq'
+  tags:
+    - 'conf'
+    - 'pxe'
+
+- name: 'Remove PXE configuration snippets'
+  ansible.builtin.file:
+    path: '/etc/dnsmasq.d/pxe.conf'
+    state: absent
+  when: not dnsmasq_pxe
+  notify:
+    - 'svc restart dnsmasq'
+  tags:
+    - 'conf'
+    - 'pxe'
+
 - name: 'Add configuration snippets'
   ansible.builtin.import_tasks:
     file: 'extra_conf.yaml'

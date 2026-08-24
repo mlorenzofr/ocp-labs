@@ -29,6 +29,9 @@ dnsmasq_no_negcache: false
 dnsmasq_no_poll: false
 dnsmasq_no_resolv: false
 dnsmasq_port: 53
+dnsmasq_pxe: false
+dnsmasq_pxe_boot_file: 'undionly.kpxe'
+dnsmasq_pxe_boot_url: ''
 dnsmasq_servers: []
 dnsmasq_strict_order: true
 dnsmasq_resolvconf: true
@@ -37,4 +40,5 @@ dnsmasq_resolvconf_options: []
 dnsmasq_resolvconf_servers:
   - '1.1.1.1'
 dnsmasq_resolv_file: ''
+dnsmasq_tftp_root: '/var/lib/tftp'
 dnsmasq_user: 'dnsmasq'

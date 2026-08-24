@@ -1,0 +1,8 @@
+{{ ansible_managed | comment }}
+
+dhcp-boot={{ dnsmasq_pxe_boot_file }}
+dhcp-match=set:ipxe,175
+dhcp-boot=tag:ipxe,{{ dnsmasq_pxe_boot_url }}
+
+enable-tftp
+tftp-root={{ dnsmasq_tftp_root }}

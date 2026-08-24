@@ -37,6 +37,9 @@ None.
 * `dnsmasq_no_poll`. _Bool_. Don't poll `/etc/resolv.conf` for changes.
 * `dnsmasq_no_resolv`. _Bool_. Don't read `/etc/resolv.conf`.
 * `dnsmasq_port`. _Number_. Listening port for the dnsmasq service.
+* `dnsmasq_pxe`. _Bool_. Enable/disable PXE boot configuration via TFTP and DHCP boot options.
+* `dnsmasq_pxe_boot_file`. _String_. Boot file name for non-iPXE clients.
+* `dnsmasq_pxe_boot_url`. _String_. Boot URL for iPXE clients.
 * `dnsmasq_servers`. _List_. List of upstream servers.
 * `dnsmasq_strict_order`. _Bool_. Forces queries to strictly follow the order of servers in which they appear in `/etc/resolv.conf`.
 * `dnsmasq_resolvconf`. _Bool_. Sets wether `/etc/resolv.conf` should be managed or not.
@@ -44,6 +47,7 @@ None.
 * `dnsmasq_resolvconf_options`. _List_. List of extra options for the `/etc/resolv.conf` file.
 * `dnsmasq_resolvconf_servers`. _List_. List of DNS servers for the `/etc/resolv.conf` file.
 * `dnsmasq_resolv_file`. _String_. Alternative `resolv.conf` file to use instead of `/etc/resolv.conf`.
+* `dnsmasq_tftp_root`. _String_. TFTP root directory for PXE boot files.
 * `dnsmasq_user`. _String_. UID used to run the dnsmasq process.
 
 ## Example Playbook
@@ -73,6 +77,20 @@ None.
     dnsmasq_servers:
         - {address: '1.1.1.1'}
         - {base: 'example.com', address: '10.0.0.1'}
+
+  roles:
+    - dnsmasq
+```
+
+### PXE Boot
+
+```yaml
+
+- hosts: servers
+
+  vars:
+    dnsmasq_pxe: true
+    dnsmasq_pxe_boot_url: 'http://192.168.125.1:8080/boot.ipxe'
 
   roles:
     - dnsmasq
