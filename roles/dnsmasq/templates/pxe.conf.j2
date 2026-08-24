@@ -4,7 +4,14 @@ dhcp-boot={{ dnsmasq_pxe_boot_file }}
 dhcp-match=set:ipxe,175
 dhcp-boot=tag:ipxe,{{ dnsmasq_pxe_boot_url }}
 {% if dnsmasq_pxe_root_path %}
-dhcp-option=option:root-path,iscsi:{{ dnsmasq_pxe_iscsi_address }}:::{{ dnsmasq_pxe_iscsi_lun }}:://{{ dnsmasq_pxe_iscsi_target_name }}
+dhcp-option=option:root-path,iscsi:{{ dnsmasq_pxe_iscsi_address }}:::{{ dnsmasq_pxe_iscsi_lun }}:{{ dnsmasq_pxe_iscsi_target_name }}
+# Extra information that can't be transmitted in previous URI
+# EFI bootloader
+# dhcp-option=encap:175,188,"\\efi\\debian\\grubx64.efi"
+# iSCSI username
+# dhcp-option=encap:175,190,username
+# iSCSI password
+# dhcp-option=encap:175,191,password
 {% endif %}
 
 enable-tftp
