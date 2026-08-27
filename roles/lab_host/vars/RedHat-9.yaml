@@ -22,6 +22,7 @@ lab_host_packages_dist:
   - 'squid'
   - 'tar'
   - 'telnet'
+  - 'the_silver_searcher'
   - 'tmux'
   - 'vim-enhanced'
   - 'virt-install'
