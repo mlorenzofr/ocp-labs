@@ -7,7 +7,7 @@ The testing could be done using Quay but the requirements for this registry are 
 
 * vCPUs: 2
 * Memory: 4096 MB
-* Disk: 100 GB
+* Disk: 300 GB
 * OS: Fedora Linux 39
 
 ## Software setup
@@ -20,9 +20,9 @@ dnf install nginx -y
 
 Create self-signed certificates:
 
-```
-$ mkdir /etc/pki/nginx/
-$ openssl req -newkey rsa:4096 -nodes -sha256 -keyout /etc/pki/nginx/registry.key \
+```shell
+mkdir /etc/pki/nginx/
+openssl req -newkey rsa:4096 -nodes -sha256 -keyout /etc/pki/nginx/registry.key \
     -subj "/C=US/ST=North Carolina/L=Raleigh/O=Red Hat/CN=pinnedis-registry.pinnedis.local.lab" \
     -addext "subjectAltName=DNS:pinnedis-registry.pinnedis.local.lab,DNS:quay.io" \
     -x509 -days 730 -out /etc/pki/nginx/registry.pem
@@ -30,7 +30,7 @@ $ openssl req -newkey rsa:4096 -nodes -sha256 -keyout /etc/pki/nginx/registry.ke
 
 Add reverse proxy configuration:
 
-```
+```text
     server {
         listen       443 ssl;
         listen       [::]:443 ssl;
@@ -70,8 +70,8 @@ systemctl enable nginx.service --now
 Enable the service in `firewalld`:
 
 ```shell
-$ firewall-cmd --zone FedoraServer --add-service=https --permanent
-$ firewall-cmd --reload
+firewall-cmd --zone FedoraServer --add-service=https --add-service=http --permanent
+firewall-cmd --reload
 ```
 
 Enable `SELinux` access to port 5000:
@@ -93,19 +93,18 @@ dnf install podman -y
 ### Prepare the filesystem
 
 ```shell
-$ mkdir /var/lib/registry
-$ lvcreate -L 50G -n registry fedora_pinnedis-registry
-$ mkfs.xfs -L registry /dev/fedora_pinnedis-registry/registry
-$ echo "LABEL=registry                            /var/lib/registry       xfs     defaults        0 0" >> /etc/fstab
-$ systemctl daemon-reload
-$ mount /var/lib/registry/
+mkdir /var/lib/registry
+lvcreate -l +100%FREE -n registry fedora_pinnedis-registry
+mkfs.xfs -L registry /dev/fedora_pinnedis-registry/registry
+echo "LABEL=registry                            /var/lib/registry       xfs     defaults        0 0" >> /etc/fstab
+mount /var/lib/registry/
 ```
 
 ### Start the registry
 
 ```shell
-$ podman pull quay.io/mlorenzofr/registry:latest
-$ podman run -d -p 5000:5000 --restart always --name registry -v /var/lib/registry:/var/lib/registry:Z registry:latest
+podman pull quay.io/mlorenzofr/registry:latest
+podman run -d -p 5000:5000 --restart always --name registry -v /var/lib/registry:/var/lib/registry:Z registry:latest
 ```
 
 ## Validate
@@ -113,15 +112,15 @@ $ podman run -d -p 5000:5000 --restart always --name registry -v /var/lib/regist
 On an external host, copy the self-signed certificate to `/etc/containers/certs.d/`.
 
 ```shell
-$ mkdir /etc/containers/certs.d/pinnedis-registry.pinnedis.local.lab
-$ cp ca.crt /etc/containers/certs.d/pinnedis-registry.pinnedis.local.lab/
+mkdir /etc/containers/certs.d/pinnedis-registry.pinnedis.local.lab
+cp ca.crt /etc/containers/certs.d/pinnedis-registry.pinnedis.local.lab/
 ```
 
 Tag an image and upload it to the registry:
 
 ```shell
-$ podman tag 95ad8395795e pinnedis-registry.pinnedis.local.lab/ubi8/ubi
-$ podman push pinnedis-registry.pinnedis.local.lab/ubi8/ubi --remove-signatures
+podman tag 95ad8395795e pinnedis-registry.pinnedis.local.lab/ubi8/ubi
+podman push pinnedis-registry.pinnedis.local.lab/ubi8/ubi --remove-signatures
 ```
 
 ## Purge the registry
@@ -130,7 +129,30 @@ Stop the registry container, remove all stored data under `/var/lib/registry`, a
 The `df` commands before and after show the freed disk space.
 
 ```shell
-$ df -h /var/lib/registry && podman stop registry && rm -Rf /var/lib/registry/* && podman start registry && df -h /var/lib/registry
+df -h /var/lib/registry && systemctl stop registry && rm -Rf /var/lib/registry/* && systemctl start registry && df -h /var/lib/registry
+```
+
+## systemd unit for OCI registry
+
+Create the file `/etc/systemd/system/registry.service` with the following content:
+
+```ini
+[Unit]
+Description=OCI Distribution registry
+Wants=syslog.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/podman start -a registry
+ExecStop=/usr/bin/podman stop -t 10 registry
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```shell
+systemctl daemon-reload
+systemctl enable registry --now
 ```
 
 ## Links
