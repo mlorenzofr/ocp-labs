@@ -11,10 +11,10 @@
     - 'clean-seed'
     - 'never'
 
-- name: 'Clean ibi-proxy-target lab'
+- name: 'Clean ibi-cluster (ibi-proxy-target) lab'
   ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
   vars:
-    lab_name: 'ibi-proxy-target'
+    lab_name: 'ibi-cluster'
   tags:
     - 'clean'
     - 'clean-target'
