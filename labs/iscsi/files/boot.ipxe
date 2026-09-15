@@ -1,0 +1,3 @@
+#!ipxe
+set initiator-iqn iqn.1994-05.com.redhat:e1c30923a3a
+sanboot iscsi:192.168.125.150::::iqn.2023-01.com.example:target01

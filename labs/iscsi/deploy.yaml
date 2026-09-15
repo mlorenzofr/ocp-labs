@@ -1,0 +1,60 @@
+---
+# Run it with:
+#   ap labs/iscsi/deploy.yaml
+
+- name: 'Clean iscsi lab'
+  ansible.builtin.import_playbook: ../../playbooks/jobs/clean-lab.yml
+  vars:
+    lab_name: 'iscsi'
+  tags:
+    - 'clean'
+    - 'never'
+
+- name: 'Deploy SNO hub cluster'
+  ansible.builtin.import_playbook: ../../playbooks/base/sno.yaml
+  tags:
+    - 'ocp'
+    - 'hub'
+  vars:
+    lab_name: 'iscsi'
+    lab_mac_base: '52:54:00:00:00:'
+    lab_node_memory: 32768
+    lab_node_disk_data: 60
+    sno_ip: 90
+    start_install: true
+
+- name: 'Install MCE and assisted-service on hub'
+  ansible.builtin.import_playbook: ../../playbooks/setup/mce.yaml
+  tags:
+    - 'mce'
+    - 'postinst'
+  vars:
+    lab_name: 'iscsi'
+    ocp_assisted_service_op: 'mce'
+
+- name: 'Prepare spoke cluster manifests'
+  ansible.builtin.import_playbook: ../../playbooks/setup/hive.yaml
+  tags:
+    - 'hive'
+    - 'postinst'
+  vars:
+    lab_name: 'iscsi'
+    ocp_apply: false
+
+    ocp_assisted_service_op: 'mce'
+    ocp_assisted_service_infraenvs:
+      - name: "spoke-{{ lab_name }}"
+        ns: 'spoke'
+        ntp: ["{{ lab_node_network_base }}1"]
+        redfish: "{{ lab_node_network_base }}1"
+        inventory: []
+
+    ocp_hive_clusters:
+      - name: "spoke-{{ lab_name }}"
+        ns: 'spoke'
+        image: 'img4.22.5-x86-64-appsub'
+        service_network: '172.32.0.0/16'
+        host_network: "{{ lab_node_network_base }}0/24"
+        masters: 1
+        domain: 'local.lab'
+        api_vips: ["{{ lab_node_network_base }}91"]
