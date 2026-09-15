@@ -1,4 +1,12 @@
 ---
+- name: 'Check if Provisioning CR exists'
+  kubernetes.core.k8s_info:
+    api_version: 'metal3.io/v1alpha1'
+    kind: 'Provisioning'
+    name: 'provisioning-configuration'
+  register: __ocp_baremetal_provisioning
+  failed_when: false
+
 - name: 'Set watchAllNamespaces for provisioning'
   kubernetes.core.k8s:
     definition:
@@ -8,6 +16,9 @@
         name: 'provisioning-configuration'
       spec:
         watchAllNamespaces: true
+  when:
+    - __ocp_baremetal_provisioning.resources is defined
+    - __ocp_baremetal_provisioning.resources | length > 0
   ignore_errors: "{{ ansible_check_mode }}"
 
 - name: 'Prepare infrastructures'
