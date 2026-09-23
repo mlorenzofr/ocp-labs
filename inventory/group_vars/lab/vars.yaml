@@ -19,9 +19,9 @@ lab_host_squid_networks:
 # haproxy_snippets:
 #  - 'haproxy/assisted-service.j2'
 lab_host_ocp_versions:
-  - {version: '4.22.6', state: 'absent'}
-  - {version: '4.22.7', state: 'present'}
-  - {version: '4.20.31', state: 'present'}
-  - {version: '4.21.25', state: 'absent'}
-  - {version: '4.21.26', state: 'present'}
+  - {version: '4.22.15', state: 'present'}
+  - {version: '4.22.7', state: 'absent'}
+  - {version: '4.20.31', state: 'absent'}
+  - {version: '4.21.26', state: 'absent'}
+  - {version: '4.21.34', state: 'present'}
 ...
