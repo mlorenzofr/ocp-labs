@@ -3,7 +3,7 @@
   community.general.copr:
     name: 'karmab/kcli'
     state: 'enabled'
-    chroot: "epel-{{ ansible_distribution_major_version }}-{{ ansible_machine }}"
+    chroot: "epel-{{ ansible_facts['distribution_major_version'] }}-{{ ansible_facts['machine'] }}"
 
 - name: 'Install kcli package'
   ansible.builtin.package:

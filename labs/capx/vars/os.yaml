@@ -1,7 +1,7 @@
 ---
 clusterctl_version: 'v1.9.3'
 dns_servers:
-  - "{{ ansible_default_ipv4.address }}"
+  - "{{ ansible_facts['default_ipv4']['address'] }}"
   - '10.0.0.2'
   - '8.8.8.8'
 helm_version: '3.17.0'

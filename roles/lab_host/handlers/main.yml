@@ -14,7 +14,7 @@
     name: 'libvirtd'
     state: 'restarted'
     enabled: true
-  when: ansible_distribution_major_version == 8
+  when: ansible_facts['distribution_major_version'] == 8
   listen: 'svc restart libvirtd'
   ignore_errors: "{{ ansible_check_mode }}"
 
@@ -23,7 +23,7 @@
     name: 'virtqemud'
     state: 'restarted'
     enabled: true
-  when: ansible_distribution_major_version == 9
+  when: ansible_facts['distribution_major_version'] == 9
   listen:
     - 'svc restart libvirtd'
     - 'svc restart virtqemud'
@@ -34,7 +34,7 @@
     name: 'virtnetworkd'
     state: 'restarted'
     enabled: true
-  when: ansible_distribution_major_version == 9
+  when: ansible_facts['distribution_major_version'] == 9
   listen:
     - 'svc restart libvirtd'
     - 'svc restart virtnetworkd'
@@ -45,7 +45,7 @@
     name: 'virtnodedevd'
     state: 'restarted'
     enabled: true
-  when: ansible_distribution_major_version == 9
+  when: ansible_facts['distribution_major_version'] == 9
   listen:
     - 'svc restart libvirtd'
     - 'svc restart virtnodedevd'
@@ -56,7 +56,7 @@
     name: 'virtnwfilterd'
     state: 'restarted'
     enabled: true
-  when: ansible_distribution_major_version == 9
+  when: ansible_facts['distribution_major_version'] == 9
   listen:
     - 'svc restart libvirtd'
     - 'svc restart virtnwfilterd'
@@ -67,7 +67,7 @@
     name: 'virtsecretd'
     state: 'restarted'
     enabled: true
-  when: ansible_distribution_major_version == 9
+  when: ansible_facts['distribution_major_version'] == 9
   listen:
     - 'svc restart libvirtd'
     - 'svc restart virtsecretd'
@@ -78,7 +78,7 @@
     name: 'virtinterfaced'
     state: 'restarted'
     enabled: true
-  when: ansible_distribution_major_version == 9
+  when: ansible_facts['distribution_major_version'] == 9
   listen:
     - 'svc restart libvirtd'
     - 'svc restart virtinterfaced'
@@ -89,7 +89,7 @@
     name: 'virtstoraged'
     state: 'restarted'
     enabled: true
-  when: ansible_distribution_major_version == 9
+  when: ansible_facts['distribution_major_version'] == 9
   listen:
     - 'svc restart libvirtd'
     - 'svc restart virtstoraged'

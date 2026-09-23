@@ -1,5 +1,5 @@
 ---
-kind_cfg_dir: "{{ ansible_env.HOME }}/.kind"
+kind_cfg_dir: "{{ ansible_facts['env']['HOME'] }}/.kind"
 kind_clusters: []
 kind_container_engine: 'podman'
 kind_group: 'root'

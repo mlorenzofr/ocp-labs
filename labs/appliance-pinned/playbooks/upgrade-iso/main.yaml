@@ -32,7 +32,7 @@
     - name: 'Prepare VMs'
       ansible.builtin.import_tasks:
         file: 'virsh.yaml'
-      when: __upgrade_iso_file.files[0].mtime > (ansible_date_time.epoch | int) - 3600
+      when: __upgrade_iso_file.files[0].mtime > (ansible_facts['date_time']['epoch'] | int) - 3600
 
     - name: 'Search machineconfig manifest'
       ansible.builtin.find:
@@ -46,4 +46,4 @@
         state: 'present'
         src: "{{ __upgrade_mc_file.files[0].path }}"
       ignore_errors: "{{ ansible_check_mode }}"
-      when: __upgrade_mc_file.files[0].mtime > (ansible_date_time.epoch | int) - 3600
+      when: __upgrade_mc_file.files[0].mtime > (ansible_facts['date_time']['epoch'] | int) - 3600

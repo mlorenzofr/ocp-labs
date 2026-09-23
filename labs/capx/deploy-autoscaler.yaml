@@ -32,7 +32,7 @@
     kind_clusters:
       - name: capi-autoscaler
         reinstall: True
-        address: "{{ ansible_default_ipv4.address }}"
+        address: "{{ ansible_facts['default_ipv4']['address'] }}"
         nginx: True
         metallb_ip: '10.89.0.250'
         assisted_svc_hostname: 'assisted-service-2.assisted-installer.com'

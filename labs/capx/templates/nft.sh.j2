@@ -5,7 +5,7 @@ flush ruleset
 table ip nat {
         chain prerouting {
                 type nat hook prerouting priority dstnat - 1; policy accept;
-                ip daddr {{ ansible_default_ipv4.address }} tcp dport { http, https } dnat to {{ assisted_ingress_ip }}
+                ip daddr {{ ansible_facts['default_ipv4']['address'] }} tcp dport { http, https } dnat to {{ assisted_ingress_ip }}
         }
 
         chain postrouting {

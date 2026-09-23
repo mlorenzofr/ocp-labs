@@ -48,7 +48,7 @@
 
 - name: 'Show internal IP'
   ansible.builtin.debug:
-    msg: "{{ ansible_default_ipv4.address }}"
+    msg: "{{ ansible_facts['default_ipv4']['address'] }}"
 
 - name: 'Change default dns_servers for containers'
   ansible.builtin.lineinfile:
