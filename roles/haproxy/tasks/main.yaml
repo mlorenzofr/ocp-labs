@@ -23,8 +23,8 @@
   ansible.builtin.include_tasks:
     file: discover_labs.yaml
     apply:
-       tags:
-         - 'haproxy'
+      tags:
+        - 'haproxy'
   when: haproxy_auto_discover_labs | bool
   tags:
     - 'haproxy'

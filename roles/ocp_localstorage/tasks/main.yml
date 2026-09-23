@@ -34,7 +34,7 @@
     dest: "{{ ocp_localstorage_path }}/localvolumeset-{{ item.name }}.yaml"
     mode: '0644'
   loop: "{{ ocp_localstorage_volumesets }}"
-  
+
 - name: 'Apply LocalVolumeSets manifests'
   kubernetes.core.k8s:
     state: 'present'

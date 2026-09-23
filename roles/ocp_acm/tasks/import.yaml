@@ -30,7 +30,7 @@
 - name: 'Add default addons'
   ansible.builtin.set_fact:
     addons: "{{ addons | default(ocp_acm_default_addons) }}"
-  
+
 - name: 'Add governance addons'
   ansible.builtin.set_fact:
     addons: "{{ addons | union(ocp_acm_governance_addons) }}"
@@ -43,7 +43,7 @@
     owner: 'root'
     group: 'root'
     mode: '0640'
-  
+
 - name: 'Create import namespace'
   kubernetes.core.k8s:
     name: "{{ cluster }}"

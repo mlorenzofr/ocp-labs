@@ -15,6 +15,7 @@
 - name: 'Extract ztp-site-generator files'
   ansible.builtin.shell:
     cmd: >
+      set -o pipefail &&
       podman run --log-driver=none --rm
       {{ ocp_gitops_site_generator_image }}:{{ ocp_gitops_site_generator_tag }}
       extract /home/ztp --tar

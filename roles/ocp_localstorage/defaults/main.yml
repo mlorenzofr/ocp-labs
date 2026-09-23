@@ -6,4 +6,3 @@ ocp_localstorage_path: "{{ lab_configs | default('/tmp') }}"
 ocp_localstorage_source: 'redhat-operators'
 ocp_localstorage_volumes: []
 ocp_localstorage_volumesets: []
-...

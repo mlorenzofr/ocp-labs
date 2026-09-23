@@ -19,6 +19,9 @@
 - name: 'Create kind configuration directory'
   ansible.builtin.file:
     path: "{{ kind_cfg_dir }}"
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
     state: directory
 
 - name: 'Increase inotify max_user_watches'

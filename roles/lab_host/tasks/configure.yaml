@@ -61,6 +61,7 @@
 - name: 'Configure aws credentials'
   community.general.ini_file:
     path: '/root/.aws/credentials'
+    mode: '0600'
     section: 'default'
     option: "{{ item.option }}"
     value: "{{ item.value }}"
