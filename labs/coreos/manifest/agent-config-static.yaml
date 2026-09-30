@@ -1,0 +1,53 @@
+---
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: coreos
+rendezvousIP: 192.168.129.178
+hosts:
+  - hostname: coreos-node-1
+    interfaces:
+      - name: enp7s0
+        macAddress: 52:54:00:37:25:d7
+    networkConfig:
+      interfaces:
+        - name: enp3s0
+          type: ethernet
+          state: up
+          mac-address: 52:54:00:00:00:b2
+          ipv4:
+            enabled: True
+            dhcp: False
+            address:
+              - ip: 192.168.125.178
+                prefix-length: 24
+          ipv6:
+            enabled: False
+        - name: enp7s0
+          type: ethernet
+          state: up
+          mac-address: 52:54:00:37:25:d7
+          ipv4:
+            enabled: True
+            dhcp: False
+            address:
+              - ip: 192.168.129.178
+                prefix-length: 24
+          ipv6:
+            enabled: False
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-interface: enp7s0
+            next-hop-address: 192.168.129.1
+          - destination: 0.0.0.0/0
+            next-hop-interface: enp3s0
+            next-hop-address: 192.168.125.1
+      dns-resolver:
+        config:
+          search:
+            - coreos.local.lab
+          server:
+            - 192.168.129.1
+    rootDeviceHints:
+      deviceName: "/dev/sda"
