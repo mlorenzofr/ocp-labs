@@ -1,0 +1,102 @@
+---
+- name: 'Install nginx'
+  ansible.builtin.package:
+    name: 'nginx'
+    state: 'present'
+  ignore_errors: "{{ ansible_check_mode }}"
+  tags:
+    - 'dnf'
+    - 'packages'
+    - 'yum'
+
+- name: 'Allow nginx to listen on its TCP port'
+  community.general.seport:
+    ports:
+      - "{{ nginx_listen_port | string }}"
+    proto: 'tcp'
+    setype: 'http_port_t'
+    state: 'present'
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ansible_facts.selinux.status | default('enabled') == 'enabled'
+  tags:
+    - 'selinux'
+
+- name: 'Set the SELinux file context for the iPXE root'
+  community.general.sefcontext:
+    target: "{{ nginx_root }}(/.*)?"
+    setype: 'httpd_sys_content_t'
+    state: 'present'
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ansible_facts.selinux.status | default('enabled') == 'enabled'
+  tags:
+    - 'selinux'
+
+- name: 'Create the iPXE document root'
+  ansible.builtin.file:
+    path: "{{ nginx_root }}"
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+    state: 'directory'
+
+- name: 'Apply the SELinux file context to the iPXE root'
+  ansible.builtin.command:
+    cmd: "restorecon -Rv {{ nginx_root }}"
+  register: nginx_restorecon
+  changed_when: nginx_restorecon.stdout | length > 0
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: ansible_facts.selinux.status | default('enabled') == 'enabled'
+  tags:
+    - 'selinux'
+
+- name: 'Configure nginx'
+  ansible.builtin.template:
+    src: 'nginx.conf.j2'
+    dest: '/etc/nginx/nginx.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify:
+    - 'svc reload nginx'
+  tags:
+    - 'conf'
+
+- name: 'Configure the iPXE server'
+  ansible.builtin.template:
+    src: 'ipxe.conf.j2'
+    dest: '/etc/nginx/conf.d/ipxe.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify:
+    - 'svc reload nginx'
+  tags:
+    - 'conf'
+
+- name: 'Gather service facts'
+  ansible.builtin.service_facts:
+  tags:
+    - 'firewall'
+
+- name: 'Open the nginx port in firewalld'
+  ansible.posix.firewalld:
+    port: "{{ nginx_listen_port }}/tcp"
+    state: 'enabled'
+    permanent: true
+    immediate: true
+  when: (ansible_facts.services['firewalld.service'] | default({})).state | default('stopped') == 'running'
+  tags:
+    - 'firewall'
+
+- name: 'Validate the nginx configuration'
+  ansible.builtin.command:
+    cmd: 'nginx -t'
+  changed_when: false
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: 'Enable nginx'
+  ansible.builtin.service:
+    name: 'nginx'
+    state: 'started'
+    enabled: true
+  ignore_errors: "{{ ansible_check_mode }}"

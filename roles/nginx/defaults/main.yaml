@@ -1,0 +1,4 @@
+---
+nginx_listen_address: '192.168.125.1'
+nginx_listen_port: 8080
+nginx_root: '/var/www/ipxe'

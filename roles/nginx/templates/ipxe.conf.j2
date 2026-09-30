@@ -1,0 +1,8 @@
+{{ ansible_managed | comment }}
+
+server {
+    listen {{ nginx_listen_address }}:{{ nginx_listen_port }} default_server;
+    server_name _;
+    root {{ nginx_root }};
+    default_type text/plain;
+}

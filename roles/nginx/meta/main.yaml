@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  role_name: nginx
+  namespace: mlorenzofr
+  author: 'Manuel Lorenzo'
+  description: 'Install and configure nginx'
+  company: 'Red Hat'
+  license: 'BSD'
+  min_ansible_version: '2.12'
+  platforms:
+    - name: 'EL'
+      versions:
+        - '9'
+  galaxy_tags: []
+dependencies: []

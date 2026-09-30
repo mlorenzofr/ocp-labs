@@ -1,0 +1,8 @@
+---
+- name: 'Reload nginx service'
+  ansible.builtin.service:
+    name: 'nginx'
+    state: 'reloaded'
+    enabled: true
+  listen: 'svc reload nginx'
+  ignore_errors: "{{ ansible_check_mode }}"

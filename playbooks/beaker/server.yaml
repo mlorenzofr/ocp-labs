@@ -13,5 +13,7 @@
     - 'lab_host'
     - role: 'haproxy'
       tags: ['haproxy']
+    - role: 'nginx'
+      tags: ['nginx']
     - role: 'kind'
       tags: ['kind']
