@@ -94,3 +94,4 @@ oc get clusterversion
 * [coreos-installer#1765](https://github.com/coreos/coreos-installer/pull/1765)
 * [OpenShift 5.0.0-rc.4](https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/5.0.0-rc.4/)
 * [assisted-service#10925](https://github.com/openshift/assisted-service/pull/10925)
+* [Configuring and using iSCSI](https://dustymabe.com/2024/05/10/configuring-and-using-iscsi/)
