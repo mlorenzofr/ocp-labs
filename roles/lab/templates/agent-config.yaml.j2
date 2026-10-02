@@ -14,6 +14,8 @@ additionalNTPSources:
 {% if lab_hosts | length > 0 and not lab_appliance %}
 hosts:
 {% for host in lab_hosts %}
+{% set host_ipv4_static = host.ipv4_enabled | default(lab_node_ipv4) and not host.ipv4_dhcp | default(lab_node_dhcp) %}
+{% set host_ipv6_static = host.ipv6_enabled | default(lab_node_ipv6) and not host.ipv6_dhcp | default(lab_node_dhcp6) %}
   - hostname: {{ lab_name }}-{{ host.role | default(lab_node_role) }}-{{ loop.index }}
     interfaces:
       - name: {{ host.iface | default('eth0') }}
@@ -42,8 +44,17 @@ hosts:
             address:
               - ip: '{{ host.address | default('{}{}'.format(lab_node_network_base, host.id)) }}'
                 prefix-length: {{ '{}'.format(net_prefix[1]) }}
+{% endif %}
+{% endif %}
+{% if host_ipv4_static or host_ipv6_static %}
       routes:
         config:
+{% if host_ipv4_static %}
+          - destination: 0.0.0.0/0
+            next-hop-interface: {{ host.iface | default('eth0') }}
+            next-hop-address: {{ lab_gateway }}
+{% endif %}
+{% if host_ipv6_static %}
           - destination: ::/0
             next-hop-interface: {{ host.iface | default('eth0') }}
             next-hop-address: {{ lab_gateway }}
