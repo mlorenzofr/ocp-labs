@@ -17,6 +17,7 @@ lab_host_packages_dist:
   - 'python3-pip'
   # - 'python3-cherrypy'
   - 'qemu-kvm'
+  - 'ranger'
   - 'rsync'
   - 'skopeo'
   - 'squid'
