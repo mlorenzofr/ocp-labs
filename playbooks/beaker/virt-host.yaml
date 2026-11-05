@@ -1,0 +1,12 @@
+---
+# Configure a RHEL hypervisor for virtual baremetal hosts (KVM, libvirt, ksushy).
+# Run: ansible-playbook playbooks/beaker/virt-host.yaml
+
+- name: 'Configure virtual BMH hypervisor'
+  hosts:
+    - 'hypervisor'
+
+  gather_facts: true
+
+  roles:
+    - 'lab_host'

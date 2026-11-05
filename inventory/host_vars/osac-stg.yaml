@@ -1,0 +1,27 @@
+---
+lab_host_aws: false
+lab_host_ksushy_host: '::'
+lab_host_manage_libvirt_networks: false
+lab_host_libvirt_pool_path: '/home/libvirt'
+
+lab_host_packages_exclude:
+  - 'ranger'
+  - 'the_silver_searcher'
+
+lab_host_packages:
+  - 'dnsmasq'
+  - 'libvirt-daemon-driver-network'
+  - 'edk2-ovmf'
+
+lab_host_networks:
+  - name: 'bmh-net'
+    cidr: '192.168.122.0/24'
+    gw: '192.168.122.1'
+    netmask: '255.255.255.0'
+    dhcp_range: '192.168.122.10,192.168.122.250'
+    domain: 'local.lab'
+
+lab_host_squid_networks:
+  - '192.168.122.0/24'
+
+libvirt_image_dir: '/home/libvirt'

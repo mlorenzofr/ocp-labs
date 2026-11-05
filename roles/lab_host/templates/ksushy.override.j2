@@ -1,6 +1,7 @@
 {{ ansible_managed | comment }}
 
 [Service]
+Environment=KSUSHY_HOST={{ lab_host_ksushy_host }}
 Environment=KSUSHY_IPV6=true
 
 [Install]

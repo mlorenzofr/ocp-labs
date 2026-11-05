@@ -1,0 +1,112 @@
+---
+- name: 'Apply firewalld handler before libvirt networking'
+  ansible.builtin.meta: flush_handlers
+
+- name: 'Disable system dnsmasq service'
+  ansible.builtin.service:
+    name: 'dnsmasq'
+    enabled: false
+    state: 'stopped'
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: 'Enable libvirt modular daemons on RHEL 9'
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: true
+    state: 'started'
+  loop:
+    - 'virtqemud'
+    - 'virtnetworkd'
+    - 'virtstoraged'
+    - 'virtqemud.socket'
+    - 'virtnetworkd.socket'
+    - 'virtstoraged.socket'
+  when: ansible_facts['distribution_major_version'] == '9'
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: 'Ensure libvirt image directory exists'
+  ansible.builtin.file:
+    path: "{{ lab_host_libvirt_pool_path }}"
+    owner: 'root'
+    group: 'root'
+    mode: '0711'
+    state: 'directory'
+
+- name: 'Check if libvirt storage pool is defined'
+  ansible.builtin.command:
+    cmd: "virsh pool-info {{ lab_host_libvirt_pool_name }}"
+  register: __lab_host_pool_info
+  changed_when: false
+  failed_when: false
+
+- name: 'Define libvirt dir storage pool'
+  ansible.builtin.command:
+    cmd: >-
+      virsh pool-define-as
+      --name {{ lab_host_libvirt_pool_name }}
+      dir
+      --target {{ lab_host_libvirt_pool_path }}
+  when: __lab_host_pool_info.rc != 0
+  changed_when: true
+
+- name: 'Build libvirt storage pool when newly defined'
+  ansible.builtin.command:
+    cmd: "virsh pool-build {{ lab_host_libvirt_pool_name }}"
+  when: __lab_host_pool_info.rc != 0
+  changed_when: true
+
+- name: 'Start libvirt storage pool'
+  ansible.builtin.command:
+    cmd: "virsh pool-start {{ lab_host_libvirt_pool_name }}"
+  register: __lab_host_pool_start
+  changed_when: __lab_host_pool_start.rc == 0
+  failed_when: false
+
+- name: 'Autostart libvirt storage pool'
+  ansible.builtin.command:
+    cmd: "virsh pool-autostart {{ lab_host_libvirt_pool_name }}"
+  changed_when: true
+
+- name: 'Check if libvirt network is defined'
+  ansible.builtin.command:
+    cmd: "virsh net-info {{ item.name }}"
+  loop: "{{ lab_host_libvirt_networks }}"
+  register: __lab_host_net_info
+  changed_when: false
+  failed_when: false
+
+- name: 'Render libvirt network definition'
+  ansible.builtin.template:
+    src: 'libvirt-network.xml.j2'
+    dest: "/tmp/lab_host-{{ network.name }}.xml"
+    mode: '0644'
+  loop: "{{ lab_host_libvirt_networks }}"
+  loop_control:
+    loop_var: "network"
+
+- name: 'Define libvirt networks'
+  ansible.builtin.command:
+    cmd: "virsh net-define /tmp/lab_host-{{ item.item.name }}.xml"
+  loop: "{{ __lab_host_net_info.results }}"
+  loop_control:
+    label: "{{ item.item.name }}"
+  when: item.rc != 0
+  changed_when: true
+
+- name: 'Autostart libvirt networks'
+  ansible.builtin.command:
+    cmd: "virsh net-autostart {{ item.item.name }}"
+  loop: "{{ __lab_host_net_info.results }}"
+  loop_control:
+    label: "{{ item.item.name }}"
+  changed_when: true
+
+- name: 'Start libvirt networks'
+  ansible.builtin.command:
+    cmd: "virsh net-start {{ item.item.name }}"
+  loop: "{{ __lab_host_net_info.results }}"
+  loop_control:
+    label: "{{ item.item.name }}"
+  register: __lab_host_net_start
+  changed_when: __lab_host_net_start.rc == 0
+  failed_when: false

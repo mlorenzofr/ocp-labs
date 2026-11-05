@@ -1,0 +1,24 @@
+<network>
+  <name>{{ network.name }}</name>
+  <metadata>
+    <kvirt:info xmlns:kvirt="kvirt">
+      <kvirt:plan>lab_host</kvirt:plan>
+    </kvirt:info>
+  </metadata>
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  <bridge name='{{ network.name }}' stp='on' delay='0'/>
+{% set net_addr = network.cidr.split('/')[0].split('.') %}
+  <mac address='52:54:00:{{ '%02x' | format(net_addr[0] | int) }}:{{ '%02x' | format(net_addr[2] | int) }}:{{ '%02x' | format(net_addr[3] | int) }}'/>
+  <domain name='{{ network.domain }}' localOnly='no'/>
+  <dns enable='yes'/>
+  <ip family='ipv4' address='{{ network.gw }}' netmask='{{ network.netmask | default(lab_host_dhcp_netmask) }}'>
+{% set dhcp_parts = network.dhcp_range.split(',') %}
+    <dhcp>
+      <range start='{{ dhcp_parts[0] }}' end='{{ dhcp_parts[1] }}'/>
+    </dhcp>
+  </ip>
+</network>

@@ -12,6 +12,12 @@ lab_host_ocp_mirror: 'https://mirror.openshift.com/pub/openshift-v4'
 lab_host_ocp_versions: []
 lab_host_oc_source: 'openshift-client-linux.tar.gz'
 lab_host_packages: []
+lab_host_packages_exclude: []
 lab_host_repos: []
 lab_host_rh_release: '9.5.0'
 lab_host_ssh_config_hosts: []
+lab_host_ksushy_host: '::'
+lab_host_manage_libvirt_networks: false
+lab_host_libvirt_pool_name: 'default'
+lab_host_libvirt_pool_path: '/var/lib/libvirt/images'
+lab_host_libvirt_networks: "{{ lab_host_networks | selectattr('dhcp_range', 'defined') | list }}"

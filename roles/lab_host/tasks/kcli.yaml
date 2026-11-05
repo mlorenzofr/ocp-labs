@@ -20,10 +20,19 @@
     - 'cherrypy'
     - 'pyopenssl'
 
+- name: 'Check if ksushy unit file exists'
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop:
+    - '/etc/systemd/system/ksushy.service'
+    - '/usr/lib/systemd/system/ksushy.service'
+  register: __ksushy_unit
+
 - name: 'Install ksushy service'
   ansible.builtin.command:
-    cmd: 'kcli create sushy-service --port 9000 --bootonce'
-    creates: '/usr/lib/systemd/system/ksushy.service'
+    cmd: "kcli create sushy-service --port 9000 --bootonce"
+  when: __ksushy_unit.results | selectattr('stat.exists') | list | length == 0
+  changed_when: true
   notify:
     - 'systemd daemon-reload'
     - 'svc restart ksushy'

@@ -21,7 +21,7 @@
 
 - name: 'Install required packages'
   ansible.builtin.package:
-    name: "{{ lab_host_packages_dist + lab_host_packages }}"
+    name: "{{ (lab_host_packages_dist + lab_host_packages) | difference(lab_host_packages_exclude) }}"
     state: 'present'
   ignore_errors: "{{ ansible_check_mode }}"
   tags:
@@ -66,6 +66,11 @@
 - name: 'Install kcli'
   ansible.builtin.import_tasks: 'kcli.yaml'
   tags: ['kcli']
+
+- name: 'Configure libvirt networks and storage'
+  ansible.builtin.import_tasks: 'libvirt_network.yaml'
+  when: lab_host_manage_libvirt_networks | bool
+  tags: ['libvirt', 'network']
 
 - name: 'Install helm'
   ansible.builtin.import_tasks: 'helm.yaml'

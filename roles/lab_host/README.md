@@ -24,9 +24,26 @@ This role is used to configure a Beaker machine and get it ready to deploy OpenS
 * `lab_host_ocp_versions`. _List_. List of OpenShift versions to install. Defaults to `[]`.
 * `lab_host_oc_source`. _String_. OpenShift client source tarball name. Defaults to `'openshift-client-linux.tar.gz'`.
 * `lab_host_packages`. _List_. Additional packages to install. Defaults to `[]`.
+* `lab_host_packages_exclude`. _List_. Package names to omit from the distro and extra package install lists. Defaults to `[]`.
 * `lab_host_repos`. _List_. Additional software repositories to configure. Defaults to `[]`.
 * `lab_host_rh_release`. _String_. Red Hat release version. Defaults to `'9.5.0'`.
 * `lab_host_ssh_config_hosts`. _List_. SSH host entries to configure in `~/.ssh/config`. Defaults to `[]`.
+* `lab_host_ksushy_host`. _String_. Address ksushy binds to (`KSUSHY_HOST`). Defaults to `'::'` (all interfaces).
+* `lab_host_manage_libvirt_networks`. _Bool_. Define NAT libvirt networks from `lab_host_networks`, disable the system `dnsmasq` service, and ensure the default storage pool. Defaults to `false`.
+* `lab_host_libvirt_pool_name`. _String_. Name of the libvirt dir storage pool. Defaults to `'default'`.
+* `lab_host_libvirt_pool_path`. _String_. Path for the libvirt dir storage pool. Defaults to `'/var/lib/libvirt/images'`.
+* `lab_host_libvirt_networks`. _List_. Subset of `lab_host_networks` entries that define `dhcp_range` (used when `lab_host_manage_libvirt_networks` is enabled). Defaults to a filtered list derived from `lab_host_networks`.
+
+### Variables for `lab_host_networks` items (libvirt NAT)
+
+When `lab_host_manage_libvirt_networks` is enabled, entries with `dhcp_range` are rendered as libvirt NAT networks:
+
+* `name`. _String_. Libvirt network name (15 characters maximum).
+* `cidr`. _String_. Network CIDR (used for bridge MAC calculation).
+* `gw`. _String_. Gateway address on the libvirt bridge.
+* `dhcp_range`. _String_. DHCP range as `start,end` (required for libvirt network creation).
+* `domain`. _String_. DNS domain for libvirt network resolution.
+* `netmask`. _String_. IPv4 netmask. Defaults to `lab_host_dhcp_netmask`.
 
 ### Variables for `lab_host_repos` items
 
@@ -78,6 +95,7 @@ This role performs the following tasks:
 2. **Package Installation**: Installs required system packages and Python packages.
 3. **Service Configuration**: Configures and manages:
    * libvirt and related services (qemu, network, storage, etc.)
+   * Optional NAT libvirt networks with DHCP/DNS (`lab_host_manage_libvirt_networks`)
    * chronyd (NTP)
    * squid (HTTP proxy)
    * firewalld (disabled)
